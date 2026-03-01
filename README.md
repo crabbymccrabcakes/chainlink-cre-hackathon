@@ -66,7 +66,7 @@ Then Oracle Court computes:
 1. `prosecutorEvidenceHash = keccak256(stable-json(prosecutorArgument))`
 2. `defenderEvidenceHash = keccak256(stable-json(defenderArgument))`
 3. `auditorEvidenceHash = keccak256(stable-json(auditorArgument))`
-4. `verdictDigest = keccak256(abi.encode(allEvidenceHashes, riskScore, mode, timestamp, caseId))`
+4. `verdictDigest = keccak256(stable-json({allEvidenceHashes, riskScore, mode, timestamp, caseId}))`
 
 All values are written on-chain via CRE report signing + `writeReport`.
 

@@ -779,43 +779,29 @@ const buildTribunalVerdict = (
   const defenderEvidenceHash = digestObject(defenderArgument)
   const auditorEvidenceHash = digestObject(auditorArgument)
 
-  const caseId = keccak256(
-    encodeAbiParameters(
-      parseAbiParameters(
-        'uint32 timestamp,uint16 depegBps,uint16 spreadBps,uint16 downside24hBps,uint16 reserveCoverageGapBps,uint16 attestationLagPenaltyBps,uint16 redemptionQueuePenaltyBps,uint16 prosecutorScore,uint16 defenderScore,uint16 auditorScore,uint16 riskScoreBps',
-      ),
-      [
-        timestamp,
-        depegBps,
-        spreadBps,
-        downside24hBps,
-        reserveCoverageGapBps,
-        attestationLagPenaltyBps,
-        redemptionQueuePenaltyBps,
-        prosecutorScore,
-        defenderScore,
-        auditorScore,
-        riskScoreBps,
-      ],
-    ),
-  )
+  const caseId = digestObject({
+    timestamp,
+    depegBps,
+    spreadBps,
+    downside24hBps,
+    reserveCoverageGapBps,
+    attestationLagPenaltyBps,
+    redemptionQueuePenaltyBps,
+    prosecutorScore,
+    defenderScore,
+    auditorScore,
+    riskScoreBps,
+  })
 
-  const verdictDigest = keccak256(
-    encodeAbiParameters(
-      parseAbiParameters(
-        'bytes32 prosecutorEvidenceHash,bytes32 defenderEvidenceHash,bytes32 auditorEvidenceHash,uint16 riskScoreBps,uint8 mode,uint32 timestamp,bytes32 caseId',
-      ),
-      [
-        prosecutorEvidenceHash,
-        defenderEvidenceHash,
-        auditorEvidenceHash,
-        riskScoreBps,
-        mode,
-        timestamp,
-        caseId,
-      ],
-    ),
-  )
+  const verdictDigest = digestObject({
+    prosecutorEvidenceHash,
+    defenderEvidenceHash,
+    auditorEvidenceHash,
+    riskScoreBps,
+    mode,
+    timestamp,
+    caseId,
+  })
 
   return {
     mode,

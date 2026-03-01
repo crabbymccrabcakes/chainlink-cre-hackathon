@@ -19,7 +19,7 @@ Each run computes three structured arguments:
 - Defender
 - Auditor
 
-Each argument is hashed (`keccak256(stable-json(argument))`) and the workflow computes a final `verdictDigest`.
+Each argument is hashed (`keccak256(stable-json(argument))`) and the workflow computes a final `verdictDigest` from a stable-json canonical verdict object.
 
 ## Onchain Payload
 
