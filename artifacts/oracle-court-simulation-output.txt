@@ -1,21 +1,21 @@
 ✓ Workflow compiled
-2026-03-01T15:39:14Z [SIMULATION] Simulator Initialized
+2026-03-01T15:53:09Z [SIMULATION] Simulator Initialized
 
-2026-03-01T15:39:14Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
-2026-03-01T15:39:15Z [USER LOG] [OracleCourt][Source][CoinGecko] call=1/5 attempt=1 url=https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true status=OK price=0.99984
-2026-03-01T15:39:15Z [USER LOG] [OracleCourt][Source][Coinbase Spot] call=2/5 attempt=1 url=https://api.coinbase.com/v2/prices/USDC-USD/spot status=OK price=1
-2026-03-01T15:39:15Z [USER LOG] [OracleCourt][Source][CoinPaprika] call=3/5 attempt=1 url=https://api.coinpaprika.com/v1/tickers/usdc-usd-coin status=OK price=1.0004544
-2026-03-01T15:39:16Z [USER LOG] [OracleCourt][Source][CryptoCompare] call=4/5 attempt=1 url=https://min-api.cryptocompare.com/data/price?fsym=USDC&tsyms=USD status=OK price=0.9999
-2026-03-01T15:39:16Z [USER LOG] [OracleCourt][SourceSummary] successful=4 failed=0 median=0.99995 min=0.99984 max=1.0004544 httpCalls=4/5
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt] Offchain signals: {
+2026-03-01T15:53:09Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-03-01T15:53:09Z [USER LOG] [OracleCourt][Source][CoinGecko] call=1/5 attempt=1 url=https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true status=OK price=0.999975
+2026-03-01T15:53:10Z [USER LOG] [OracleCourt][Source][Coinbase Spot] call=2/5 attempt=1 url=https://api.coinbase.com/v2/prices/USDC-USD/spot status=OK price=1
+2026-03-01T15:53:10Z [USER LOG] [OracleCourt][Source][CoinPaprika] call=3/5 attempt=1 url=https://api.coinpaprika.com/v1/tickers/usdc-usd-coin status=OK price=1.00038369
+2026-03-01T15:53:11Z [USER LOG] [OracleCourt][Source][CryptoCompare] call=4/5 attempt=1 url=https://min-api.cryptocompare.com/data/price?fsym=USDC&tsyms=USD status=OK price=0.9999
+2026-03-01T15:53:11Z [USER LOG] [OracleCourt][SourceSummary] successful=4 failed=0 median=0.9999875 min=0.9999 max=1.00038369 httpCalls=4/5
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt] Offchain signals: {
   "successfulSources": [
     {
       "name": "CoinGecko",
       "kind": "coingecko",
       "selectedUrl": "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true",
       "attempt": 1,
-      "price": 0.99984,
-      "change24hPct": -0.00687455
+      "price": 0.999975,
+      "change24hPct": 0.0071701
     },
     {
       "name": "Coinbase Spot",
@@ -30,8 +30,8 @@
       "kind": "coinpaprika",
       "selectedUrl": "https://api.coinpaprika.com/v1/tickers/usdc-usd-coin",
       "attempt": 1,
-      "price": 1.0004544,
-      "change24hPct": -0.02
+      "price": 1.00038369,
+      "change24hPct": 0
     },
     {
       "name": "CryptoCompare",
@@ -42,53 +42,53 @@
       "change24hPct": 0
     }
   ],
-  "f ...(truncated)
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt] Onchain signals: {
+  "faile ...(truncated)
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt] Onchain signals: {
   "ethUsd": 2013.87,
   "btcUsd": 67334.786
 }
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt] RWA signals: {
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt] RWA signals: {
   "reserveCoverageBps": 9400,
   "attestationAgeSeconds": 172800,
   "redemptionQueueBps": 2800
 }
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][EvidenceDossier] {"admissibilityScoreBps":8681,"claimCount":3,"contradictionCount":1,"evidenceFreshnessScoreBps":9221,"evidenceRoot":"0x43c3c853838cbdd7a8074d1d64caf54ee1d4be184754ee5d2d6ba15eee1f60ec","generatedAtUnix":1772343560,"protectedSourcesPresent":true,"sourceIds":["ATT-2026-02-28","DISC-2026-02-28","GOV-2026-02-27"]}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][DossierClaim] {"chunkId":"ATT-2026-02-28-chunk-1","claimId":"CLM-1","confidenceBps":6834,"polarity":"adverse","sourceId":"ATT-2026-02-28","textSnippet":"Independent attestation states reserves are sufficient and fully backed as of Friday close. Coverage remained within internal tolerance, ...","topic":"reserves"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][DossierClaim] {"chunkId":"DISC-2026-02-28-chunk-1","claimId":"CLM-2","confidenceBps":6758,"polarity":"supportive","sourceId":"DISC-2026-02-28","textSnippet":"Issuer disclosure reports redemption operations are normal and orderly. The statement also notes temporary queue expansion during market ...","topic":"redemptions"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][DossierClaim] {"chunkId":"GOV-2026-02-27-chunk-1","claimId":"CLM-3","confidenceBps":6080,"polarity":"neutral","sourceId":"GOV-2026-02-27","textSnippet":"A governance proposal suggests loosening mint throttles to improve growth and reducing mandatory reserve buffer targets during calm periods.","topic":"reserves"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][AgentBrief][PROSECUTOR] {"brief":{"agent":"PROSECUTOR","citations":[{"chunkId":"ATT-2026-02-28-chunk-1","claimId":"CLM-1","quote":"Independent attestation states reserves are sufficient and fully backed as of Friday close. C...","sourceId":"ATT-2026-02-28"}],"claims":["Reserve gap penalty=500","Attestation lag penalty=1320","Redemption queue penalty=3000","Contradiction severity total=4800"],"confidenceBps":9100,"contradictionsFound":["C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"],"policyRecommendation":"REDEMPTION_ONLY","position":"restrict","thesis":"Reserve deterioration, stale attestations, and redemption stress create insolvency propagation risk."},"evidenceHash":"0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][AgentBrief][DEFENDER] {"brief":{"agent":"DEFENDER","citations":[{"chunkId":"DISC-2026-02-28-chunk-1","claimId":"CLM-2","quote":"Issuer disclosure reports redemption operations are normal and orderly. The statement also no...","sourceId":"DISC-2026-02-28"}],"claims":["Supportive claims count=1","Evidence freshness score=9221","Admissibility score=8681","Residual market stress (depeg+spread)=6"],"confidenceBps":5714,"contradictionsFound":["C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"],"policyRecommendation":"REDEMPTION_ONLY","position":"hold","thesis":"Current evidence quality is insufficient to justify maximum restrictions."},"evidenceHash":"0x68fd6ec9c368b4b63c06c7a9df121542b8659f9d07a92b51df1ea4078a2369a6"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][AgentBrief][AUDITOR] {"brief":{"agent":"AUDITOR","citations":[{"chunkId":"ATT-2026-02-28-chunk-1","claimId":"CLM-1","quote":"Independent attestation states reserves are sufficient and fully backed as of Friday close. C...","sourceId":"ATT-2026-02-28"},{"chunkId":"DISC-2026-02-28-chunk-1","claimId":"CLM-2","quote":"Issuer disclosure reports redemption operations are normal and orderly. The statement also no...","sourceId":"DISC-2026-02-28"}],"claims":["Contradictions detected=1","Admissibility score=8681","Freshness score=9221","Source failure penalty=0"],"confidenceBps":6278,"contradictionsFound":["C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"],"policyRecommendation":"NORMAL","position":"restrict","thesis":"Narrative claims conflict with telemetry; admissibility and freshness controls require a safety premium."},"evidenceHash":"0x6e52c62cdc2b4554a6beb2a9a58f766ff90798cb5af71799cf52581348a73d49"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][ContradictionMatrix] [{"explanation":"Queue stress indicates redemptions are not behaving as claimed","id":"C-1","lhs":"Disclosure says redemptions are normal","rhs":"Telemetry redemptionQueueBps=2800","severityBps":4800}]
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][PolicySimulation] {"explanation":"THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6507","modeResults":[{"falsePositiveCostBps":3291,"mode":"NORMAL","objectiveScoreBps":6255,"operationalReversibilityBps":9300,"rationale":"Minimizes user harm but offers the least solvency protection.","solvencyProtectionBps":5373,"userHarmBps":1200},{"falsePositiveCostBps":2605,"mode":"THROTTLE","objectiveScoreBps":6507,"operationalReversibilityBps":7600,"rationale":"Balances containment with user access while preserving reversibility.","solvencyProtectionBps":7573,"userHarmBps":4300},{"falsePositiveCostBps":3811,"mode":"REDEMPTION_ONLY","objectiveScoreBps":5246,"operationalReversibilityBps":3000,"rationale":"Maximizes solvency containment under contradiction-heavy evidence.","solvencyProtectionBps":8573,"userHarmBps":8200}],"selectedMode":"THROTTLE"}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][Constitution] [{"principle":"Solvency First","reason":"Selected mode prioritizes solvency containment under observed stress.","status":"SATISFIED"},{"principle":"Orderly Exit","reason":"Selected modes preserve redemptions to support orderly user exits.","status":"SATISFIED"},{"principle":"Minimum Necessary Restriction","reason":"THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6507","status":"SATISFIED"},{"principle":"Evidence Sufficiency","reason":"admissibilityScoreBps=8681","status":"SATISFIED"},{"principle":"Freshness Requirement","reason":"evidenceFreshnessScoreBps=9221","status":"SATISFIED"}]
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][AppealOutcome] {"confidenceBps":8597,"deltas":{"contradictionCountDelta":1,"contradictionSeverityDeltaBps":4800,"freshnessDeltaBps":9221,"riskDeltaBps":-3773},"outcome":"RELAX","rationale":"New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."}
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt] Tribunal scores prosecutor=5813 defender=1046 auditor=1206
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt] Verdict mode=1 (THROTTLE) riskScoreBps=5973 caseId=0x4fdaa86b7d5894e58720923e5a0c837445fc9559ca17abfbb2080cd8233c8cac evidenceRoot=0x43c3c853838cbdd7a8074d1d64caf54ee1d4be184754ee5d2d6ba15eee1f60ec verdictDigest=0x88cb439713de367e06b684a25dec3fc44dc586fcdd5de800b7b8394e9d9cf92b
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt] Write report transaction succeeded: 0x0000000000000000000000000000000000000000000000000000000000000000
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][ProofBlock] {"agentScores":{"auditorScore":1206,"contradictionSeverityBps":4800,"defenderScore":1046,"prosecutorScore":5813,"riskScoreBps":5973},"evidenceDossierSummary":{"admissibilityScoreBps":8681,"averageClaimConfidenceBps":6557,"claimBalance":{"adverse":1,"neutral":1,"supportive":1},"contradictionCount":1,"evidenceFreshnessScoreBps":9221,"evidenceRoot":"0x43c3c853838cbdd7a8074d1d64caf54ee1d4be184754ee5d2d6ba15eee1f60ec"},"evidenceHashes":{"auditorEvidenceHash":"0x6e52c62cdc2b4554a6beb2a9a58f766ff90798cb5af71799cf52581348a73d49","defenderEvidenceHash":"0x68fd6ec9c368b4b63c06c7a9df121542b8659f9d07a92b51df1ea4078a2369a6","evidenceRoot":"0x43c3c853838cbdd7a8074d1d64caf54ee1d4be184754ee5d2d6ba15eee1f60ec","prosecutorEvidenceHash":"0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa","verdictDigest":"0x88cb439713de367e06b684a25dec3fc44dc586fcdd5de800b7b8394e9d9cf92b"},"finalVerdict":{"caseId":"0x4fdaa86b7d5894e58720923e5a0c837445fc9559ca17abfbb2080cd8233c8ca ...(truncated)
-2026-03-01T15:39:20Z [USER LOG] [OracleCourt][VerdictBulletin] {"appealOutcome":{"confidenceBps":8597,"deltas":{"contradictionCountDelta":1,"contradictionSeverityDeltaBps":4800,"freshnessDeltaBps":9221,"riskDeltaBps":-3773},"outcome":"RELAX","rationale":"New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."},"bulletinVersion":"oracle-court-ai-governor-v1","caseId":"0x4fdaa86b7d5894e58720923e5a0c837445fc9559ca17abfbb2080cd8233c8cac","constitutionalAssessments":[{"principle":"Solvency First","reason":"Selected mode prioritizes solvency containment under observed stress.","status":"SATISFIED"},{"principle":"Orderly Exit","reason":"Selected modes preserve redemptions to support orderly user exits.","status":"SATISFIED"},{"principle":"Minimum Necessary Restriction","reason":"THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6507","status":"SATISFIED"},{"principle":"Evidence Sufficiency","reason":"admissib ...(truncated)
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][EvidenceDossier] {"admissibilityScoreBps":8680,"claimCount":3,"contradictionCount":1,"evidenceFreshnessScoreBps":9207,"evidenceRoot":"0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14","generatedAtUnix":1772344394,"protectedSourcesPresent":true,"sourceIds":["ATT-2026-02-28","DISC-2026-02-28","GOV-2026-02-27"]}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][DossierClaim] {"chunkId":"ATT-2026-02-28-chunk-1","claimId":"CLM-1","confidenceBps":6834,"polarity":"adverse","sourceId":"ATT-2026-02-28","textSnippet":"Independent attestation states reserves are sufficient and fully backed as of Friday close. Coverage remained within internal tolerance, ...","topic":"reserves"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][DossierClaim] {"chunkId":"DISC-2026-02-28-chunk-1","claimId":"CLM-2","confidenceBps":6758,"polarity":"supportive","sourceId":"DISC-2026-02-28","textSnippet":"Issuer disclosure reports redemption operations are normal and orderly. The statement also notes temporary queue expansion during market ...","topic":"redemptions"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][DossierClaim] {"chunkId":"GOV-2026-02-27-chunk-1","claimId":"CLM-3","confidenceBps":6080,"polarity":"neutral","sourceId":"GOV-2026-02-27","textSnippet":"A governance proposal suggests loosening mint throttles to improve growth and reducing mandatory reserve buffer targets during calm periods.","topic":"reserves"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][AgentBrief][PROSECUTOR] {"brief":{"agent":"PROSECUTOR","citations":[{"chunkId":"ATT-2026-02-28-chunk-1","claimId":"CLM-1","quote":"Independent attestation states reserves are sufficient and fully backed as of Friday close. C...","sourceId":"ATT-2026-02-28"}],"claims":["Reserve gap penalty=500","Attestation lag penalty=1320","Redemption queue penalty=3000","Contradiction severity total=4800"],"confidenceBps":9100,"contradictionsFound":["C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"],"policyRecommendation":"REDEMPTION_ONLY","position":"restrict","thesis":"Reserve deterioration, stale attestations, and redemption stress create insolvency propagation risk."},"evidenceHash":"0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][AgentBrief][DEFENDER] {"brief":{"agent":"DEFENDER","citations":[{"chunkId":"DISC-2026-02-28-chunk-1","claimId":"CLM-2","quote":"Issuer disclosure reports redemption operations are normal and orderly. The statement also no...","sourceId":"DISC-2026-02-28"}],"claims":["Supportive claims count=1","Evidence freshness score=9207","Admissibility score=8680","Residual market stress (depeg+spread)=5"],"confidenceBps":5714,"contradictionsFound":["C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"],"policyRecommendation":"REDEMPTION_ONLY","position":"hold","thesis":"Current evidence quality is insufficient to justify maximum restrictions."},"evidenceHash":"0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][AgentBrief][AUDITOR] {"brief":{"agent":"AUDITOR","citations":[{"chunkId":"ATT-2026-02-28-chunk-1","claimId":"CLM-1","quote":"Independent attestation states reserves are sufficient and fully backed as of Friday close. C...","sourceId":"ATT-2026-02-28"},{"chunkId":"DISC-2026-02-28-chunk-1","claimId":"CLM-2","quote":"Issuer disclosure reports redemption operations are normal and orderly. The statement also no...","sourceId":"DISC-2026-02-28"}],"claims":["Contradictions detected=1","Admissibility score=8680","Freshness score=9207","Source failure penalty=0"],"confidenceBps":6278,"contradictionsFound":["C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"],"policyRecommendation":"NORMAL","position":"restrict","thesis":"Narrative claims conflict with telemetry; admissibility and freshness controls require a safety premium."},"evidenceHash":"0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][ContradictionMatrix] [{"explanation":"Queue stress indicates redemptions are not behaving as claimed","id":"C-1","lhs":"Disclosure says redemptions are normal","rhs":"Telemetry redemptionQueueBps=2800","severityBps":4800}]
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][PolicySimulation] {"explanation":"THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505","modeResults":[{"falsePositiveCostBps":3289,"mode":"NORMAL","objectiveScoreBps":6253,"operationalReversibilityBps":9300,"rationale":"Minimizes user harm but offers the least solvency protection.","solvencyProtectionBps":5369,"userHarmBps":1200},{"falsePositiveCostBps":2606,"mode":"THROTTLE","objectiveScoreBps":6505,"operationalReversibilityBps":7600,"rationale":"Balances containment with user access while preserving reversibility.","solvencyProtectionBps":7569,"userHarmBps":4300},{"falsePositiveCostBps":3812,"mode":"REDEMPTION_ONLY","objectiveScoreBps":5244,"operationalReversibilityBps":3000,"rationale":"Maximizes solvency containment under contradiction-heavy evidence.","solvencyProtectionBps":8569,"userHarmBps":8200}],"selectedMode":"THROTTLE"}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][Constitution] [{"principle":"Solvency First","reason":"Selected mode prioritizes solvency containment under observed stress.","status":"SATISFIED"},{"principle":"Orderly Exit","reason":"Selected modes preserve redemptions to support orderly user exits.","status":"SATISFIED"},{"principle":"Minimum Necessary Restriction","reason":"THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505","status":"SATISFIED"},{"principle":"Evidence Sufficiency","reason":"admissibilityScoreBps=8680","status":"SATISFIED"},{"principle":"Freshness Requirement","reason":"evidenceFreshnessScoreBps=9207","status":"SATISFIED"}]
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt][AppealOutcome] {"confidenceBps":9035,"deltas":{"contradictionCountDelta":1,"contradictionSeverityDeltaBps":4800,"freshnessDeltaBps":9207,"riskDeltaBps":5969},"outcome":"ESCALATE","rationale":"New evidence increased contradiction pressure or risk score; policy escalated."}
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt] Tribunal scores prosecutor=5810 defender=1046 auditor=1205
+2026-03-01T15:53:14Z [USER LOG] [OracleCourt] Verdict mode=1 (THROTTLE) riskScoreBps=5969 caseId=0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2 evidenceRoot=0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14 verdictDigest=0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b
+2026-03-01T15:53:25Z [USER LOG] [OracleCourt] Write report transaction succeeded: 0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b
+2026-03-01T15:53:25Z [USER LOG] [OracleCourt][ProofBlock] {"agentScores":{"auditorScore":1205,"contradictionSeverityBps":4800,"defenderScore":1046,"prosecutorScore":5810,"riskScoreBps":5969},"evidenceDossierSummary":{"admissibilityScoreBps":8680,"averageClaimConfidenceBps":6557,"claimBalance":{"adverse":1,"neutral":1,"supportive":1},"contradictionCount":1,"evidenceFreshnessScoreBps":9207,"evidenceRoot":"0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14"},"evidenceHashes":{"auditorEvidenceHash":"0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a","defenderEvidenceHash":"0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d","evidenceRoot":"0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14","prosecutorEvidenceHash":"0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa","verdictDigest":"0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"},"finalVerdict":{"caseId":"0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a ...(truncated)
+2026-03-01T15:53:25Z [USER LOG] [OracleCourt][VerdictBulletin] {"appealOutcome":{"confidenceBps":9035,"deltas":{"contradictionCountDelta":1,"contradictionSeverityDeltaBps":4800,"freshnessDeltaBps":9207,"riskDeltaBps":5969},"outcome":"ESCALATE","rationale":"New evidence increased contradiction pressure or risk score; policy escalated."},"bulletinVersion":"oracle-court-ai-governor-v1","caseId":"0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2","constitutionalAssessments":[{"principle":"Solvency First","reason":"Selected mode prioritizes solvency containment under observed stress.","status":"SATISFIED"},{"principle":"Orderly Exit","reason":"Selected modes preserve redemptions to support orderly user exits.","status":"SATISFIED"},{"principle":"Minimum Necessary Restriction","reason":"THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505","status":"SATISFIED"},{"principle":"Evidence Sufficiency","reason":"admissibilityS ...(truncated)
 
 ✓ Workflow Simulation Result:
 {
-  "appealOutcome": "RELAX",
-  "auditorEvidenceHash": "0x6e52c62cdc2b4554a6beb2a9a58f766ff90798cb5af71799cf52581348a73d49",
-  "auditorScore": 1206,
-  "caseId": "0x4fdaa86b7d5894e58720923e5a0c837445fc9559ca17abfbb2080cd8233c8cac",
-  "defenderEvidenceHash": "0x68fd6ec9c368b4b63c06c7a9df121542b8659f9d07a92b51df1ea4078a2369a6",
+  "appealOutcome": "ESCALATE",
+  "auditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
+  "auditorScore": 1205,
+  "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+  "defenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
   "defenderScore": 1046,
-  "evidenceRoot": "0x43c3c853838cbdd7a8074d1d64caf54ee1d4be184754ee5d2d6ba15eee1f60ec",
+  "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
   "mode": 1,
   "modeLabel": "THROTTLE",
   "prosecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-  "prosecutorScore": 5813,
-  "riskScoreBps": 5973,
-  "txHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "verdictDigest": "0x88cb439713de367e06b684a25dec3fc44dc586fcdd5de800b7b8394e9d9cf92b"
+  "prosecutorScore": 5810,
+  "riskScoreBps": 5969,
+  "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
+  "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
 }
 
-2026-03-01T15:39:20Z [SIMULATION] Execution finished signal received
-2026-03-01T15:39:20Z [SIMULATION] Skipping WorkflowEngineV2
+2026-03-01T15:53:25Z [SIMULATION] Execution finished signal received
+2026-03-01T15:53:25Z [SIMULATION] Skipping WorkflowEngineV2
 
 ╭──────────────────────────────────────────────────────╮
 │ Simulation complete! Ready to deploy your workflow?  │

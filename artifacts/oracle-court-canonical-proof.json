@@ -1,13 +1,3 @@
-# Oracle Court Policy Impact (Canonical)
-
-This artifact uses a single canonical before/after flow.
-
-- Before: healthy inputs -> `NORMAL` -> minting allowed
-- After: stressed inputs -> `THROTTLE` -> minting restricted by policy
-
-## Snapshot
-
-```json
 {
   "packageVersion": "oracle-court-canonical-proof-v1",
   "generatedAtIso": "2026-03-01T05:53:30.206Z",
@@ -47,4 +37,3 @@ This artifact uses a single canonical before/after flow.
     }
   }
 }
-```

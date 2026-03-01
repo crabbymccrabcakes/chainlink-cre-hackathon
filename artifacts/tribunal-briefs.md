@@ -1,3 +1,5 @@
+> Scenario: stressed-canonical (tx: 0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b)
+
 # Tribunal Briefs
 
 ## Prosecutor
@@ -44,9 +46,9 @@
   ],
   "claims": [
     "Supportive claims count=1",
-    "Evidence freshness score=9221",
-    "Admissibility score=8681",
-    "Residual market stress (depeg+spread)=6"
+    "Evidence freshness score=9207",
+    "Admissibility score=8680",
+    "Residual market stress (depeg+spread)=5"
   ],
   "confidenceBps": 5714,
   "contradictionsFound": [
@@ -79,8 +81,8 @@
   ],
   "claims": [
     "Contradictions detected=1",
-    "Admissibility score=8681",
-    "Freshness score=9221",
+    "Admissibility score=8680",
+    "Freshness score=9207",
     "Source failure penalty=0"
   ],
   "confidenceBps": 6278,
@@ -96,5 +98,5 @@
 ## Evidence Hashes
 
 - prosecutorEvidenceHash: `0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa`
-- defenderEvidenceHash: `0x68fd6ec9c368b4b63c06c7a9df121542b8659f9d07a92b51df1ea4078a2369a6`
-- auditorEvidenceHash: `0x6e52c62cdc2b4554a6beb2a9a58f766ff90798cb5af71799cf52581348a73d49`
+- defenderEvidenceHash: `0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d`
+- auditorEvidenceHash: `0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a`

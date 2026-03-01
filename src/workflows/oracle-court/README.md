@@ -47,7 +47,7 @@ The report payload sent to `OracleCourtReceiver` remains:
 
 ## Artifacts
 
-`generate-oracle-court-proof.mjs` produces:
+`generate-oracle-court-proof.mjs` produces per-run proof artifacts:
 
 - `artifacts/evidence-dossier.json`
 - `artifacts/evidence-dossier.md`
@@ -56,10 +56,19 @@ The report payload sent to `OracleCourtReceiver` remains:
 - `artifacts/verdict-bulletin.json`
 - `artifacts/oracle-court-proof.md`
 
+`build-oracle-court-canonical-proof.mjs` produces the submission-safe canonical package:
+
+- `artifacts/oracle-court-canonical-proof.json`
+- `artifacts/oracle-court-proof-package.md`
+- `artifacts/oracle-court-policy-impact.md`
+- `artifacts/oracle-court-healthy-scenario.json`
+- `artifacts/oracle-court-stressed-scenario.json`
+- `artifacts/ARTIFACT_MAP.md`
+
 ## Execution
 
 ```bash
 bun run deploy:oracle-court:stack
 bun run simulate:oracle-court:broadcast
-bun run demo:oracle-court:impact
+bun run proof:oracle-court:canonical
 ```

@@ -1,0 +1,150 @@
+{
+  "title": "Scenario B — Stressed evidence and telemetry",
+  "expectedModeLabel": "THROTTLE",
+  "telemetry": {
+    "reserveCoverageBps": 9400,
+    "attestationAgeSeconds": 172800,
+    "redemptionQueueBps": 2800
+  },
+  "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
+  "simulationResult": {
+    "appealOutcome": "ESCALATE",
+    "auditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
+    "auditorScore": 1205,
+    "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+    "defenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
+    "defenderScore": 1046,
+    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
+    "mode": 1,
+    "modeLabel": "THROTTLE",
+    "prosecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
+    "prosecutorScore": 5810,
+    "riskScoreBps": 5969,
+    "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
+    "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
+  },
+  "verdictBulletin": {
+    "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+    "mode": "THROTTLE",
+    "riskScoreBps": 5969,
+    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
+    "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b",
+    "policyExplanation": null,
+    "constitutionalAssessments": [
+      {
+        "principle": "Solvency First",
+        "reason": "Selected mode prioritizes solvency containment under observed stress.",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Orderly Exit",
+        "reason": "Selected modes preserve redemptions to support orderly user exits.",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Minimum Necessary Restriction",
+        "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Evidence Sufficiency",
+        "reason": "admissibilityScoreBps=8680",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Freshness Requirement",
+        "reason": "evidenceFreshnessScoreBps=9207",
+        "status": "SATISFIED"
+      }
+    ],
+    "appealOutcome": {
+      "confidenceBps": 9035,
+      "deltas": {
+        "contradictionCountDelta": 1,
+        "contradictionSeverityDeltaBps": 4800,
+        "freshnessDeltaBps": 9207,
+        "riskDeltaBps": 5969
+      },
+      "outcome": "ESCALATE",
+      "rationale": "New evidence increased contradiction pressure or risk score; policy escalated."
+    },
+    "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b"
+  },
+  "evidenceDossier": {
+    "admissibilityScoreBps": 8680,
+    "claimCount": 3,
+    "contradictionCount": 1,
+    "evidenceFreshnessScoreBps": 9207,
+    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
+    "generatedAtUnix": 1772344394,
+    "protectedSourcesPresent": true,
+    "sourceIds": [
+      "ATT-2026-02-28",
+      "DISC-2026-02-28",
+      "GOV-2026-02-27"
+    ],
+    "claims": [
+      {
+        "chunkId": "ATT-2026-02-28-chunk-1",
+        "claimId": "CLM-1",
+        "confidenceBps": 6834,
+        "polarity": "adverse",
+        "sourceId": "ATT-2026-02-28",
+        "textSnippet": "Independent attestation states reserves are sufficient and fully backed as of Friday close. Coverage remained within internal tolerance, ...",
+        "topic": "reserves"
+      },
+      {
+        "chunkId": "DISC-2026-02-28-chunk-1",
+        "claimId": "CLM-2",
+        "confidenceBps": 6758,
+        "polarity": "supportive",
+        "sourceId": "DISC-2026-02-28",
+        "textSnippet": "Issuer disclosure reports redemption operations are normal and orderly. The statement also notes temporary queue expansion during market ...",
+        "topic": "redemptions"
+      },
+      {
+        "chunkId": "GOV-2026-02-27-chunk-1",
+        "claimId": "CLM-3",
+        "confidenceBps": 6080,
+        "polarity": "neutral",
+        "sourceId": "GOV-2026-02-27",
+        "textSnippet": "A governance proposal suggests loosening mint throttles to improve growth and reducing mandatory reserve buffer targets during calm periods.",
+        "topic": "reserves"
+      }
+    ],
+    "contradictionMatrix": [
+      {
+        "explanation": "Queue stress indicates redemptions are not behaving as claimed",
+        "id": "C-1",
+        "lhs": "Disclosure says redemptions are normal",
+        "rhs": "Telemetry redemptionQueueBps=2800",
+        "severityBps": 4800
+      }
+    ]
+  },
+  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
+  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "receiverState": {
+    "latestMode": 1,
+    "latestRiskScoreBps": 5969,
+    "latestProsecutorScore": 5810,
+    "latestDefenderScore": 1046,
+    "latestAuditorScore": 1205,
+    "latestTimestamp": 1772344394,
+    "latestCaseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+    "latestProsecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
+    "latestDefenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
+    "latestAuditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
+    "latestVerdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
+  },
+  "vaultState": {
+    "riskMode": 1,
+    "throttleMintLimit": "1000",
+    "reserveCoverageBps": 9400,
+    "attestationAgeSeconds": 172800,
+    "redemptionQueueBps": 2800,
+    "canMint1000": true,
+    "canMint5000": false,
+    "canRedeem1000": true
+  }
+}

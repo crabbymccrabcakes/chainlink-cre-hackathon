@@ -76,6 +76,12 @@ Run policy-impact + appeal demo:
 bun run demo:oracle-court:impact
 ```
 
+Build canonical healthy->stressed proof package:
+
+```bash
+bun run proof:oracle-court:canonical
+```
+
 Read onchain post-verdict state:
 
 ```bash
@@ -117,19 +123,30 @@ Each run writes:
 
 This is not read-only analysis; it enforces protocol behavior by changing vault mint policy.
 
+## Canonical Demo Outcome (submission scenario)
+
+- Healthy scenario tx: `0xf39993d60dec5e885f7eae556c192cbcd1f353171798916fac38cc0da4435a66`
+  - mode: `NORMAL`
+  - policy: minting allowed (`canMint5000=true`)
+- Stressed scenario tx: `0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b`
+  - mode: `THROTTLE`
+  - policy: mint restricted (`canMint5000=false`, `canRedeem1000=true`)
+
 ## Evidence Artifacts
 
 Generated artifacts include:
 
-- `artifacts/oracle-court-sim-latest.log`
-- `artifacts/oracle-court-simulation-output.txt`
-- `artifacts/oracle-court-proof.md`
+- `artifacts/oracle-court-canonical-proof.json`
+- `artifacts/oracle-court-proof-package.md`
 - `artifacts/oracle-court-policy-impact.md`
+- `artifacts/oracle-court-healthy-scenario.json`
+- `artifacts/oracle-court-stressed-scenario.json`
 - `artifacts/evidence-dossier.json`
 - `artifacts/evidence-dossier.md`
 - `artifacts/tribunal-briefs.md`
 - `artifacts/policy-simulation.md`
 - `artifacts/verdict-bulletin.json`
+- `artifacts/ARTIFACT_MAP.md`
 
 These artifacts include:
 

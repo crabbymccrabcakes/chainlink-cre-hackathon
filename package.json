@@ -26,6 +26,7 @@
     "read:oracle-court:state": "node scripts/read-oracle-court-state.mjs",
     "set:oracle-court:rwa": "node scripts/set-oracle-court-rwa-telemetry.mjs",
     "demo:oracle-court:impact": "node scripts/demo-oracle-court-policy-impact.mjs",
+    "proof:oracle-court:canonical": "node scripts/build-oracle-court-canonical-proof.mjs",
 
     "check": "bun run typecheck && bun run compile:all"
   },

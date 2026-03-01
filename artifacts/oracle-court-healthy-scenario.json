@@ -1,0 +1,142 @@
+{
+  "title": "Scenario A — Healthy evidence and telemetry",
+  "expectedModeLabel": "NORMAL",
+  "telemetry": {
+    "reserveCoverageBps": 10000,
+    "attestationAgeSeconds": 300,
+    "redemptionQueueBps": 200
+  },
+  "txHash": "0xf39993d60dec5e885f7eae556c192cbcd1f353171798916fac38cc0da4435a66",
+  "simulationResult": {
+    "appealOutcome": "RELAX",
+    "auditorEvidenceHash": "0x5a1df0dc46eabec4e6755840d7601c776f8e3db94432f33cc685d4af1f9944ec",
+    "auditorScore": 5,
+    "caseId": "0x2baa461d7ece1d800d13a52ca53cabf69b62ec776ab590dbbe7e1c1da8ad62ed",
+    "defenderEvidenceHash": "0x05984f3c046c68ec7c5648777168743f1055d3d9fd2b129a4d738e4306d3d297",
+    "defenderScore": 1166,
+    "evidenceRoot": "0xcc0764202e2c74c770365e48d134e9d0cdf2e22752964691b4f0273cce896bfc",
+    "mode": 0,
+    "modeLabel": "NORMAL",
+    "prosecutorEvidenceHash": "0xf9053d780500ea4cfa92097b4e6c361fdfa90cf145d650bed671b3a48833173e",
+    "prosecutorScore": 10,
+    "riskScoreBps": 0,
+    "txHash": "0xf39993d60dec5e885f7eae556c192cbcd1f353171798916fac38cc0da4435a66",
+    "verdictDigest": "0xe6d24c72e6013f3e94eb15280ae520edf0df1d338d19f93552581bd8db733343"
+  },
+  "verdictBulletin": {
+    "caseId": "0x2baa461d7ece1d800d13a52ca53cabf69b62ec776ab590dbbe7e1c1da8ad62ed",
+    "mode": "NORMAL",
+    "riskScoreBps": null,
+    "evidenceRoot": "0xcc0764202e2c74c770365e48d134e9d0cdf2e22752964691b4f0273cce896bfc",
+    "verdictDigest": "0xe6d24c72e6013f3e94eb15280ae520edf0df1d338d19f93552581bd8db733343",
+    "policyExplanation": null,
+    "constitutionalAssessments": [
+      {
+        "principle": "Solvency First",
+        "reason": "Risk is low enough that solvency-first restrictions were not required.",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Orderly Exit",
+        "reason": "Selected modes preserve redemptions to support orderly user exits.",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Minimum Necessary Restriction",
+        "reason": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=4655",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Evidence Sufficiency",
+        "reason": "admissibilityScoreBps=9480",
+        "status": "SATISFIED"
+      },
+      {
+        "principle": "Freshness Requirement",
+        "reason": "evidenceFreshnessScoreBps=9207",
+        "status": "SATISFIED"
+      }
+    ],
+    "appealOutcome": {
+      "confidenceBps": 9121,
+      "deltas": {
+        "contradictionCountDelta": 0,
+        "contradictionSeverityDeltaBps": 0,
+        "freshnessDeltaBps": 9207,
+        "riskDeltaBps": -10000
+      },
+      "outcome": "RELAX",
+      "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
+    },
+    "txHash": "0xf39993d60dec5e885f7eae556c192cbcd1f353171798916fac38cc0da4435a66"
+  },
+  "evidenceDossier": {
+    "admissibilityScoreBps": 9480,
+    "claimCount": 3,
+    "contradictionCount": 0,
+    "evidenceFreshnessScoreBps": 9207,
+    "evidenceRoot": "0xcc0764202e2c74c770365e48d134e9d0cdf2e22752964691b4f0273cce896bfc",
+    "generatedAtUnix": 1772344357,
+    "protectedSourcesPresent": true,
+    "sourceIds": [
+      "ATT-2026-02-28",
+      "DISC-2026-02-28",
+      "GOV-2026-02-27"
+    ],
+    "claims": [
+      {
+        "chunkId": "ATT-2026-02-28-chunk-1",
+        "claimId": "CLM-1",
+        "confidenceBps": 6834,
+        "polarity": "adverse",
+        "sourceId": "ATT-2026-02-28",
+        "textSnippet": "Independent attestation states reserves are sufficient and fully backed as of Friday close. Coverage remained within internal tolerance, ...",
+        "topic": "reserves"
+      },
+      {
+        "chunkId": "DISC-2026-02-28-chunk-1",
+        "claimId": "CLM-2",
+        "confidenceBps": 6758,
+        "polarity": "supportive",
+        "sourceId": "DISC-2026-02-28",
+        "textSnippet": "Issuer disclosure reports redemption operations are normal and orderly. The statement also notes temporary queue expansion during market ...",
+        "topic": "redemptions"
+      },
+      {
+        "chunkId": "GOV-2026-02-27-chunk-1",
+        "claimId": "CLM-3",
+        "confidenceBps": 6080,
+        "polarity": "neutral",
+        "sourceId": "GOV-2026-02-27",
+        "textSnippet": "A governance proposal suggests loosening mint throttles to improve growth and reducing mandatory reserve buffer targets during calm periods.",
+        "topic": "reserves"
+      }
+    ],
+    "contradictionMatrix": []
+  },
+  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
+  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "receiverState": {
+    "latestMode": 0,
+    "latestRiskScoreBps": 0,
+    "latestProsecutorScore": 10,
+    "latestDefenderScore": 1166,
+    "latestAuditorScore": 5,
+    "latestTimestamp": 1772344357,
+    "latestCaseId": "0x2baa461d7ece1d800d13a52ca53cabf69b62ec776ab590dbbe7e1c1da8ad62ed",
+    "latestProsecutorEvidenceHash": "0xf9053d780500ea4cfa92097b4e6c361fdfa90cf145d650bed671b3a48833173e",
+    "latestDefenderEvidenceHash": "0x05984f3c046c68ec7c5648777168743f1055d3d9fd2b129a4d738e4306d3d297",
+    "latestAuditorEvidenceHash": "0x5a1df0dc46eabec4e6755840d7601c776f8e3db94432f33cc685d4af1f9944ec",
+    "latestVerdictDigest": "0xe6d24c72e6013f3e94eb15280ae520edf0df1d338d19f93552581bd8db733343"
+  },
+  "vaultState": {
+    "riskMode": 0,
+    "throttleMintLimit": "1000",
+    "reserveCoverageBps": 10000,
+    "attestationAgeSeconds": 300,
+    "redemptionQueueBps": 200,
+    "canMint1000": true,
+    "canMint5000": true,
+    "canRedeem1000": true
+  }
+}

@@ -19,6 +19,26 @@ This implementation already ships:
 
 ---
 
+## Canonical Demo Story (judge quick-pass)
+
+Single before/after narrative used in final proof package:
+
+1. **Healthy evidence + telemetry** (`reserveCoverageBps=10000`, `attestationAgeSeconds=300`, `redemptionQueueBps=200`)
+   - mode: `NORMAL`
+   - policy effect: minting allowed
+2. **Stressed evidence + contradictions** (`reserveCoverageBps=9400`, `attestationAgeSeconds=172800`, `redemptionQueueBps=2800`)
+   - mode: `THROTTLE`
+   - policy effect: large mint requests blocked (`canMint5000=false`)
+3. Verdict is committed onchain and immediately enforced by `OracleCourtReceiver -> MockRWAVault.setRiskMode(mode)`.
+
+Canonical proof files:
+
+- `artifacts/oracle-court-canonical-proof.json`
+- `artifacts/oracle-court-proof-package.md`
+- `artifacts/oracle-court-policy-impact.md`
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -147,6 +167,7 @@ scripts/
   set-oracle-court-rwa-telemetry.mjs
   demo-oracle-court-policy-impact.mjs
   generate-oracle-court-proof.mjs
+  build-oracle-court-canonical-proof.mjs
   read-oracle-court-state.mjs
 
 src/workflows/oracle-court/
@@ -165,11 +186,16 @@ artifacts/
   oracle-court-simulation-output.txt
   oracle-court-proof.md
   oracle-court-policy-impact.md
+  oracle-court-canonical-proof.json
+  oracle-court-proof-package.md
+  oracle-court-healthy-scenario.json
+  oracle-court-stressed-scenario.json
   evidence-dossier.json
   evidence-dossier.md
   tribunal-briefs.md
   policy-simulation.md
   verdict-bulletin.json
+  ARTIFACT_MAP.md
 ```
 
 ---
@@ -213,6 +239,12 @@ Policy-impact + appeal demo:
 
 ```bash
 bun run demo:oracle-court:impact
+```
+
+Build canonical healthy->stressed proof package (used in submission):
+
+```bash
+node scripts/build-oracle-court-canonical-proof.mjs
 ```
 
 ---

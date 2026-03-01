@@ -303,6 +303,7 @@ const finalVerdict = {
 
 const deterministicProofBlock = {
   proofVersion: 'oracle-court-ai-governor-v1',
+  proofMode: isPlaceholderTxHash ? 'simulated-placeholder' : 'onchain-broadcast',
   generatedAtIso: new Date().toISOString(),
   txHash,
   blockNumber: receipt?.blockNumber?.toString() || null,
@@ -361,7 +362,7 @@ const briefsMarkdown = `# Tribunal Briefs\n\n## Prosecutor\n\n\`\`\`json\n${JSON
 
 const policyMarkdown = `# Policy Simulation\n\n## Counterfactual Mode Analysis\n\n\`\`\`json\n${JSON.stringify(deterministicProofBlock.policySimulation, null, 2)}\n\`\`\`\n\n## Final Selection\n\n- selectedMode: \`${finalVerdict.modeLabel || 'n/a'}\`\n- rationale: ${finalVerdict.reason || 'n/a'}\n`
 
-const proofMarkdown = `# Oracle Court Proof Artifact\n\n## Deterministic Proof Block\n\n\`\`\`json\n${JSON.stringify(deterministicProofBlock, null, 2)}\n\`\`\`\n\n## Notes\n\n- Evidence dossier is compiled before tribunal reasoning and hashed as \`evidenceRoot\`.\n- Prosecutor / Defender / Auditor briefs are adversarial, citation-backed, and independently hashed.\n- Policy mode is selected via counterfactual simulation across NORMAL / THROTTLE / REDEMPTION_ONLY.\n- Receiver enforces protocol consequence by calling \`MockRWAVault.setRiskMode(mode)\`.\n`
+const proofMarkdown = `# Oracle Court Proof Artifact\n\n## Deterministic Proof Block\n\n\`\`\`json\n${JSON.stringify(deterministicProofBlock, null, 2)}\n\`\`\`\n\n## Notes\n\n- Evidence dossier is compiled before tribunal reasoning and hashed as \`evidenceRoot\`.\n- Prosecutor / Defender / Auditor briefs are adversarial, citation-backed, and independently hashed.\n- Policy mode is selected via counterfactual simulation across NORMAL / THROTTLE / REDEMPTION_ONLY.\n- Receiver enforces protocol consequence by calling \`MockRWAVault.setRiskMode(mode)\`.\n- If \`proofMode=simulated-placeholder\`, treat artifact as simulation-only (not final onchain proof).\n`
 
 fs.mkdirSync(path.dirname(proofPath), { recursive: true })
 fs.writeFileSync(proofPath, proofMarkdown, 'utf8')
