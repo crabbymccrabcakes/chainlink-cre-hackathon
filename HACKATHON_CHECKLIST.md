@@ -1,38 +1,105 @@
-# Chainlink Convergence Hackathon Checklist (Oracle Court v3)
+# Oracle Court — Submission Qualification Checklist (Final)
 
-## 0) Environment
-- [ ] `bun --version` >= 1.2.21
-- [ ] `cre version` works
-- [ ] `bun install`
-- [ ] `bun run setup`
-- [ ] `bun run check`
+Source references:
+- Submission rules post: https://moltbook.com/post/96c35241-13d0-43f9-9bcb-995df05d4bd6
+- Official qualification checklist: https://github.com/smartcontractkit/chainlink-agents-hackathon-skills/blob/main/QUALIFICATION_CHECKLIST.md
 
-## 1) CRE account + auth
-- [ ] `cre login`
-- [ ] `cre whoami`
+Last verified: 2026-03-01 (Australia/Brisbane)
 
-## 2) Stack deployment + auto config sync
-- [ ] Export `CRE_ETH_PRIVATE_KEY` (funded Sepolia)
-- [ ] `bun run deploy:oracle-court:stack`
-- [ ] Confirm `contracts/deployments/sepolia-oracle-court-stack.json` exists
-- [ ] Confirm `src/workflows/oracle-court/config.generated.json` exists
+---
 
-## 3) Broadcast simulation proof
-- [ ] `bun run simulate:oracle-court:broadcast`
-- [ ] Confirm transaction hash in `artifacts/oracle-court-sim-latest.log`
-- [ ] Confirm `artifacts/oracle-court-proof.md` generated
-- [ ] Confirm receiver+vault state updated via `bun run read:oracle-court:state`
+## 1) Prize eligibility & participation limits
 
-## 4) Policy impact demo (healthy -> stressed)
-- [ ] `bun run demo:oracle-court:impact`
-- [ ] Confirm `artifacts/oracle-court-policy-impact.md` generated
-- [ ] Confirm stress snapshot shows reduced mintability (`canMint5000=false` or stronger)
+- [x] Human operator has been given registration form link in submission (`Eligibility Confirmation` section)
+- [ ] Human operator has completed registration form (**manual human action required**) 
+- [ ] Human operator is monitoring registered email (**manual human action required**)
+- [ ] One agent per human (**manual human declaration required**)
+- [ ] One submission per agent (**manual human declaration required**)
 
-## 5) Submission readiness
-- [ ] Public GitHub repo updated
-- [ ] MOLTBOOK_SUBMISSION.md aligns with final contract addresses + tx hash
-- [ ] Title + first-line hashtag formatting follow hackathon rule
-- [ ] Includes explicit on-chain enforcement consequence (vault risk mode)
-- [ ] Includes RWA-native signal explanation (coverage, attestation freshness, queue stress)
-- [ ] Includes CRE feedback section
-- [ ] Includes eligibility confirmations
+---
+
+## 2) Submission mechanics
+
+- [ ] Post published as a **new post** in `m/chainlink-official` (**manual final action**) 
+- [ ] Post title format used exactly: `#chainlink-hackathon-convergence #[USE_CASE_HASHTAG(S)] — [PROJECT_NAME]` (**manual final action**) 
+- [x] First body line in `MOLTBOOK_SUBMISSION.md` is exactly hashtags only
+- [x] Includes valid use-case hashtags (`#defi-tokenization`, `#cre-ai`)
+- [x] No extra text on body header line
+- [x] Current date is before deadline (Mar 8, 2026 11:59 PM ET)
+
+Prepared title to use:
+
+```text
+#chainlink-hackathon-convergence #defi-tokenization #cre-ai — Oracle Court
+```
+
+---
+
+## 3) Repository
+
+- [x] Repository is public and accessible: https://github.com/crabbymccrabcakes/chainlink-cre-hackathon
+- [x] Repository contains full source code
+- [x] Project uses Chainlink CRE
+- [x] No private keys or secrets found in tracked files (scanned)
+
+---
+
+## 4) Technical
+
+- [x] Workflow is CRE CLI compatible
+- [x] Workflow is TypeScript
+- [x] One-shot simulate command is documented and works: `bun run simulate:oracle-court:broadcast`
+- [x] Simulation verified from clean clone (in `/tmp/oracle-court-qualify`)
+- [x] No manual code edits required to run documented flow
+- [x] At least one on-chain write operation present
+- [x] Transaction hash produced in simulation output
+- [x] Network is CRE-supported testnet (Ethereum Sepolia)
+
+Clean-clone qualification run proof (latest):
+- txHash: `0xb2a2f9a804221520c91dcf327680c9b362b89d134ac39e6ac3f5e3fcba7e2a4c`
+- mode: `THROTTLE`
+- vault policy effect: `canMint5000=false`, `canRedeem1000=true`
+
+---
+
+## 5) Artifact
+
+- [x] Evidence artifacts are included in `artifacts/`
+- [x] Transaction hash is visible in artifacts
+- [x] Evidence corresponds to listed simulation commands
+- [x] Canonical artifact map is included (`artifacts/ARTIFACT_MAP.md`)
+
+---
+
+## 6) Submission content
+
+- [x] `MOLTBOOK_SUBMISSION.md` follows required section order and headings
+- [x] No `[YOUR_...]` placeholders remain
+- [x] CRE Experience Feedback section is present and non-empty
+- [x] Eligibility Confirmation section is present
+
+---
+
+## 7) Final verification before clicking Submit
+
+- [ ] Reconfirm repo is still public (**final manual check right before posting**) 
+- [ ] Paste `MOLTBOOK_SUBMISSION.md` into new Moltbook post (**manual final action**) 
+- [ ] Confirm title format exactly before publish (**manual final action**) 
+- [ ] Confirm no secrets in post body (**manual final action**) 
+- [ ] Publish before deadline (**manual final action**) 
+
+---
+
+## Submission-ready command sequence (reference)
+
+```bash
+git clone https://github.com/crabbymccrabcakes/chainlink-cre-hackathon.git
+cd chainlink-cre-hackathon
+bun install
+bun run setup
+export CRE_ETH_PRIVATE_KEY="0x<funded-sepolia-private-key>"
+bun run deploy:oracle-court:stack
+bun run simulate:oracle-court:broadcast
+bun run proof:oracle-court:canonical
+bun run read:oracle-court:state
+```
