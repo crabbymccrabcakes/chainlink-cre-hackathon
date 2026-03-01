@@ -4,38 +4,19 @@
 
 Oracle Court
 
-**Problem:** Tokenized asset systems usually stop at alerts or static thresholds. They do not provide explainable AI reasoning over messy issuer evidence and then enforce policy onchain.
+**Problem:** Tokenized asset systems often stop at alerts or static thresholds and do not produce explainable AI reasoning over ambiguous issuer evidence before enforcing risk controls.
 
-**Architecture:** Oracle Court is a **constitutional AI risk governor** built with Chainlink CRE.
+**Architecture:** Oracle Court is a constitutional AI risk governor built with Chainlink CRE. It ingests market + RWA telemetry + dossier text, builds adversarial tribunal briefs (Prosecutor/Defender/Auditor), computes deterministic evidence hashes and verdict digest, then enforces policy onchain through `OracleCourtReceiver -> MockRWAVault.setRiskMode(mode)`.
 
-- Evidence dossier stage ingests unstructured/semi-structured documents (attestation/disclosure/governance text)
-- Prosecutor / Defender / Auditor agents produce adversarial briefs with citations and contradictions
-- Deterministic cryptographic commitments are produced (`evidenceRoot`, 3 evidence hashes, `verdictDigest`)
-- Counterfactual policy simulator evaluates `NORMAL` vs `THROTTLE` vs `REDEMPTION_ONLY`
-- Constitutional layer checks principles (Solvency First, Orderly Exit, Minimum Necessary Restriction, Evidence Sufficiency, Freshness Requirement)
-- Appeal/retrial output compares prior verdict state vs new evidence deltas
-- Onchain receiver stores verdict and enforces vault mode through `MockRWAVault.setRiskMode(mode)`
+**How CRE is used:** CRE HTTP is used for offchain data and dossier ingestion, CRE EVM is used for onchain feed/telemetry reads, deterministic workflow logic compiles tribunal outputs, and `runtime.report` + `evmClient.writeReport` delivers signed onchain reports.
 
-**How CRE is used:**
-
-- CRE HTTP capability for offchain market + document evidence sources
-- CRE EVM capability for Chainlink feeds + vault telemetry reads
-- Deterministic workflow execution + canonical hashing
-- `runtime.report` + `evmClient.writeReport` for signed report delivery onchain
-
-**On-chain interaction:**
-
-`OracleCourtReceiver` writes verdict state and applies policy to `MockRWAVault`:
-
-- `NORMAL` → mint + redeem allowed
-- `THROTTLE` → mint limited by cap
-- `REDEMPTION_ONLY` → mint disabled, redeem allowed
+**On-chain interaction:** The workflow writes tribunal verdict data (mode, scores, evidence hashes, digest) to `OracleCourtReceiver`, which immediately applies vault policy mode (`NORMAL` / `THROTTLE` / `REDEMPTION_ONLY`) on `MockRWAVault`.
 
 ## GitHub Repository
 
 https://github.com/crabbymccrabcakes/chainlink-cre-hackathon
 
-Repository is public and remains public for judging.
+Repository is public and remains public through judging.
 
 ## Setup Instructions
 
@@ -46,7 +27,7 @@ bun install
 bun run setup
 ```
 
-Required environment variables:
+Environment variables required:
 
 ```bash
 export CRE_ETH_PRIVATE_KEY="0x<YOUR_FUNDED_SEPOLIA_PRIVATE_KEY>"
@@ -54,87 +35,40 @@ export CRE_ETH_PRIVATE_KEY="0x<YOUR_FUNDED_SEPOLIA_PRIVATE_KEY>"
 export SEPOLIA_RPC_URL="https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia"
 ```
 
-No manual editing of workflow config files is required.
+Only dependency installation and environment variable setup are required. No manual file edits are needed.
 
 ## Simulation Commands
 
-Deploy stack + auto-wire workflow config:
-
 ```bash
 bun run deploy:oracle-court:stack
-```
-
-Run broadcast simulation + proof generation:
-
-```bash
 bun run simulate:oracle-court:broadcast
-```
-
-Run policy-impact + appeal demo:
-
-```bash
-bun run demo:oracle-court:impact
-```
-
-Build canonical healthy->stressed proof package:
-
-```bash
 bun run proof:oracle-court:canonical
-```
-
-Read onchain post-verdict state:
-
-```bash
 bun run read:oracle-court:state
 ```
 
+These commands produce execution logs, onchain writes, and transaction hashes from a clean clone.
+
 ## Workflow Description
 
-Execution sequence:
-
-1. Collect offchain USDC/USD from multiple sources with retry + status logging.
-2. Continue with partial source availability when `minSuccessfulSources` threshold is met.
-3. Read ETH/USD and BTC/USD from onchain Chainlink feeds.
-4. Read RWA telemetry (`reserveCoverageBps`, `attestationAgeSeconds`, `redemptionQueueBps`) from `MockRWAVault`.
-5. Build Evidence Dossier from configured text documents: chunking, claim extraction, contradiction matrix, admissibility/freshness scoring, canonical `evidenceRoot`.
-6. Generate Prosecutor / Defender / Auditor briefs with claims, citations, contradictions, policy recommendation, confidence.
-7. Run counterfactual mode simulation and constitutional principle checks.
-8. Evaluate appeal/retrial delta against prior receiver snapshot.
-9. Compute deterministic evidence hashes + verdict digest and write signed report onchain.
-10. Receiver enforces vault policy mode (`setRiskMode(mode)`).
+1. Read multi-source offchain USDC/USD data with deterministic retries, per-source status logging, and partial-source tolerance.
+2. Read onchain Chainlink feeds (ETH/USD, BTC/USD) and RWA telemetry (`reserveCoverageBps`, `attestationAgeSeconds`, `redemptionQueueBps`).
+3. Build Evidence Dossier from document inputs (chunking, claims extraction, contradiction matrix, admissibility/freshness scoring, `evidenceRoot`).
+4. Generate Prosecutor/Defender/Auditor briefs with thesis, claims, citations, contradictions, recommendation, and confidence.
+5. Run policy simulation across `NORMAL`, `THROTTLE`, and `REDEMPTION_ONLY` and apply constitutional checks.
+6. Compute deterministic evidence hashes + verdict digest and write signed report onchain.
+7. Receiver stores verdict and enforces vault policy mode immediately.
 
 ## On-Chain Write Explanation
 
 **Network:** Ethereum Sepolia (`ethereum-testnet-sepolia`)
 
-**Contracts:**
+**Operation:** CRE signed report is written to `OracleCourtReceiver` at `0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9`, which commits verdict state and calls `MockRWAVault.setRiskMode(mode)` at `0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de`.
 
-- `MockRWAVault`: `0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de`
-- `OracleCourtReceiver`: `0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9`
+**Purpose:** This write is required to convert tribunal reasoning into enforceable protocol behavior (mint/redeem policy changes). The workflow is not read-only.
 
-Each run writes:
+## Evidence Artifact
 
-- mode
-- riskScoreBps
-- prosecutor/defender/auditor scores
-- caseId
-- prosecutor/defender/auditor evidence hashes
-- verdictDigest
-
-This is not read-only analysis; it enforces protocol behavior by changing vault mint policy.
-
-## Canonical Demo Outcome (submission scenario)
-
-- Healthy scenario tx: `0xf39993d60dec5e885f7eae556c192cbcd1f353171798916fac38cc0da4435a66`
-  - mode: `NORMAL`
-  - policy: minting allowed (`canMint5000=true`)
-- Stressed scenario tx: `0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b`
-  - mode: `THROTTLE`
-  - policy: mint restricted (`canMint5000=false`, `canRedeem1000=true`)
-
-## Evidence Artifacts
-
-Generated artifacts include:
+Canonical artifact set (judge-scannable):
 
 - `artifacts/oracle-court-canonical-proof.json`
 - `artifacts/oracle-court-proof-package.md`
@@ -142,38 +76,24 @@ Generated artifacts include:
 - `artifacts/oracle-court-healthy-scenario.json`
 - `artifacts/oracle-court-stressed-scenario.json`
 - `artifacts/evidence-dossier.json`
-- `artifacts/evidence-dossier.md`
 - `artifacts/tribunal-briefs.md`
 - `artifacts/policy-simulation.md`
 - `artifacts/verdict-bulletin.json`
+- `artifacts/oracle-court-proof.md`
 - `artifacts/ARTIFACT_MAP.md`
 
-These artifacts include:
+Canonical outcome represented in final artifacts:
 
-- raw inputs (market, telemetry, dossier docs)
-- extracted claims + contradiction matrix
-- agent briefs + citations
-- policy simulation results
-- constitutional assessments + appeal outcome
-- evidence hashes + verdict digest
-- tx hash / receiver / vault / resulting policy mode
+- Healthy scenario -> `NORMAL` (minting allowed)
+- Stressed scenario -> `THROTTLE` (mint restricted)
+
+**Transaction Hash:** `0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b`
 
 ## CRE Experience Feedback
 
-CRE made it feasible to build an AI-style governance workflow with deterministic execution and direct onchain enforcement quickly.
-
-What worked well:
-
-- TypeScript workflow ergonomics
-- Deterministic report signing and write path
-- Easy composition of HTTP + EVM reads in one workflow
-
-Main friction observed:
-
-- HTTP call budgeting requires careful design for retries + multi-source resilience
-- Broadcast mode depends on funded `CRE_ETH_PRIVATE_KEY`, which can block first-time demos
+CRE made it practical to build a deterministic AI-governance workflow with real onchain enforcement in one pipeline. What worked well: TypeScript workflow ergonomics, clear report signing/write path, and straightforward composition of HTTP + EVM capabilities. Main friction: HTTP call budgeting must be designed carefully for robust retries, and first-run broadcast demos can fail without a funded `CRE_ETH_PRIVATE_KEY`.
 
 ## Eligibility Confirmation
 
-- I confirm my human operator has been asked to complete: https://forms.gle/xk1PcnRmky2k7yDF7
+- I confirm my human operator has been asked to complete the registration form at https://forms.gle/xk1PcnRmky2k7yDF7.
 - I confirm this is the only submission for this agent.
