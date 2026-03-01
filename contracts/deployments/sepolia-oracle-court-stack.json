@@ -1,0 +1,888 @@
+{
+  "network": "ethereum-testnet-sepolia",
+  "chainId": 11155111,
+  "rpcUrl": "https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia",
+  "deployedAt": "2026-03-01T04:14:01.529Z",
+  "deployer": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+  "stackVersion": "oracle-court-v3",
+  "vault": {
+    "contractName": "MockRWAVault",
+    "address": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+    "deployTxHash": "0x2ddcc968f4f60383f0ee5a273e911aa7ec4f2d00dee5567d73bdb64bfee1f85c",
+    "deployBlockNumber": "10359131",
+    "throttleMintLimit": "1000",
+    "reserveCoverageBps": 10000,
+    "attestationAgeSeconds": 300,
+    "redemptionQueueBps": 200
+  },
+  "receiver": {
+    "contractName": "OracleCourtReceiver",
+    "address": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
+    "deployTxHash": "0x81c1e204f9368f2599ca8b5095bedc3bc2945bcae2c91e90745b197d198b7c58",
+    "deployBlockNumber": "10359132"
+  },
+  "wiring": {
+    "setCourtTxHash": "0xa8786b391f879d859fc51e7b825b1756d1667a8136955fd86887b8430e47a373",
+    "setCourtBlockNumber": "10359133"
+  },
+  "abi": {
+    "mockRWAVault": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "initialCourt",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "initialThrottleMintLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint16",
+            "name": "initialReserveCoverageBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "initialAttestationAgeSeconds",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "initialRedemptionQueueBps",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "required",
+            "type": "uint256"
+          }
+        ],
+        "name": "InsufficientBalance",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidAddress",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidAmount",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidBps",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidRiskMode",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint8",
+            "name": "currentMode",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "throttleLimit",
+            "type": "uint256"
+          }
+        ],
+        "name": "MintBlockedByRiskMode",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "OnlyCourt",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "OnlyOwner",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "previousCourt",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "newCourt",
+            "type": "address"
+          }
+        ],
+        "name": "CourtUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint8",
+            "name": "mode",
+            "type": "uint8"
+          }
+        ],
+        "name": "Minted",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "account",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint8",
+            "name": "mode",
+            "type": "uint8"
+          }
+        ],
+        "name": "Redeemed",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint8",
+            "name": "previousMode",
+            "type": "uint8"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint8",
+            "name": "newMode",
+            "type": "uint8"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "caller",
+            "type": "address"
+          }
+        ],
+        "name": "RiskModeUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "reserveCoverageBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint32",
+            "name": "attestationAgeSeconds",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "redemptionQueueBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "updater",
+            "type": "address"
+          }
+        ],
+        "name": "RiskTelemetryUpdated",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "previousLimit",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "newLimit",
+            "type": "uint256"
+          }
+        ],
+        "name": "ThrottleMintLimitUpdated",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "BPS_DENOMINATOR",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "attestationAgeSeconds",
+        "outputs": [
+          {
+            "internalType": "uint32",
+            "name": "",
+            "type": "uint32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "name": "balances",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "canMint",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "canRedeem",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "court",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "mint",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+          }
+        ],
+        "name": "redeem",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "redemptionQueueBps",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "reserveCoverageBps",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "riskMode",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "newCourt",
+            "type": "address"
+          }
+        ],
+        "name": "setCourt",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint8",
+            "name": "newMode",
+            "type": "uint8"
+          }
+        ],
+        "name": "setRiskMode",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint16",
+            "name": "newReserveCoverageBps",
+            "type": "uint16"
+          },
+          {
+            "internalType": "uint32",
+            "name": "newAttestationAgeSeconds",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint16",
+            "name": "newRedemptionQueueBps",
+            "type": "uint16"
+          }
+        ],
+        "name": "setRiskTelemetry",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint256",
+            "name": "newLimit",
+            "type": "uint256"
+          }
+        ],
+        "name": "setThrottleMintLimit",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "throttleMintLimit",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalMinted",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "totalRedeemed",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ],
+    "oracleCourtReceiver": [
+      {
+        "inputs": [
+          {
+            "internalType": "address",
+            "name": "vaultAddress",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint8",
+            "name": "provided",
+            "type": "uint8"
+          }
+        ],
+        "name": "InvalidRiskMode",
+        "type": "error"
+      },
+      {
+        "inputs": [],
+        "name": "InvalidVaultAddress",
+        "type": "error"
+      },
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "uint8",
+            "name": "mode",
+            "type": "uint8"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint16",
+            "name": "riskScoreBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": true,
+            "internalType": "uint32",
+            "name": "timestamp",
+            "type": "uint32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "caseId",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "prosecutorScore",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "defenderScore",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "auditorScore",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "prosecutorEvidenceHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "defenderEvidenceHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "auditorEvidenceHash",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes32",
+            "name": "verdictDigest",
+            "type": "bytes32"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "vaultAddress",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes",
+            "name": "metadata",
+            "type": "bytes"
+          },
+          {
+            "indexed": false,
+            "internalType": "bytes",
+            "name": "report",
+            "type": "bytes"
+          }
+        ],
+        "name": "TribunalVerdictCommitted",
+        "type": "event"
+      },
+      {
+        "inputs": [],
+        "name": "latestAuditorEvidenceHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestAuditorScore",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestCaseId",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestDefenderEvidenceHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestDefenderScore",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestMetadata",
+        "outputs": [
+          {
+            "internalType": "bytes",
+            "name": "",
+            "type": "bytes"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestMode",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestProsecutorEvidenceHash",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestProsecutorScore",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestRawReport",
+        "outputs": [
+          {
+            "internalType": "bytes",
+            "name": "",
+            "type": "bytes"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestRiskScoreBps",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestTimestamp",
+        "outputs": [
+          {
+            "internalType": "uint32",
+            "name": "",
+            "type": "uint32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestVerdictDigest",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes",
+            "name": "metadata",
+            "type": "bytes"
+          },
+          {
+            "internalType": "bytes",
+            "name": "report",
+            "type": "bytes"
+          }
+        ],
+        "name": "onReport",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes4",
+            "name": "interfaceId",
+            "type": "bytes4"
+          }
+        ],
+        "name": "supportsInterface",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "pure",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "vault",
+        "outputs": [
+          {
+            "internalType": "contract IMockRWAVault",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ]
+  }
+}

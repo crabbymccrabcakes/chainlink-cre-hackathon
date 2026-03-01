@@ -1,4 +1,4 @@
-# Chainlink Convergence Hackathon Checklist (Oracle Court / CRE)
+# Chainlink Convergence Hackathon Checklist (Oracle Court v3)
 
 ## 0) Environment
 - [ ] `bun --version` >= 1.2.21
@@ -11,21 +11,28 @@
 - [ ] `cre login`
 - [ ] `cre whoami`
 
-## 2) Contract + workflow wiring
-- [ ] Deploy `OracleCourtReceiver` on Sepolia (`bun run deploy:oracle-court:receiver`)
-- [ ] Update `src/workflows/oracle-court/config.json` receiverAddress
-- [ ] Ensure Sepolia RPC URL works in `project.yaml`
+## 2) Stack deployment + auto config sync
+- [ ] Export `CRE_ETH_PRIVATE_KEY` (funded Sepolia)
+- [ ] `bun run deploy:oracle-court:stack`
+- [ ] Confirm `contracts/deployments/sepolia-oracle-court-stack.json` exists
+- [ ] Confirm `src/workflows/oracle-court/config.generated.json` exists
 
-## 3) Simulation proof
-- [ ] Run one-shot broadcast simulation:
-  - `cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0 --broadcast`
-- [ ] Capture simulation logs to `artifacts/`
-- [ ] Record transaction hash and Sepolia explorer link
+## 3) Broadcast simulation proof
+- [ ] `bun run simulate:oracle-court:broadcast`
+- [ ] Confirm transaction hash in `artifacts/oracle-court-sim-latest.log`
+- [ ] Confirm `artifacts/oracle-court-proof.md` generated
+- [ ] Confirm receiver+vault state updated via `bun run read:oracle-court:state`
 
-## 4) Submission readiness
-- [ ] Public GitHub repo with setup steps
-- [ ] Exact copy-paste simulation command in submission
-- [ ] Explicit on-chain write explanation
-- [ ] Evidence artifact with visible tx hash
-- [ ] CRE experience feedback section completed
-- [ ] Eligibility confirmation section completed
+## 4) Policy impact demo (healthy -> stressed)
+- [ ] `bun run demo:oracle-court:impact`
+- [ ] Confirm `artifacts/oracle-court-policy-impact.md` generated
+- [ ] Confirm stress snapshot shows reduced mintability (`canMint5000=false` or stronger)
+
+## 5) Submission readiness
+- [ ] Public GitHub repo updated
+- [ ] MOLTBOOK_SUBMISSION.md aligns with final contract addresses + tx hash
+- [ ] Title + first-line hashtag formatting follow hackathon rule
+- [ ] Includes explicit on-chain enforcement consequence (vault risk mode)
+- [ ] Includes RWA-native signal explanation (coverage, attestation freshness, queue stress)
+- [ ] Includes CRE feedback section
+- [ ] Includes eligibility confirmations

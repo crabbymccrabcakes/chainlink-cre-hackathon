@@ -1,19 +1,5 @@
 {
-  "schedule": "0 */5 * * * *",
-  "chainSelectorName": "ethereum-testnet-sepolia",
-  "receiverAddress": "0xed32426e3315cb1acf830f801cf1de6b52be959e",
-  "gasLimit": "900000",
-  "apis": {
-    "coingeckoUrl": "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true",
-    "coinbaseUrl": "https://api.coinbase.com/v2/prices/USDC-USD/spot",
-    "cryptocompareUrl": "https://min-api.cryptocompare.com/data/price?fsym=USDC&tsyms=USD"
-  },
-  "feeds": {
-    "ethUsdProxy": "0x694AA1769357215DE4FAC081bf1f309aDC325306",
-    "btcUsdProxy": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43"
-  },
-  "policy": {
-    "normalMaxStressBps": 120,
-    "throttleMaxStressBps": 380
-  }
+  "note": "Deprecated for execution. Use config.template.json + config.generated.json via sync script.",
+  "templatePath": "./config.template.json",
+  "generatedPath": "./config.generated.json"
 }

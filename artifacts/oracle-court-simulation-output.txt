@@ -1,33 +1,83 @@
 ✓ Workflow compiled
-2026-03-01T12:58:29Z [SIMULATION] Simulator Initialized
+2026-03-01T14:16:25Z [SIMULATION] Simulator Initialized
 
-2026-03-01T12:58:29Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
-2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Offchain signals: {
-  "usdcCg": 0.999948,
-  "usdcCb": 1,
-  "usdcCc": 1,
-  "usdc24hChangePct": -0.0014872023405148444
+2026-03-01T14:16:25Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-03-01T14:16:25Z [USER LOG] [OracleCourt][Source][CoinGecko] call=1/5 attempt=1 url=https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true status=OK price=0.999874
+2026-03-01T14:16:26Z [USER LOG] [OracleCourt][Source][Coinbase Spot] call=2/5 attempt=1 url=https://api.coinbase.com/v2/prices/USDC-USD/spot status=OK price=1
+2026-03-01T14:16:26Z [USER LOG] [OracleCourt][Source][CoinPaprika] call=3/5 attempt=1 url=https://api.coinpaprika.com/v1/tickers/usdc-usd-coin status=OK price=1.00022161
+2026-03-01T14:16:27Z [USER LOG] [OracleCourt][Source][CryptoCompare] call=4/5 attempt=1 url=https://min-api.cryptocompare.com/data/price?fsym=USDC&tsyms=USD status=OK price=1
+2026-03-01T14:16:27Z [USER LOG] [OracleCourt][SourceSummary] successful=4 failed=0 median=1 min=0.999874 max=1.00022161 httpCalls=4/5
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt] Offchain signals: {
+  "successfulSources": [
+    {
+      "name": "CoinGecko",
+      "kind": "coingecko",
+      "selectedUrl": "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true",
+      "attempt": 1,
+      "price": 0.999874,
+      "change24hPct": -0.01238125
+    },
+    {
+      "name": "Coinbase Spot",
+      "kind": "coinbaseSpot",
+      "selectedUrl": "https://api.coinbase.com/v2/prices/USDC-USD/spot",
+      "attempt": 1,
+      "price": 1,
+      "change24hPct": 0
+    },
+    {
+      "name": "CoinPaprika",
+      "kind": "coinpaprika",
+      "selectedUrl": "https://api.coinpaprika.com/v1/tickers/usdc-usd-coin",
+      "attempt": 1,
+      "price": 1.00022161,
+      "change24hPct": -0.03
+    },
+    {
+      "name": "CryptoCompare",
+      "kind": "cryptocompare",
+      "selectedUrl": "https://min-api.cryptocompare.com/data/price?fsym=USDC&tsyms=USD",
+      "attempt": 1,
+      "price": 1,
+      "change24hPct": 0
+    }
+  ],
+  "fail ...(truncated)
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt] Onchain signals: {
+  "ethUsd": 2034.62,
+  "btcUsd": 67522.822791
 }
-2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Onchain signals: {
-  "ethUsd": 2043.22,
-  "btcUsd": 67621
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt] RWA signals: {
+  "reserveCoverageBps": 9400,
+  "attestationAgeSeconds": 172800,
+  "redemptionQueueBps": 2800
 }
-2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Tribunal scores prosecutor=2 defender=318 auditor=0
-2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Verdict mode=0 stressBps=0 depegBps=0 spreadBps=1 caseId=0x69db8bf364110ffc48d621c6469a4898b1d8dec211d37f52979516a9bbedcf91
-2026-03-01T12:58:49Z [USER LOG] [OracleCourt] Write report transaction succeeded: 0x7b63b4c616568c6714aa7014a7d7f9fb929c173d2d443156bacaeab19fbb29cf
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt][Agent][PROSECUTOR] argument={"agent":"PROSECUTOR","claim":"Liquidity + reserve stress detected above safe minting threshold","confidenceBps":9900,"metrics":{"attestationAgeSeconds":172800,"attestationLagPenaltyBps":1320,"btcUsd":67522.82,"depegBps":0,"downside24hBps":1,"ethUsd":2034.62,"redemptionQueueBps":2800,"redemptionQueuePenaltyBps":3000,"reserveCoverageBps":9400,"reserveCoverageGapBps":500,"sourceFailures":0,"spreadBps":3,"usdcMedian":1},"recommendation":"REDEMPTION_ONLY","riskDeltaBps":5327} evidenceHash=0x96dee44f5a18ed1de7ef62c95141c3071bcd21fd1eaed52b9e4f4024ba299542
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt][Agent][DEFENDER] argument={"agent":"DEFENDER","claim":"Observed variance appears bounded; avoid over-restrictive policy","confidenceBps":5808,"metrics":{"attestationAgeSeconds":172800,"change24hPct":-0.012381,"failedSources":0,"redemptionQueueBps":2800,"reserveCoverageBps":9400,"spreadBps":3,"successfulSources":4,"usdcMedian":1},"recommendation":"REDEMPTION_ONLY","riskDeltaBps":-404} evidenceHash=0xd09e242a2367bac68c95ca986fe7b62fa58cb92d3a52f73db99ea61c3674e2de
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt][Agent][AUDITOR] argument={"agent":"AUDITOR","claim":"Data and/or RWA control signals show elevated operational risk; apply safety premium","confidenceBps":9900,"metrics":{"attestationAgeSeconds":172800,"attestationLagPenaltyBps":1320,"depegBps":0,"macroStressBps":0,"redemptionQueueBps":2800,"redemptionQueuePenaltyBps":3000,"reserveCoverageBps":9400,"reserveCoverageGapBps":500,"sourceFailurePenaltyBps":0,"sourceFailures":0,"spreadBps":3,"successfulSources":4},"recommendation":"REDEMPTION_ONLY","riskDeltaBps":4823} evidenceHash=0x7c82e9c0973fd77d2ace8dad2d6eac9e976973092bcd85e7ba0a190f47edd31b
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt] Tribunal scores prosecutor=5327 defender=404 auditor=4823
+2026-03-01T14:16:30Z [USER LOG] [OracleCourt] Verdict mode=2 (REDEMPTION_ONLY) riskScoreBps=9746 caseId=0x6a42f46887659675100e2c1a77a48a53557f80196353a76c2c22db945bb788f0 verdictDigest=0xe954e7993a7f7b7ca6256a05cbab817a85e1afdd04ea3bc9fdee8698a21127ee
+2026-03-01T14:16:37Z [USER LOG] [OracleCourt] Write report transaction succeeded: 0xd2dde0ed39e31157bee2dd2402a25f77c2ad23317b74044baa0ac65c496361c8
+2026-03-01T14:16:37Z [USER LOG] [OracleCourt][ProofBlock] {"agentScores":{"attestationLagPenaltyBps":1320,"auditorScore":4823,"defenderScore":404,"depegBps":0,"downside24hBps":1,"prosecutorScore":5327,"redemptionQueuePenaltyBps":3000,"reserveCoverageGapBps":500,"riskScoreBps":9746,"spreadBps":3},"evidenceHashes":{"auditorEvidenceHash":"0x7c82e9c0973fd77d2ace8dad2d6eac9e976973092bcd85e7ba0a190f47edd31b","defenderEvidenceHash":"0xd09e242a2367bac68c95ca986fe7b62fa58cb92d3a52f73db99ea61c3674e2de","prosecutorEvidenceHash":"0x96dee44f5a18ed1de7ef62c95141c3071bcd21fd1eaed52b9e4f4024ba299542","verdictDigest":"0xe954e7993a7f7b7ca6256a05cbab817a85e1afdd04ea3bc9fdee8698a21127ee"},"finalVerdict":{"caseId":"0x6a42f46887659675100e2c1a77a48a53557f80196353a76c2c22db945bb788f0","mode":2,"modeLabel":"REDEMPTION_ONLY","txHash":"0xd2dde0ed39e31157bee2dd2402a25f77c2ad23317b74044baa0ac65c496361c8"},"inputValues":{"offchain":{"failedSourceCount":0,"successfulSourceCount":4,"successfulSourcePrices":[{"attempt":1,"name":"CoinGecko","price":0 ...(truncated)
 
 ✓ Workflow Simulation Result:
 {
-  "caseId": "0x69db8bf364110ffc48d621c6469a4898b1d8dec211d37f52979516a9bbedcf91",
-  "depegBps": 0,
-  "mode": 0,
-  "spreadBps": 1,
-  "stressBps": 0,
-  "txHash": "0x7b63b4c616568c6714aa7014a7d7f9fb929c173d2d443156bacaeab19fbb29cf"
+  "auditorEvidenceHash": "0x7c82e9c0973fd77d2ace8dad2d6eac9e976973092bcd85e7ba0a190f47edd31b",
+  "auditorScore": 4823,
+  "caseId": "0x6a42f46887659675100e2c1a77a48a53557f80196353a76c2c22db945bb788f0",
+  "defenderEvidenceHash": "0xd09e242a2367bac68c95ca986fe7b62fa58cb92d3a52f73db99ea61c3674e2de",
+  "defenderScore": 404,
+  "mode": 2,
+  "modeLabel": "REDEMPTION_ONLY",
+  "prosecutorEvidenceHash": "0x96dee44f5a18ed1de7ef62c95141c3071bcd21fd1eaed52b9e4f4024ba299542",
+  "prosecutorScore": 5327,
+  "riskScoreBps": 9746,
+  "txHash": "0xd2dde0ed39e31157bee2dd2402a25f77c2ad23317b74044baa0ac65c496361c8",
+  "verdictDigest": "0xe954e7993a7f7b7ca6256a05cbab817a85e1afdd04ea3bc9fdee8698a21127ee"
 }
 
-2026-03-01T12:58:49Z [SIMULATION] Execution finished signal received
-2026-03-01T12:58:49Z [SIMULATION] Skipping WorkflowEngineV2
+2026-03-01T14:16:37Z [SIMULATION] Execution finished signal received
+2026-03-01T14:16:37Z [SIMULATION] Skipping WorkflowEngineV2
 
 ╭──────────────────────────────────────────────────────╮
 │ Simulation complete! Ready to deploy your workflow?  │

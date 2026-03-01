@@ -1,0 +1,55 @@
+{
+  "schedule": "0 */5 * * * *",
+  "chainSelectorName": "ethereum-testnet-sepolia",
+  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
+  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "gasLimit": "1250000",
+  "feeds": {
+    "ethUsdProxy": "0x694AA1769357215DE4FAC081bf1f309aDC325306",
+    "btcUsdProxy": "0x1b44F3514812d835EB1BDB0acB33d3fA3351Ee43"
+  },
+  "offchain": {
+    "maxAttempts": 2,
+    "maxHttpCalls": 5,
+    "minSuccessfulSources": 2,
+    "sources": [
+      {
+        "name": "CoinGecko",
+        "kind": "coingecko",
+        "urls": [
+          "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin&vs_currencies=usd&include_24hr_change=true"
+        ]
+      },
+      {
+        "name": "Coinbase Spot",
+        "kind": "coinbaseSpot",
+        "urls": [
+          "https://api.coinbase.com/v2/prices/USDC-USD/spot"
+        ]
+      },
+      {
+        "name": "CoinPaprika",
+        "kind": "coinpaprika",
+        "urls": [
+          "https://api.coinpaprika.com/v1/tickers/usdc-usd-coin"
+        ]
+      },
+      {
+        "name": "CryptoCompare",
+        "kind": "cryptocompare",
+        "urls": [
+          "https://min-api.cryptocompare.com/data/price?fsym=USDC&tsyms=USD"
+        ]
+      }
+    ]
+  },
+  "policy": {
+    "normalMaxRiskBps": 120,
+    "throttleMaxRiskBps": 380
+  },
+  "rwaPolicy": {
+    "minReserveCoverageBps": 9900,
+    "maxAttestationAgeSeconds": 14400,
+    "maxRedemptionQueueBps": 800
+  }
+}

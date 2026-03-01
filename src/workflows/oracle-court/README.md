@@ -1,26 +1,54 @@
-# Oracle Court (CRE Workflow)
+# Oracle Court Workflow
 
-Oracle Court is a constitutional AI oracle pattern for tokenized-asset risk management.
+Oracle Court is a CRE workflow that implements deterministic multi-agent risk judgment.
 
-On each cron execution, the workflow:
+## Inputs
 
-1. Fetches USDC/USD signals from three public APIs (CoinGecko, Coinbase, CryptoCompare)
-2. Reads ETH/USD and BTC/USD Chainlink Data Feeds on Sepolia
-3. Runs a 3-agent tribunal model:
-   - **Prosecutor** (risk-up)
-   - **Defender** (risk-down)
-   - **Auditor** (consistency/safety)
-4. Produces a deterministic verdict (`NORMAL`, `THROTTLE`, `REDEMPTION_ONLY`)
-5. Performs an on-chain write via CRE `writeReport` to `OracleCourtReceiver`
+- Offchain USDC/USD sources (configured in `config.template.json`)
+- Onchain Chainlink feeds: ETH/USD + BTC/USD on Sepolia
+- Onchain mock RWA telemetry from `MockRWAVault`:
+  - `reserveCoverageBps`
+  - `attestationAgeSeconds`
+  - `redemptionQueueBps`
 
-The verdict struct written onchain is:
+## Agent Output
+
+Each run computes three structured arguments:
+
+- Prosecutor
+- Defender
+- Auditor
+
+Each argument is hashed (`keccak256(stable-json(argument))`) and the workflow computes a final `verdictDigest`.
+
+## Onchain Payload
+
+The report payload sent to `OracleCourtReceiver` is:
 
 ```solidity
-(uint8 mode, uint16 stressBps, uint32 timestamp, bytes32 caseId)
+(
+  uint8 mode,
+  uint16 riskScoreBps,
+  uint16 prosecutorScore,
+  uint16 defenderScore,
+  uint16 auditorScore,
+  uint32 timestamp,
+  bytes32 caseId,
+  bytes32 prosecutorEvidenceHash,
+  bytes32 defenderEvidenceHash,
+  bytes32 auditorEvidenceHash,
+  bytes32 verdictDigest
+)
 ```
 
-Mode mapping:
+`OracleCourtReceiver` then calls `MockRWAVault.setRiskMode(mode)`.
 
-- `0` = NORMAL
-- `1` = THROTTLE
-- `2` = REDEMPTION_ONLY
+## Execution
+
+Use root scripts for reproducible flow:
+
+```bash
+bun run deploy:oracle-court:stack
+bun run simulate:oracle-court:broadcast
+bun run demo:oracle-court:impact
+```
