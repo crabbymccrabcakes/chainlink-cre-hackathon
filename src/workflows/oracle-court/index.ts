@@ -20,15 +20,24 @@ import {
   decodeFunctionResult,
   encodeAbiParameters,
   encodeFunctionData,
-  keccak256,
   parseAbi,
   parseAbiParameters,
-  stringToHex,
   zeroAddress,
 } from 'viem'
 import { z } from 'zod'
 
 import { AGGREGATOR_V3_ABI } from './aggregator-v3-abi'
+import { evaluateAppeal, type AppealSnapshot } from './appeal'
+import { clamp, digestObject, round, stableStringify } from './canonical'
+import {
+  averageClaimConfidence,
+  buildEvidenceDossier,
+  summarizeClaimBalance,
+  type EvidenceDocumentInput,
+  type EvidenceDossier,
+} from './dossier'
+import { simulatePolicyModes, type PolicySimulationOutput } from './policy-simulator'
+import { buildTribunalBriefs, type AgentBrief, type ModeLabel } from './tribunal'
 
 const sourceKindSchema = z.enum(['coingecko', 'coinbaseSpot', 'coinbaseTicker', 'coinpaprika', 'cryptocompare'])
 
@@ -36,6 +45,13 @@ const RWA_VAULT_ABI = parseAbi([
   'function reserveCoverageBps() view returns (uint16)',
   'function attestationAgeSeconds() view returns (uint32)',
   'function redemptionQueueBps() view returns (uint16)',
+])
+
+const RECEIVER_STATE_ABI = parseAbi([
+  'function latestMode() view returns (uint8)',
+  'function latestRiskScoreBps() view returns (uint16)',
+  'function latestTimestamp() view returns (uint32)',
+  'function latestCaseId() view returns (bytes32)',
 ])
 
 const configSchema = z.object({
@@ -71,14 +87,36 @@ const configSchema = z.object({
     maxAttestationAgeSeconds: z.number().int().nonnegative(),
     maxRedemptionQueueBps: z.number().int().nonnegative(),
   }),
+  dossier: z.object({
+    documents: z
+      .array(
+        z.object({
+          id: z.string(),
+          kind: z.enum([
+            'reserveAttestation',
+            'issuerDisclosure',
+            'custodyStatement',
+            'governanceProposal',
+            'incidentNote',
+          ]),
+          sourceLabel: z.string(),
+          updatedAtUnix: z.number().int().nonnegative(),
+          text: z.string().min(1),
+          isProtected: z.boolean().optional(),
+        }),
+      )
+      .min(1),
+  }),
+  constitution: z.object({
+    evidenceSufficiencyMinBps: z.number().int().nonnegative(),
+    freshnessMinBps: z.number().int().nonnegative(),
+  }),
 })
 
 type Config = z.infer<typeof configSchema>
 type SourceKind = z.infer<typeof sourceKindSchema>
 
 type TribunalMode = 0 | 1 | 2
-type AgentName = 'PROSECUTOR' | 'DEFENDER' | 'AUDITOR'
-type ModeLabel = 'NORMAL' | 'THROTTLE' | 'REDEMPTION_ONLY'
 
 interface OnchainSignals {
   ethUsd: number
@@ -109,13 +147,22 @@ interface OffchainSignals {
   usdc24hChangePct: number
 }
 
-interface AgentArgument {
-  agent: AgentName
-  claim: string
-  metrics: Record<string, number | string>
-  recommendation: ModeLabel
+interface ConstitutionalPrincipleAssessment {
+  principle: string
+  status: 'SATISFIED' | 'BREACHED'
+  reason: string
+}
+
+interface AppealSummary {
+  outcome: 'NO_PRIOR_CASE' | 'ESCALATE' | 'RELAX' | 'MAINTAIN'
+  rationale: string
   confidenceBps: number
-  riskDeltaBps: number
+  deltas: {
+    riskDeltaBps: number
+    contradictionCountDelta: number
+    contradictionSeverityDeltaBps: number
+    freshnessDeltaBps: number
+  }
 }
 
 interface TribunalVerdict {
@@ -131,15 +178,23 @@ interface TribunalVerdict {
   reserveCoverageGapBps: number
   attestationLagPenaltyBps: number
   redemptionQueuePenaltyBps: number
+  sourceFailurePenaltyBps: number
+  macroStressBps: number
+  contradictionSeverityBps: number
   timestamp: number
   caseId: `0x${string}`
   prosecutorEvidenceHash: `0x${string}`
   defenderEvidenceHash: `0x${string}`
   auditorEvidenceHash: `0x${string}`
   verdictDigest: `0x${string}`
-  prosecutorArgument: AgentArgument
-  defenderArgument: AgentArgument
-  auditorArgument: AgentArgument
+  evidenceRoot: `0x${string}`
+  prosecutorBrief: AgentBrief
+  defenderBrief: AgentBrief
+  auditorBrief: AgentBrief
+  dossier: EvidenceDossier
+  policySimulation: PolicySimulationOutput
+  constitutionalAssessments: ConstitutionalPrincipleAssessment[]
+  appealOutcome: AppealSummary
 }
 
 interface SourceReadRequest {
@@ -184,52 +239,20 @@ type CryptoCompareResponse = {
   USD?: number
 }
 
-const clamp = (value: number, min: number, max: number): number =>
-  Math.max(min, Math.min(max, value))
-
-const round = (value: number, decimals = 8): number => {
-  const factor = 10 ** decimals
-  return Math.round(value * factor) / factor
-}
-
 const modeToLabel = (mode: TribunalMode): ModeLabel => {
   if (mode === 0) return 'NORMAL'
   if (mode === 1) return 'THROTTLE'
   return 'REDEMPTION_ONLY'
 }
 
-const modeFromRisk = (config: Config, riskScoreBps: number): TribunalMode => {
-  if (riskScoreBps <= config.policy.normalMaxRiskBps) return 0
-  if (riskScoreBps <= config.policy.throttleMaxRiskBps) return 1
+const modeLabelToNumber = (modeLabel: ModeLabel): TribunalMode => {
+  if (modeLabel === 'NORMAL') return 0
+  if (modeLabel === 'THROTTLE') return 1
   return 2
 }
 
 const safeJsonStringify = (value: unknown): string =>
   JSON.stringify(value, (_, v) => (typeof v === 'bigint' ? v.toString() : v), 2)
-
-const normalizeForHash = (value: unknown): unknown => {
-  if (typeof value === 'number') return round(value, 8)
-  if (typeof value === 'bigint') return value.toString()
-  if (Array.isArray(value)) return value.map(normalizeForHash)
-  if (value && typeof value === 'object') {
-    const output: Record<string, unknown> = {}
-    const entries = Object.entries(value as Record<string, unknown>).sort(([a], [b]) =>
-      a.localeCompare(b),
-    )
-
-    for (const [key, item] of entries) {
-      output[key] = normalizeForHash(item)
-    }
-
-    return output
-  }
-
-  return value
-}
-
-const stableStringify = (value: unknown): string => JSON.stringify(normalizeForHash(value))
-
-const digestObject = <T>(value: T): `0x${string}` => keccak256(stringToHex(stableStringify(value)))
 
 const medianOf = (values: number[]): number => {
   if (values.length === 0) throw new Error('Cannot compute median of an empty array')
@@ -619,12 +642,74 @@ const readRWASignals = (runtime: Runtime<Config>, evmClient: EVMClient): RWASign
   }
 }
 
+const readPreviousReceiverSnapshot = (
+  runtime: Runtime<Config>,
+  evmClient: EVMClient,
+): AppealSnapshot | null => {
+  try {
+    const latestModeCall = encodeFunctionData({ abi: RECEIVER_STATE_ABI, functionName: 'latestMode' })
+    const latestRiskCall = encodeFunctionData({
+      abi: RECEIVER_STATE_ABI,
+      functionName: 'latestRiskScoreBps',
+    })
+
+    const latestModeResp = evmClient
+      .callContract(runtime, {
+        call: encodeCallMsg({
+          from: zeroAddress,
+          to: runtime.config.receiverAddress as Address,
+          data: latestModeCall,
+        }),
+      })
+      .result()
+
+    const latestRiskResp = evmClient
+      .callContract(runtime, {
+        call: encodeCallMsg({
+          from: zeroAddress,
+          to: runtime.config.receiverAddress as Address,
+          data: latestRiskCall,
+        }),
+      })
+      .result()
+
+    const latestMode = Number(
+      decodeFunctionResult({
+        abi: RECEIVER_STATE_ABI,
+        functionName: 'latestMode',
+        data: bytesToHex(latestModeResp.data),
+      }),
+    )
+
+    const latestRiskScoreBps = Number(
+      decodeFunctionResult({
+        abi: RECEIVER_STATE_ABI,
+        functionName: 'latestRiskScoreBps',
+        data: bytesToHex(latestRiskResp.data),
+      }),
+    )
+
+    const mode = modeToLabel(clamp(latestMode, 0, 2) as TribunalMode)
+
+    return {
+      mode,
+      riskScoreBps: latestRiskScoreBps,
+      contradictionCount: 0,
+      contradictionSeverityBps: 0,
+      evidenceFreshnessScoreBps: 0,
+    }
+  } catch {
+    return null
+  }
+}
+
 const buildTribunalVerdict = (
   config: Config,
   offchain: OffchainSignals,
   onchain: OnchainSignals,
   rwa: RWASignals,
   timestamp: number,
+  previousSnapshot: AppealSnapshot | null,
 ): TribunalVerdict => {
   const depegBps = clamp(Math.round(Math.abs(offchain.usdcMedian - 1) * 10_000), 0, 10_000)
   const spreadBps = clamp(Math.round((offchain.usdcMax - offchain.usdcMin) * 10_000), 0, 10_000)
@@ -641,11 +726,13 @@ const buildTribunalVerdict = (
     0,
     10_000,
   )
+
   const attestationLagSeconds = clamp(
     rwa.attestationAgeSeconds - config.rwaPolicy.maxAttestationAgeSeconds,
     0,
     10_000_000,
   )
+
   const redemptionQueueExcessBps = clamp(
     rwa.redemptionQueueBps - config.rwaPolicy.maxRedemptionQueueBps,
     0,
@@ -655,129 +742,133 @@ const buildTribunalVerdict = (
   const attestationLagPenaltyBps = clamp(Math.round(attestationLagSeconds / 120), 0, 2_500)
   const redemptionQueuePenaltyBps = clamp(Math.round(redemptionQueueExcessBps * 1.5), 0, 3_000)
 
+  const documents = config.dossier.documents as EvidenceDocumentInput[]
+  const dossier = buildEvidenceDossier(documents, timestamp, {
+    reserveCoverageBps: rwa.reserveCoverageBps,
+    attestationAgeSeconds: rwa.attestationAgeSeconds,
+    redemptionQueueBps: rwa.redemptionQueueBps,
+  })
+
+  const contradictionSeverityBps = dossier.contradictionMatrix.reduce(
+    (acc, entry) => acc + entry.severityBps,
+    0,
+  )
+
+  const briefs = buildTribunalBriefs({
+    dossier,
+    depegBps,
+    spreadBps,
+    downside24hBps,
+    reserveCoverageGapBps,
+    attestationLagPenaltyBps,
+    redemptionQueuePenaltyBps,
+    sourceFailurePenaltyBps,
+    macroStressBps,
+  })
+
   const prosecutorScore = clamp(
-    Math.round(
+    reserveCoverageGapBps * 2 +
+      attestationLagPenaltyBps +
+      redemptionQueuePenaltyBps +
       depegBps * 4 +
-        spreadBps * 2 +
-        downside24hBps +
-        sourceFailurePenaltyBps +
-        macroStressBps +
-        reserveCoverageGapBps * 2 +
-        attestationLagPenaltyBps +
-        redemptionQueuePenaltyBps,
-    ),
+      spreadBps * 2 +
+      downside24hBps +
+      sourceFailurePenaltyBps +
+      macroStressBps +
+      Math.round(contradictionSeverityBps / 10),
     0,
     10_000,
   )
 
   const defenderScore = clamp(
-    Math.round(
-      Math.max(0, 120 - depegBps) * 2 +
-        Math.max(0, 60 - spreadBps) * 2 +
-        (offchain.failedSources.length === 0 ? 50 : 0) +
-        (reserveCoverageGapBps === 0 ? 45 : 0) +
-        (attestationLagPenaltyBps === 0 ? 25 : 0) +
-        (redemptionQueuePenaltyBps === 0 ? 25 : 0),
-    ),
+    Math.round(averageClaimConfidence(dossier.claims) / 12) +
+      (dossier.evidenceFreshnessScoreBps > config.constitution.freshnessMinBps ? 250 : 60) +
+      Math.max(0, 250 - offchain.failedSources.length * 50) +
+      Math.max(0, 120 - reserveCoverageGapBps),
     0,
     10_000,
   )
 
   const auditorScore = clamp(
-    Math.round(
-      spreadBps +
-        sourceFailurePenaltyBps +
-        (offchain.usdcMedian < 0.995 || offchain.usdcMedian > 1.005 ? 160 : 0) +
-        (offchain.failedSources.length > 0 ? 90 : 0) +
-        reserveCoverageGapBps +
-        attestationLagPenaltyBps +
-        redemptionQueuePenaltyBps,
-    ),
+    Math.round(contradictionSeverityBps / 4) +
+      Math.max(0, 8000 - dossier.admissibilityScoreBps) +
+      Math.max(0, 8000 - dossier.evidenceFreshnessScoreBps) +
+      sourceFailurePenaltyBps +
+      spreadBps,
     0,
     10_000,
   )
 
   const riskScoreBps = clamp(Math.round(prosecutorScore + auditorScore - defenderScore), 0, 10_000)
-  const mode = modeFromRisk(config, riskScoreBps)
 
-  const prosecutorArgument: AgentArgument = {
-    agent: 'PROSECUTOR',
-    claim:
-      prosecutorScore > config.policy.throttleMaxRiskBps
-        ? 'Liquidity + reserve stress detected above safe minting threshold'
-        : 'Minor stress present; monitor for escalation',
-    metrics: {
-      usdcMedian: round(offchain.usdcMedian, 6),
-      depegBps,
-      spreadBps,
-      downside24hBps,
-      sourceFailures: offchain.failedSources.length,
-      reserveCoverageBps: rwa.reserveCoverageBps,
-      reserveCoverageGapBps,
-      attestationAgeSeconds: rwa.attestationAgeSeconds,
-      attestationLagPenaltyBps,
-      redemptionQueueBps: rwa.redemptionQueueBps,
-      redemptionQueuePenaltyBps,
-      ethUsd: round(onchain.ethUsd, 2),
-      btcUsd: round(onchain.btcUsd, 2),
+  const policySimulation = simulatePolicyModes({
+    prosecutorScore,
+    defenderScore,
+    auditorScore,
+    contradictionSeverityBps,
+    evidenceFreshnessScoreBps: dossier.evidenceFreshnessScoreBps,
+    admissibilityScoreBps: dossier.admissibilityScoreBps,
+  })
+
+  const modeLabel = policySimulation.selectedMode
+  const mode = modeLabelToNumber(modeLabel)
+
+  const constitutionalAssessments: ConstitutionalPrincipleAssessment[] = [
+    {
+      principle: 'Solvency First',
+      status:
+        modeLabel === 'REDEMPTION_ONLY' || modeLabel === 'THROTTLE' || riskScoreBps < 100
+          ? 'SATISFIED'
+          : 'BREACHED',
+      reason:
+        modeLabel === 'REDEMPTION_ONLY' || modeLabel === 'THROTTLE'
+          ? 'Selected mode prioritizes solvency containment under observed stress.'
+          : 'Risk is low enough that solvency-first restrictions were not required.',
     },
-    recommendation: modeToLabel(modeFromRisk(config, prosecutorScore)),
-    confidenceBps: clamp(5_500 + prosecutorScore * 3, 5_500, 9_900),
-    riskDeltaBps: prosecutorScore,
-  }
-
-  const defenderArgument: AgentArgument = {
-    agent: 'DEFENDER',
-    claim:
-      defenderScore > 220
-        ? 'Observed variance appears bounded; avoid over-restrictive policy'
-        : 'Limited mitigation signal available due to uncertainty',
-    metrics: {
-      usdcMedian: round(offchain.usdcMedian, 6),
-      spreadBps,
-      successfulSources: offchain.successfulSources.length,
-      failedSources: offchain.failedSources.length,
-      change24hPct: round(offchain.usdc24hChangePct, 6),
-      reserveCoverageBps: rwa.reserveCoverageBps,
-      attestationAgeSeconds: rwa.attestationAgeSeconds,
-      redemptionQueueBps: rwa.redemptionQueueBps,
+    {
+      principle: 'Orderly Exit',
+      status: 'SATISFIED',
+      reason: 'Selected modes preserve redemptions to support orderly user exits.',
     },
-    recommendation: modeToLabel(modeFromRisk(config, Math.max(0, prosecutorScore - defenderScore))),
-    confidenceBps: clamp(5_000 + defenderScore * 2, 5_000, 9_800),
-    riskDeltaBps: -defenderScore,
-  }
-
-  const auditorArgument: AgentArgument = {
-    agent: 'AUDITOR',
-    claim:
-      offchain.failedSources.length > 0 ||
-      reserveCoverageGapBps > 0 ||
-      attestationLagPenaltyBps > 0 ||
-      redemptionQueuePenaltyBps > 0
-        ? 'Data and/or RWA control signals show elevated operational risk; apply safety premium'
-        : 'Data integrity and reserve telemetry checks passed',
-    metrics: {
-      sourceFailures: offchain.failedSources.length,
-      successfulSources: offchain.successfulSources.length,
-      spreadBps,
-      depegBps,
-      macroStressBps,
-      sourceFailurePenaltyBps,
-      reserveCoverageBps: rwa.reserveCoverageBps,
-      reserveCoverageGapBps,
-      attestationAgeSeconds: rwa.attestationAgeSeconds,
-      attestationLagPenaltyBps,
-      redemptionQueueBps: rwa.redemptionQueueBps,
-      redemptionQueuePenaltyBps,
+    {
+      principle: 'Minimum Necessary Restriction',
+      status:
+        policySimulation.modeResults[0].objectiveScoreBps ===
+          Math.max(...policySimulation.modeResults.map((item) => item.objectiveScoreBps)) ||
+        modeLabel !== 'REDEMPTION_ONLY'
+          ? 'SATISFIED'
+          : 'BREACHED',
+      reason: policySimulation.explanation,
     },
-    recommendation: modeToLabel(modeFromRisk(config, auditorScore + depegBps)),
-    confidenceBps: clamp(5_200 + auditorScore * 3, 5_200, 9_900),
-    riskDeltaBps: auditorScore,
-  }
+    {
+      principle: 'Evidence Sufficiency',
+      status:
+        dossier.admissibilityScoreBps >= config.constitution.evidenceSufficiencyMinBps
+          ? 'SATISFIED'
+          : 'BREACHED',
+      reason: `admissibilityScoreBps=${dossier.admissibilityScoreBps}`,
+    },
+    {
+      principle: 'Freshness Requirement',
+      status:
+        dossier.evidenceFreshnessScoreBps >= config.constitution.freshnessMinBps
+          ? 'SATISFIED'
+          : 'BREACHED',
+      reason: `evidenceFreshnessScoreBps=${dossier.evidenceFreshnessScoreBps}`,
+    },
+  ]
 
-  const prosecutorEvidenceHash = digestObject(prosecutorArgument)
-  const defenderEvidenceHash = digestObject(defenderArgument)
-  const auditorEvidenceHash = digestObject(auditorArgument)
+  const appealOutcome = evaluateAppeal(previousSnapshot, {
+    mode: modeLabel,
+    riskScoreBps,
+    contradictionCount: dossier.contradictionMatrix.length,
+    contradictionSeverityBps,
+    evidenceFreshnessScoreBps: dossier.evidenceFreshnessScoreBps,
+  })
+
+  const prosecutorEvidenceHash = digestObject(briefs.prosecutor)
+  const defenderEvidenceHash = digestObject(briefs.defender)
+  const auditorEvidenceHash = digestObject(briefs.auditor)
 
   const caseId = digestObject({
     timestamp,
@@ -791,6 +882,7 @@ const buildTribunalVerdict = (
     defenderScore,
     auditorScore,
     riskScoreBps,
+    evidenceRoot: dossier.evidenceRoot,
   })
 
   const verdictDigest = digestObject({
@@ -801,11 +893,13 @@ const buildTribunalVerdict = (
     mode,
     timestamp,
     caseId,
+    evidenceRoot: dossier.evidenceRoot,
+    constitutionalAssessments,
   })
 
   return {
     mode,
-    modeLabel: modeToLabel(mode),
+    modeLabel,
     riskScoreBps,
     prosecutorScore,
     defenderScore,
@@ -816,15 +910,23 @@ const buildTribunalVerdict = (
     reserveCoverageGapBps,
     attestationLagPenaltyBps,
     redemptionQueuePenaltyBps,
+    sourceFailurePenaltyBps,
+    macroStressBps,
+    contradictionSeverityBps,
     timestamp,
     caseId,
     prosecutorEvidenceHash,
     defenderEvidenceHash,
     auditorEvidenceHash,
     verdictDigest,
-    prosecutorArgument,
-    defenderArgument,
-    auditorArgument,
+    evidenceRoot: dossier.evidenceRoot,
+    prosecutorBrief: briefs.prosecutor,
+    defenderBrief: briefs.defender,
+    auditorBrief: briefs.auditor,
+    dossier,
+    policySimulation,
+    constitutionalAssessments,
+    appealOutcome,
   }
 }
 
@@ -901,28 +1003,81 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
   }
   const rwaSignals = readRWASignals(runtime, evmClient)
 
+  const previousSnapshot = readPreviousReceiverSnapshot(runtime, evmClient)
   const timestamp = Math.floor(runtime.now().getTime() / 1000)
-  const verdict = buildTribunalVerdict(runtime.config, offchainSignals, onchainSignals, rwaSignals, timestamp)
+  const verdict = buildTribunalVerdict(
+    runtime.config,
+    offchainSignals,
+    onchainSignals,
+    rwaSignals,
+    timestamp,
+    previousSnapshot,
+  )
 
   runtime.log(`[OracleCourt] Offchain signals: ${safeJsonStringify(offchainSignals)}`)
   runtime.log(`[OracleCourt] Onchain signals: ${safeJsonStringify(onchainSignals)}`)
   runtime.log(`[OracleCourt] RWA signals: ${safeJsonStringify(rwaSignals)}`)
 
+  const dossierSummaryForArtifacts = {
+    generatedAtUnix: verdict.dossier.generatedAtUnix,
+    sourceIds: verdict.dossier.sourceIds,
+    protectedSourcesPresent: verdict.dossier.protectedSourcesPresent,
+    admissibilityScoreBps: verdict.dossier.admissibilityScoreBps,
+    evidenceFreshnessScoreBps: verdict.dossier.evidenceFreshnessScoreBps,
+    evidenceRoot: verdict.evidenceRoot,
+    claimCount: verdict.dossier.claims.length,
+    contradictionCount: verdict.dossier.contradictionMatrix.length,
+  }
+
+  const dossierClaimsForArtifacts = verdict.dossier.claims.map((claim) => ({
+    claimId: claim.claimId,
+    sourceId: claim.sourceId,
+    chunkId: claim.chunkId,
+    topic: claim.topic,
+    polarity: claim.polarity,
+    confidenceBps: claim.confidenceBps,
+    textSnippet: claim.text.length > 140 ? `${claim.text.slice(0, 137)}...` : claim.text,
+  }))
+
+  const briefForArtifacts = (brief: AgentBrief) => ({
+    ...brief,
+    citations: brief.citations.map((citation) => ({
+      sourceId: citation.sourceId,
+      chunkId: citation.chunkId,
+      claimId: citation.claimId,
+      quote: citation.quote,
+    })),
+  })
+
+  const prosecutorBriefForArtifacts = briefForArtifacts(verdict.prosecutorBrief)
+  const defenderBriefForArtifacts = briefForArtifacts(verdict.defenderBrief)
+  const auditorBriefForArtifacts = briefForArtifacts(verdict.auditorBrief)
+
+  runtime.log(`[OracleCourt][EvidenceDossier] ${stableStringify(dossierSummaryForArtifacts)}`)
+  for (const claim of dossierClaimsForArtifacts) {
+    runtime.log(`[OracleCourt][DossierClaim] ${stableStringify(claim)}`)
+  }
   runtime.log(
-    `[OracleCourt][Agent][PROSECUTOR] argument=${stableStringify(verdict.prosecutorArgument)} evidenceHash=${verdict.prosecutorEvidenceHash}`,
+    `[OracleCourt][AgentBrief][PROSECUTOR] ${stableStringify({ brief: prosecutorBriefForArtifacts, evidenceHash: verdict.prosecutorEvidenceHash })}`,
   )
   runtime.log(
-    `[OracleCourt][Agent][DEFENDER] argument=${stableStringify(verdict.defenderArgument)} evidenceHash=${verdict.defenderEvidenceHash}`,
+    `[OracleCourt][AgentBrief][DEFENDER] ${stableStringify({ brief: defenderBriefForArtifacts, evidenceHash: verdict.defenderEvidenceHash })}`,
   )
   runtime.log(
-    `[OracleCourt][Agent][AUDITOR] argument=${stableStringify(verdict.auditorArgument)} evidenceHash=${verdict.auditorEvidenceHash}`,
+    `[OracleCourt][AgentBrief][AUDITOR] ${stableStringify({ brief: auditorBriefForArtifacts, evidenceHash: verdict.auditorEvidenceHash })}`,
   )
+  runtime.log(
+    `[OracleCourt][ContradictionMatrix] ${stableStringify(verdict.dossier.contradictionMatrix)}`,
+  )
+  runtime.log(`[OracleCourt][PolicySimulation] ${stableStringify(verdict.policySimulation)}`)
+  runtime.log(`[OracleCourt][Constitution] ${stableStringify(verdict.constitutionalAssessments)}`)
+  runtime.log(`[OracleCourt][AppealOutcome] ${stableStringify(verdict.appealOutcome)}`)
 
   runtime.log(
     `[OracleCourt] Tribunal scores prosecutor=${verdict.prosecutorScore} defender=${verdict.defenderScore} auditor=${verdict.auditorScore}`,
   )
   runtime.log(
-    `[OracleCourt] Verdict mode=${verdict.mode} (${verdict.modeLabel}) riskScoreBps=${verdict.riskScoreBps} caseId=${verdict.caseId} verdictDigest=${verdict.verdictDigest}`,
+    `[OracleCourt] Verdict mode=${verdict.mode} (${verdict.modeLabel}) riskScoreBps=${verdict.riskScoreBps} caseId=${verdict.caseId} evidenceRoot=${verdict.evidenceRoot} verdictDigest=${verdict.verdictDigest}`,
   )
 
   const txHash = writeVerdictOnchain(runtime, evmClient, verdict)
@@ -941,11 +1096,6 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
         usdc24hChangePct: offchainSignals.usdc24hChangePct,
         successfulSourceCount: offchainSignals.successfulSources.length,
         failedSourceCount: offchainSignals.failedSources.length,
-        successfulSourcePrices: offchainSignals.successfulSources.map((source) => ({
-          name: source.name,
-          price: source.price,
-          attempt: source.attempt,
-        })),
       },
       onchain: {
         ethUsd: onchainSignals.ethUsd,
@@ -956,20 +1106,35 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
         attestationAgeSeconds: rwaSignals.attestationAgeSeconds,
         redemptionQueueBps: rwaSignals.redemptionQueueBps,
       },
+      dossierDocuments: runtime.config.dossier.documents.map((doc) => ({
+        id: doc.id,
+        kind: doc.kind,
+        sourceLabel: doc.sourceLabel,
+        updatedAtUnix: doc.updatedAtUnix,
+        isProtected: Boolean(doc.isProtected),
+      })),
+    },
+    evidenceDossierSummary: {
+      claimBalance: summarizeClaimBalance(verdict.dossier.claims),
+      averageClaimConfidenceBps: averageClaimConfidence(verdict.dossier.claims),
+      contradictionCount: verdict.dossier.contradictionMatrix.length,
+      admissibilityScoreBps: verdict.dossier.admissibilityScoreBps,
+      evidenceFreshnessScoreBps: verdict.dossier.evidenceFreshnessScoreBps,
+      evidenceRoot: verdict.evidenceRoot,
     },
     agentScores: {
       prosecutorScore: verdict.prosecutorScore,
       defenderScore: verdict.defenderScore,
       auditorScore: verdict.auditorScore,
       riskScoreBps: verdict.riskScoreBps,
-      depegBps: verdict.depegBps,
-      spreadBps: verdict.spreadBps,
-      downside24hBps: verdict.downside24hBps,
-      reserveCoverageGapBps: verdict.reserveCoverageGapBps,
-      attestationLagPenaltyBps: verdict.attestationLagPenaltyBps,
-      redemptionQueuePenaltyBps: verdict.redemptionQueuePenaltyBps,
+      contradictionSeverityBps: verdict.contradictionSeverityBps,
+    },
+    policySimulation: {
+      selectedMode: verdict.policySimulation.selectedMode,
+      explanation: verdict.policySimulation.explanation,
     },
     evidenceHashes: {
+      evidenceRoot: verdict.evidenceRoot,
       prosecutorEvidenceHash: verdict.prosecutorEvidenceHash,
       defenderEvidenceHash: verdict.defenderEvidenceHash,
       auditorEvidenceHash: verdict.auditorEvidenceHash,
@@ -983,7 +1148,21 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
     },
   }
 
+  const verdictBulletin = {
+    bulletinVersion: 'oracle-court-ai-governor-v1',
+    caseId: verdict.caseId,
+    mode: verdict.modeLabel,
+    riskScoreBps: verdict.riskScoreBps,
+    evidenceRoot: verdict.evidenceRoot,
+    verdictDigest: verdict.verdictDigest,
+    constitutionalAssessments: verdict.constitutionalAssessments,
+    policyExplanation: verdict.policySimulation.explanation,
+    appealOutcome: verdict.appealOutcome,
+    txHash,
+  }
+
   runtime.log(`[OracleCourt][ProofBlock] ${stableStringify(proofBlock)}`)
+  runtime.log(`[OracleCourt][VerdictBulletin] ${stableStringify(verdictBulletin)}`)
 
   return {
     mode: verdict.mode,
@@ -992,11 +1171,13 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
     prosecutorScore: verdict.prosecutorScore,
     defenderScore: verdict.defenderScore,
     auditorScore: verdict.auditorScore,
+    evidenceRoot: verdict.evidenceRoot,
     prosecutorEvidenceHash: verdict.prosecutorEvidenceHash,
     defenderEvidenceHash: verdict.defenderEvidenceHash,
     auditorEvidenceHash: verdict.auditorEvidenceHash,
     verdictDigest: verdict.verdictDigest,
     caseId: verdict.caseId,
+    appealOutcome: verdict.appealOutcome.outcome,
     txHash,
   }
 }

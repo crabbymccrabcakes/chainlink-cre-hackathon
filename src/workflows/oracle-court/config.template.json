@@ -51,5 +51,35 @@
     "minReserveCoverageBps": 9900,
     "maxAttestationAgeSeconds": 14400,
     "maxRedemptionQueueBps": 800
+  },
+  "dossier": {
+    "documents": [
+      {
+        "id": "ATT-2026-02-28",
+        "kind": "reserveAttestation",
+        "sourceLabel": "issuer-attestation-api",
+        "updatedAtUnix": 1772323200,
+        "isProtected": true,
+        "text": "Independent attestation states reserves are sufficient and fully backed as of Friday close. Coverage remained within internal tolerance, while attestation publication was delayed by back-office reconciliation updates."
+      },
+      {
+        "id": "DISC-2026-02-28",
+        "kind": "issuerDisclosure",
+        "sourceLabel": "issuer-disclosure-feed",
+        "updatedAtUnix": 1772326800,
+        "text": "Issuer disclosure reports redemption operations are normal and orderly. The statement also notes temporary queue expansion during market volatility and active liquidity balancing."
+      },
+      {
+        "id": "GOV-2026-02-27",
+        "kind": "governanceProposal",
+        "sourceLabel": "governance-forum",
+        "updatedAtUnix": 1772240400,
+        "text": "A governance proposal suggests loosening mint throttles to improve growth and reducing mandatory reserve buffer targets during calm periods."
+      }
+    ]
+  },
+  "constitution": {
+    "evidenceSufficiencyMinBps": 7000,
+    "freshnessMinBps": 6500
   }
 }

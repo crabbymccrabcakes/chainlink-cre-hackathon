@@ -1,0 +1,47 @@
+{
+  "caseId": "0x4fdaa86b7d5894e58720923e5a0c837445fc9559ca17abfbb2080cd8233c8cac",
+  "mode": "THROTTLE",
+  "riskScoreBps": 5973,
+  "evidenceRoot": "0x43c3c853838cbdd7a8074d1d64caf54ee1d4be184754ee5d2d6ba15eee1f60ec",
+  "verdictDigest": "0x88cb439713de367e06b684a25dec3fc44dc586fcdd5de800b7b8394e9d9cf92b",
+  "policyExplanation": null,
+  "constitutionalAssessments": [
+    {
+      "principle": "Solvency First",
+      "reason": "Selected mode prioritizes solvency containment under observed stress.",
+      "status": "SATISFIED"
+    },
+    {
+      "principle": "Orderly Exit",
+      "reason": "Selected modes preserve redemptions to support orderly user exits.",
+      "status": "SATISFIED"
+    },
+    {
+      "principle": "Minimum Necessary Restriction",
+      "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6507",
+      "status": "SATISFIED"
+    },
+    {
+      "principle": "Evidence Sufficiency",
+      "reason": "admissibilityScoreBps=8681",
+      "status": "SATISFIED"
+    },
+    {
+      "principle": "Freshness Requirement",
+      "reason": "evidenceFreshnessScoreBps=9221",
+      "status": "SATISFIED"
+    }
+  ],
+  "appealOutcome": {
+    "confidenceBps": 8597,
+    "deltas": {
+      "contradictionCountDelta": 1,
+      "contradictionSeverityDeltaBps": 4800,
+      "freshnessDeltaBps": 9221,
+      "riskDeltaBps": -3773
+    },
+    "outcome": "RELAX",
+    "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
+  },
+  "txHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+}

@@ -1,17 +1,21 @@
-# Oracle Court — Verifiable AI Tribunal for RWA Risk (Chainlink CRE)
+# Oracle Court — Constitutional AI Risk Governor for Tokenized Assets (Chainlink CRE)
 
 `#defi-tokenization #cre-ai`
 
-Oracle Court is a deterministic multi-agent workflow that produces **verifiable risk judgments** and enforces protocol behavior on-chain.
+Oracle Court is a **constitutional tribunal workflow** where:
 
-Instead of just writing a score, Oracle Court commits:
+- an AI-style reasoning layer interprets ambiguous issuer evidence,
+- CRE deterministically compiles + hashes the reasoning,
+- and onchain contracts enforce the selected protocol policy.
 
-- 3 structured tribunal arguments (Prosecutor, Defender, Auditor)
-- 3 argument evidence hashes
-- 1 deterministic verdict digest
-- 1 enforceable risk mode (`NORMAL`, `THROTTLE`, `REDEMPTION_ONLY`)
+This implementation already ships:
 
-The receiver contract immediately applies that verdict to a mock RWA vault policy surface.
+- Evidence Dossier generation from unstructured/semi-structured text
+- Adversarial Prosecutor / Defender / Auditor briefs with citations
+- Contradiction matrix + admissibility/freshness scoring
+- Counterfactual policy simulation (`NORMAL`, `THROTTLE`, `REDEMPTION_ONLY`)
+- Constitutional principle checks + appeal/retrial delta output
+- Onchain verdict commit + vault policy enforcement via `setRiskMode(mode)`
 
 ---
 
@@ -19,108 +23,112 @@ The receiver contract immediately applies that verdict to a mock RWA vault polic
 
 ```mermaid
 flowchart LR
-    A["Offchain Sources<br/>CoinGecko | Coinbase | CoinPaprika | CryptoCompare"]
-    B["Chainlink Data Feeds<br/>ETH/USD and BTC/USD on Sepolia"]
-    H["Mock RWA Telemetry<br/>reserveCoverageBps | attestationAgeSeconds | redemptionQueueBps"]
-    C["CRE Workflow<br/>Oracle Court Tribunal"]
-    D["Evidence Hashing<br/>keccak256 over stable-json agent arguments"]
-    E["Verdict Digest<br/>keccak256 over evidence hashes and verdict"]
-    F["OracleCourtReceiver"]
-    G["MockRWAVault"]
+    A["Evidence Inputs<br/>attestation | disclosure | governance text"]
+    B["Market Inputs<br/>USDC multi-source + Chainlink feeds"]
+    C["RWA Telemetry<br/>coverage | attestation age | queue pressure"]
+    D["Evidence Dossier<br/>claims + contradictions + evidenceRoot"]
+    E["AI Tribunal Briefs<br/>Prosecutor | Defender | Auditor"]
+    F["Policy Simulator<br/>NORMAL vs THROTTLE vs REDEMPTION_ONLY"]
+    G["Constitution + Appeal Pass<br/>principles + retrial delta"]
+    H["Deterministic Hashing<br/>brief hashes + verdictDigest"]
+    I["OracleCourtReceiver"]
+    J["MockRWAVault"]
 
-    A --> C
-    B --> C
-    H --> C
+    A --> D
+    B --> D
     C --> D
     D --> E
     E --> F
-    F -->|setRiskMode| G
+    F --> G
+    G --> H
+    H --> I
+    I -->|setRiskMode| J
 ```
 
 ---
 
-## Tribunal Model
+## AI-Native Tribunal Flow
 
-Each agent produces a deterministic argument object:
+### 1) Evidence Dossier (ambiguity handling)
 
-```json
-{
-  "agent": "PROSECUTOR",
-  "claim": "Liquidity stress detected above safe minting threshold",
-  "metrics": {
-    "usdcMedian": 0.99999,
-    "depegBps": 12,
-    "spreadBps": 7,
-    "reserveCoverageBps": 9600,
-    "attestationAgeSeconds": 86400,
-    "redemptionQueueBps": 2500
-  },
-  "recommendation": "THROTTLE",
-  "confidenceBps": 8700,
-  "riskDeltaBps": 220
-}
-```
+Oracle Court reads configured dossier documents (`reserveAttestation`, `issuerDisclosure`, `governanceProposal`, etc), chunks them, extracts claims, and builds:
 
-Then Oracle Court computes:
+- `claims[]` (topic, polarity, confidence, source IDs)
+- `contradictionMatrix[]`
+- `admissibilityScoreBps`
+- `evidenceFreshnessScoreBps`
+- `evidenceRoot` (canonical digest)
 
-1. `prosecutorEvidenceHash = keccak256(stable-json(prosecutorArgument))`
-2. `defenderEvidenceHash = keccak256(stable-json(defenderArgument))`
-3. `auditorEvidenceHash = keccak256(stable-json(auditorArgument))`
-4. `verdictDigest = keccak256(stable-json({allEvidenceHashes, riskScore, mode, timestamp, caseId}))`
+### 2) Adversarial briefs
 
-All values are written on-chain via CRE report signing + `writeReport`.
+Each agent emits a full brief:
 
----
+- `position`
+- `thesis`
+- `claims[]`
+- `citations[]`
+- `contradictionsFound[]`
+- `policyRecommendation`
+- `confidenceBps`
 
-## RWA-Native Inputs
+Each brief is hashed with stable canonical JSON:
 
-Oracle Court now consumes explicit RWA telemetry from `MockRWAVault` (read on-chain during each run):
+- `prosecutorEvidenceHash`
+- `defenderEvidenceHash`
+- `auditorEvidenceHash`
 
-- `reserveCoverageBps` (coverage shortfall penalty)
-- `attestationAgeSeconds` (freshness/staleness penalty)
-- `redemptionQueueBps` (queue stress penalty)
+### 3) Contradiction analysis
 
-These inputs are included in agent argument metrics and directly influence prosecutor/auditor risk deltas.
+The dossier pass explicitly checks narrative-vs-telemetry conflicts, e.g.:
 
----
+- “reserves sufficient” vs deteriorating `reserveCoverageBps`
+- “redemptions normal” vs high `redemptionQueueBps`
+- “fresh attestation” vs stale `attestationAgeSeconds`
 
-## Enforceable Protocol Impact
+### 4) Counterfactual policy simulation
 
-### Contract 1: `OracleCourtReceiver`
-Stores latest tribunal state:
+Oracle Court scores all three policy modes and compares:
 
-- `latestRiskScoreBps`
-- `latestProsecutorScore` / `latestDefenderScore` / `latestAuditorScore`
-- `latestProsecutorEvidenceHash` / `latestDefenderEvidenceHash` / `latestAuditorEvidenceHash`
-- `latestVerdictDigest`
-- `latestCaseId`
+- solvency protection
+- user harm
+- false-positive cost
+- operational reversibility
 
-### Contract 2: `MockRWAVault`
-Receiver calls `vault.setRiskMode(mode)` on every accepted report.
+The selected mode is the highest objective score under current evidence.
 
-Vault policy effects:
+### 5) Constitutional + appeal layer
+
+Final decision cites principles:
+
+- Solvency First
+- Orderly Exit
+- Minimum Necessary Restriction
+- Evidence Sufficiency
+- Freshness Requirement
+
+And emits `appealOutcome` relative to prior onchain snapshot (`ESCALATE` / `RELAX` / `MAINTAIN` / `NO_PRIOR_CASE`).
+
+### 6) Deterministic commit + onchain enforcement
+
+CRE writes a signed report to `OracleCourtReceiver`, which stores verdict state and calls:
+
+- `MockRWAVault.setRiskMode(mode)`
+
+Vault behavior:
 
 - `NORMAL` → mint + redeem allowed
-- `THROTTLE` → mint capped by `throttleMintLimit`
+- `THROTTLE` → mint limited by `throttleMintLimit`
 - `REDEMPTION_ONLY` → mint disabled, redeem allowed
-
-This gives a direct **court verdict → protocol behavior** path.
 
 ---
 
-## Reliability Features (HTTP)
+## Reliability Features
 
-- Multi-source median over independent providers
+- Multi-source median for offchain USDC
 - Retry with deterministic backoff logging
-- Call-budget guard to avoid capability call-limit failures
 - Per-source status logs (`OK`, `FAILED`, `SKIPPED`)
-- Continue with partial source availability (`minSuccessfulSources` threshold)
-
-Example logs:
-
-- `[OracleCourt][Source][CoinGecko] ... status=OK ...`
-- `[OracleCourt][Source][CoinPaprika] ... status=FAILED ...`
-- `[OracleCourt][SourceSummary] successful=3 failed=1 median=...`
+- Partial-source tolerance with `minSuccessfulSources`
+- Call-budget guard (`maxHttpCalls`)
 
 ---
 
@@ -143,6 +151,11 @@ scripts/
 
 src/workflows/oracle-court/
   index.ts
+  canonical.ts
+  dossier.ts
+  tribunal.ts
+  policy-simulator.ts
+  appeal.ts
   workflow.yaml
   config.template.json
   config.generated.json   # generated automatically
@@ -152,11 +165,16 @@ artifacts/
   oracle-court-simulation-output.txt
   oracle-court-proof.md
   oracle-court-policy-impact.md
+  evidence-dossier.json
+  evidence-dossier.md
+  tribunal-briefs.md
+  policy-simulation.md
+  verdict-bulletin.json
 ```
 
 ---
 
-## One-Shot Reproducible Flow (No Manual Config Edits)
+## Reproducible Run (no manual config edits)
 
 ```bash
 git clone https://github.com/crabbymccrabcakes/chainlink-cre-hackathon.git
@@ -165,51 +183,35 @@ bun install
 bun run setup
 ```
 
-Set required env:
+Set env:
 
 ```bash
 export CRE_ETH_PRIVATE_KEY="0x<funded-sepolia-private-key>"
-# optional:
+# optional
 export SEPOLIA_RPC_URL="https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia"
 ```
 
-Deploy stack + auto-wire config:
+Deploy + sync:
 
 ```bash
 bun run deploy:oracle-court:stack
 ```
 
-Run broadcast simulation + generate proof artifact:
+Broadcast simulation + proof artifacts:
 
 ```bash
 bun run simulate:oracle-court:broadcast
 ```
 
-Read resulting on-chain state:
+Read onchain state:
 
 ```bash
 bun run read:oracle-court:state
 ```
 
-Run deterministic policy-impact demo (healthy -> stressed telemetry):
+Policy-impact + appeal demo:
 
 ```bash
-bun run demo:oracle-court:impact
-```
-
-This writes `artifacts/oracle-court-policy-impact.md` with before/after mintability checks.
-
----
-
-## Dev Commands
-
-```bash
-bun run typecheck
-bun run compile:oracle-court
-bun run check
-bun run sync:oracle-court:config
-bun run set:oracle-court:rwa
-bun run proof:oracle-court
 bun run demo:oracle-court:impact
 ```
 
@@ -217,5 +219,5 @@ bun run demo:oracle-court:impact
 
 ## Security Note
 
-This repository is optimized for hackathon simulation reproducibility.
-Receiver access control should be hardened before production use (trusted forwarder + workflow metadata checks).
+Current receiver accepts reports for simulation convenience.
+Production hardening should gate report delivery by trusted forwarder + workflow metadata policy.

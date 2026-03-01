@@ -1,29 +1,31 @@
 # Oracle Court Workflow
 
-Oracle Court is a CRE workflow that implements deterministic multi-agent risk judgment.
+Oracle Court is a CRE workflow for **constitutional AI risk governance** over tokenized-asset policy.
 
 ## Inputs
 
-- Offchain USDC/USD sources (configured in `config.template.json`)
+- Offchain USDC/USD sources (multi-source median + retry + partial tolerance)
 - Onchain Chainlink feeds: ETH/USD + BTC/USD on Sepolia
-- Onchain mock RWA telemetry from `MockRWAVault`:
+- Onchain RWA telemetry from `MockRWAVault`:
   - `reserveCoverageBps`
   - `attestationAgeSeconds`
   - `redemptionQueueBps`
+- Evidence dossier documents from config (`dossier.documents`):
+  - reserve attestation text
+  - issuer disclosure text
+  - governance/custody/incident text
 
-## Agent Output
+## Processing Stages
 
-Each run computes three structured arguments:
-
-- Prosecutor
-- Defender
-- Auditor
-
-Each argument is hashed (`keccak256(stable-json(argument))`) and the workflow computes a final `verdictDigest` from a stable-json canonical verdict object.
+1. `dossier.ts` — chunk + claim extraction + contradiction matrix + `evidenceRoot`
+2. `tribunal.ts` — Prosecutor/Defender/Auditor adversarial briefs
+3. `policy-simulator.ts` — counterfactual scoring of mode outcomes
+4. `appeal.ts` — compares prior verdict vs current evidence deltas
+5. `index.ts` — deterministic digesting, report signing, onchain write
 
 ## Onchain Payload
 
-The report payload sent to `OracleCourtReceiver` is:
+The report payload sent to `OracleCourtReceiver` remains:
 
 ```solidity
 (
@@ -41,11 +43,20 @@ The report payload sent to `OracleCourtReceiver` is:
 )
 ```
 
-`OracleCourtReceiver` then calls `MockRWAVault.setRiskMode(mode)`.
+`OracleCourtReceiver` enforces protocol impact via `MockRWAVault.setRiskMode(mode)`.
+
+## Artifacts
+
+`generate-oracle-court-proof.mjs` produces:
+
+- `artifacts/evidence-dossier.json`
+- `artifacts/evidence-dossier.md`
+- `artifacts/tribunal-briefs.md`
+- `artifacts/policy-simulation.md`
+- `artifacts/verdict-bulletin.json`
+- `artifacts/oracle-court-proof.md`
 
 ## Execution
-
-Use root scripts for reproducible flow:
 
 ```bash
 bun run deploy:oracle-court:stack
