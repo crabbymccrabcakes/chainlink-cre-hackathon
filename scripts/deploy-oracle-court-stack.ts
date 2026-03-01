@@ -7,7 +7,7 @@ import { createPublicClient, createWalletClient, formatEther, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
 
-import { syncOracleCourtConfig } from './sync-oracle-court-config.mjs'
+import { syncOracleCourtConfig } from './sync-oracle-court-config.ts'
 
 const PRIVATE_KEY = process.env.CRE_ETH_PRIVATE_KEY
 if (!PRIVATE_KEY) {

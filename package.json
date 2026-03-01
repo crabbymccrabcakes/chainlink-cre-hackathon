@@ -9,18 +9,18 @@
     "typecheck": "tsc --noEmit",
 
     "simulate:oracle-court": "bun run sync:oracle-court:config && cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0",
-    "simulate:oracle-court:broadcast": "bash -o pipefail -c 'bun run sync:oracle-court:config && mkdir -p artifacts && tmp=$(mktemp) && if cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0 --broadcast | tee \"$tmp\"; then cp \"$tmp\" artifacts/oracle-court-sim-latest.log && cp \"$tmp\" artifacts/oracle-court-simulation-output.txt && node scripts/generate-oracle-court-proof.mjs; else rm -f \"$tmp\"; exit 1; fi'",
+    "simulate:oracle-court:broadcast": "bash -o pipefail -c 'bun run sync:oracle-court:config && mkdir -p artifacts && tmp=$(mktemp) && if cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0 --broadcast | tee \"$tmp\"; then cp \"$tmp\" artifacts/oracle-court-sim-latest.log && cp \"$tmp\" artifacts/oracle-court-simulation-output.txt && bun scripts/generate-oracle-court-proof.ts; else rm -f \"$tmp\"; exit 1; fi'",
 
     "compile:oracle-court": "bun x cre-compile src/workflows/oracle-court/index.ts dist/oracle-court.wasm",
     "compile:all": "bun run compile:oracle-court",
 
-    "deploy:oracle-court:stack": "node scripts/deploy-oracle-court-stack.mjs",
-    "sync:oracle-court:config": "node scripts/sync-oracle-court-config.mjs",
-    "proof:oracle-court": "node scripts/generate-oracle-court-proof.mjs",
-    "read:oracle-court:state": "node scripts/read-oracle-court-state.mjs",
-    "set:oracle-court:rwa": "node scripts/set-oracle-court-rwa-telemetry.mjs",
-    "demo:oracle-court:impact": "node scripts/demo-oracle-court-policy-impact.mjs",
-    "proof:oracle-court:canonical": "node scripts/build-oracle-court-canonical-proof.mjs",
+    "deploy:oracle-court:stack": "bun scripts/deploy-oracle-court-stack.ts",
+    "sync:oracle-court:config": "bun scripts/sync-oracle-court-config.ts",
+    "proof:oracle-court": "bun scripts/generate-oracle-court-proof.ts",
+    "read:oracle-court:state": "bun scripts/read-oracle-court-state.ts",
+    "set:oracle-court:rwa": "bun scripts/set-oracle-court-rwa-telemetry.ts",
+    "demo:oracle-court:impact": "bun scripts/demo-oracle-court-policy-impact.ts",
+    "proof:oracle-court:canonical": "bun scripts/build-oracle-court-canonical-proof.ts",
 
     "check": "bun run typecheck && bun run compile:all"
   },

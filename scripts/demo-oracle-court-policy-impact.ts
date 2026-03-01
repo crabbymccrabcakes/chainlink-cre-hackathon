@@ -39,10 +39,10 @@ const runBroadcast = () => {
   }
 }
 
-const readState = () => JSON.parse(run('node scripts/read-oracle-court-state.mjs'))
+const readState = () => JSON.parse(run('bun scripts/read-oracle-court-state.ts'))
 
 const setTelemetry = ({ reserveCoverageBps, attestationAgeSeconds, redemptionQueueBps }) => {
-  run('node scripts/set-oracle-court-rwa-telemetry.mjs', {
+  run('bun scripts/set-oracle-court-rwa-telemetry.ts', {
     CRE_ETH_PRIVATE_KEY: PRIVATE_KEY,
     ORACLE_COURT_RESERVE_COVERAGE_BPS: String(reserveCoverageBps),
     ORACLE_COURT_ATTESTATION_AGE_SECONDS: String(attestationAgeSeconds),

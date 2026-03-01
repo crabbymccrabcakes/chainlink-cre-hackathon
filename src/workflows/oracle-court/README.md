@@ -47,7 +47,7 @@ The report payload sent to `OracleCourtReceiver` remains:
 
 ## Artifacts
 
-`generate-oracle-court-proof.mjs` produces per-run proof artifacts:
+`generate-oracle-court-proof.ts` produces per-run proof artifacts:
 
 - `artifacts/evidence-dossier.json`
 - `artifacts/evidence-dossier.md`
@@ -56,7 +56,7 @@ The report payload sent to `OracleCourtReceiver` remains:
 - `artifacts/verdict-bulletin.json`
 - `artifacts/oracle-court-proof.md`
 
-`build-oracle-court-canonical-proof.mjs` produces the submission-safe canonical package:
+`build-oracle-court-canonical-proof.ts` produces the submission-safe canonical package:
 
 - `artifacts/oracle-court-canonical-proof.json`
 - `artifacts/oracle-court-proof-package.md`

@@ -162,13 +162,13 @@ contracts/
     sepolia-oracle-court-stack.json
 
 scripts/
-  deploy-oracle-court-stack.mjs
-  sync-oracle-court-config.mjs
-  set-oracle-court-rwa-telemetry.mjs
-  demo-oracle-court-policy-impact.mjs
-  generate-oracle-court-proof.mjs
-  build-oracle-court-canonical-proof.mjs
-  read-oracle-court-state.mjs
+  deploy-oracle-court-stack.ts
+  sync-oracle-court-config.ts
+  set-oracle-court-rwa-telemetry.ts
+  demo-oracle-court-policy-impact.ts
+  generate-oracle-court-proof.ts
+  build-oracle-court-canonical-proof.ts
+  read-oracle-court-state.ts
 
 src/workflows/oracle-court/
   index.ts
@@ -244,7 +244,7 @@ bun run demo:oracle-court:impact
 Build canonical healthy->stressed proof package (used in submission):
 
 ```bash
-node scripts/build-oracle-court-canonical-proof.mjs
+bun scripts/build-oracle-court-canonical-proof.ts
 ```
 
 ---
