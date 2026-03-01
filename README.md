@@ -34,7 +34,7 @@ flowchart LR
     C --> D
     D --> E
     E --> F
-    F -->|setRiskMode(mode)| G
+    F -->|setRiskMode| G
 ```
 
 ---
