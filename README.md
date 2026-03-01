@@ -1,23 +1,54 @@
-# Chainlink Convergence Hackathon — TypeScript CRE Starter Kit
+# Oracle Court — Constitutional AI Oracle for RWA Risk (CRE)
 
-This repo is now set up for **fast hackathon execution** with a TypeScript-first CRE workflow stack.
+`#defi-tokenization #cre-ai`
 
-## Included starters
+Oracle Court is a Chainlink CRE workflow that turns multi-source market signals into an enforceable on-chain risk verdict.
 
-- `hello-world` — minimal cron workflow for smoke testing
-- `block-trigger` — EVM log-triggered workflow (event-driven)
-- `read-data-feeds` — reads Chainlink Data Feeds on a schedule
+## What it does
+
+On each cron execution, the workflow:
+
+1. Fetches USDC/USD signals from three public APIs (CoinGecko, Coinbase, CryptoCompare)
+2. Reads ETH/USD and BTC/USD Chainlink Data Feeds on Sepolia
+3. Runs a deterministic 3-agent tribunal:
+   - **Prosecutor** (risk-up)
+   - **Defender** (risk-down)
+   - **Auditor** (consistency/safety)
+4. Produces a risk mode:
+   - `0 = NORMAL`
+   - `1 = THROTTLE`
+   - `2 = REDEMPTION_ONLY`
+5. Performs a CRE on-chain write (`runtime.report` + `evmClient.writeReport`) to `OracleCourtReceiver`
+
+This is an oracle-to-policy control loop: not just alerts, but an enforceable on-chain verdict.
+
+---
 
 ## Project layout
 
 ```text
+contracts/
+  OracleCourtReceiver.sol
+  deployments/
+scripts/
+  deploy-oracle-court-receiver.mjs
 src/workflows/
   hello-world/
   block-trigger/
   read-data-feeds/
-.github/workflows/ci.yml
-HACKATHON_CHECKLIST.md
+  oracle-court/
 ```
+
+---
+
+## Prerequisites
+
+- Bun >= 1.2.21
+- CRE CLI (`cre version`)
+- CRE login (`cre login`)
+- Funded Sepolia private key for broadcast simulation
+
+---
 
 ## Quick start
 
@@ -27,53 +58,61 @@ bun run setup
 bun run check
 ```
 
-> Note: `cre workflow simulate` and deployment commands require `cre login`.
+---
 
-## Commands
+## Deploy the receiver contract (one-time)
 
 ```bash
-# Setup
-bun run setup
+export CRE_ETH_PRIVATE_KEY="0x<your-funded-sepolia-private-key>"
+# Optional override; defaults to project Sepolia RPC
+export SEPOLIA_RPC_URL="https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia"
 
-# Validate
+bun run deploy:oracle-court:receiver
+```
+
+This writes deployment metadata to:
+
+```text
+contracts/deployments/sepolia-oracle-court-receiver.json
+```
+
+Then copy the deployed contract address into:
+
+```text
+src/workflows/oracle-court/config.json -> receiverAddress
+```
+
+---
+
+## Simulate Oracle Court with on-chain write
+
+```bash
+export CRE_ETH_PRIVATE_KEY="0x<your-funded-sepolia-private-key>"
+
+cre workflow simulate ./src/workflows/oracle-court \
+  --target local-simulation \
+  --non-interactive \
+  --trigger-index 0 \
+  --broadcast
+```
+
+Expected outcome:
+
+- Workflow logs for tribunal signals/scores
+- A real Sepolia transaction hash from `writeReport`
+
+---
+
+## Useful commands
+
+```bash
 bun run typecheck
-bun run compile:all
-bun run check
-
-# Simulate (after cre login)
-bun run simulate:hello
-bun run simulate:block
-bun run simulate:feeds
+bun run compile:oracle-court
+bun run simulate:oracle-court
 ```
 
-## GitHub remote setup
+---
 
-Use the helper script from repo root:
+## Security note
 
-```bash
-./scripts/set-github-remote.sh <github-repo-url>
-```
-
-Then:
-
-```bash
-git push -u origin main
-```
-
-## CI
-
-GitHub Actions (`.github/workflows/ci.yml`) runs:
-1. `bun install --frozen-lockfile`
-2. `bun run setup`
-3. `bun run typecheck`
-4. `bun run compile:all`
-
-## Hackathon execution plan (high level)
-
-1. Pick one starter as your base (likely `read-data-feeds` + custom logic).
-2. Add your differentiator (automation, cross-chain action, agent loop, etc.).
-3. Keep the demo path short and deterministic.
-4. Ensure CI green + reproducible setup.
-5. Ship the pitch + demo + repo before polishing extras.
-
-For action items, use `HACKATHON_CHECKLIST.md`.
+The demo `OracleCourtReceiver` is intentionally permissive for local simulation speed. For production hardening, gate `onReport` using a trusted forwarder and workflow metadata validation.

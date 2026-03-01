@@ -5,4 +5,5 @@ node_modules/
 !.env.example
 *.log
 dist/
+.cre_build_tmp.js
 .DS_Store

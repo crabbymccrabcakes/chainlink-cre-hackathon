@@ -1,0 +1,36 @@
+✓ Workflow compiled
+2026-03-01T12:58:29Z [SIMULATION] Simulator Initialized
+
+2026-03-01T12:58:29Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Offchain signals: {
+  "usdcCg": 0.999948,
+  "usdcCb": 1,
+  "usdcCc": 1,
+  "usdc24hChangePct": -0.0014872023405148444
+}
+2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Onchain signals: {
+  "ethUsd": 2043.22,
+  "btcUsd": 67621
+}
+2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Tribunal scores prosecutor=2 defender=318 auditor=0
+2026-03-01T12:58:33Z [USER LOG] [OracleCourt] Verdict mode=0 stressBps=0 depegBps=0 spreadBps=1 caseId=0x69db8bf364110ffc48d621c6469a4898b1d8dec211d37f52979516a9bbedcf91
+2026-03-01T12:58:49Z [USER LOG] [OracleCourt] Write report transaction succeeded: 0x7b63b4c616568c6714aa7014a7d7f9fb929c173d2d443156bacaeab19fbb29cf
+
+✓ Workflow Simulation Result:
+{
+  "caseId": "0x69db8bf364110ffc48d621c6469a4898b1d8dec211d37f52979516a9bbedcf91",
+  "depegBps": 0,
+  "mode": 0,
+  "spreadBps": 1,
+  "stressBps": 0,
+  "txHash": "0x7b63b4c616568c6714aa7014a7d7f9fb929c173d2d443156bacaeab19fbb29cf"
+}
+
+2026-03-01T12:58:49Z [SIMULATION] Execution finished signal received
+2026-03-01T12:58:49Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯
