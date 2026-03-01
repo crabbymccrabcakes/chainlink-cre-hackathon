@@ -19,14 +19,14 @@ The receiver contract immediately applies that verdict to a mock RWA vault polic
 
 ```mermaid
 flowchart LR
-    A[Offchain Sources\nCoinGecko / Coinbase / CoinPaprika / CryptoCompare]
-    B[Chainlink Data Feeds\nETH/USD + BTC/USD on Sepolia]
-    H[Mock RWA Telemetry\nreserve coverage / attestation age / redemption queue]
-    C[CRE Workflow\nOracle Court Tribunal]
-    D[Evidence Hashing\nkeccak256(agent argument JSON)]
-    E[Verdict Digest\nkeccak256(all evidence + verdict)]
-    F[OracleCourtReceiver]
-    G[MockRWAVault]
+    A["Offchain Sources<br/>CoinGecko | Coinbase | CoinPaprika | CryptoCompare"]
+    B["Chainlink Data Feeds<br/>ETH/USD and BTC/USD on Sepolia"]
+    H["Mock RWA Telemetry<br/>reserveCoverageBps | attestationAgeSeconds | redemptionQueueBps"]
+    C["CRE Workflow<br/>Oracle Court Tribunal"]
+    D["Evidence Hashing<br/>keccak256 over stable-json agent arguments"]
+    E["Verdict Digest<br/>keccak256 over evidence hashes and verdict"]
+    F["OracleCourtReceiver"]
+    G["MockRWAVault"]
 
     A --> C
     B --> C
