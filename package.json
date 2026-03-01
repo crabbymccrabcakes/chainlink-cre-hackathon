@@ -1,23 +1,32 @@
 {
   "name": "chainlink-convergence-hackathon",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "TypeScript CRE starter for Chainlink Convergence Hackathon",
+  "description": "TypeScript CRE starter kit for Chainlink Convergence Hackathon",
   "scripts": {
     "setup": "bun x cre-setup",
     "typecheck": "tsc --noEmit",
-    "simulate": "cre workflow simulate ./src/workflows/hello-world",
-    "compile": "bun x cre-compile src/workflows/hello-world/index.ts dist/hello-world.wasm"
+
+    "simulate:hello": "cre workflow simulate ./src/workflows/hello-world",
+    "simulate:block": "cre workflow simulate ./src/workflows/block-trigger",
+    "simulate:feeds": "cre workflow simulate ./src/workflows/read-data-feeds",
+
+    "compile:hello": "bun x cre-compile src/workflows/hello-world/index.ts dist/hello-world.wasm",
+    "compile:block": "bun x cre-compile src/workflows/block-trigger/index.ts dist/block-trigger.wasm",
+    "compile:feeds": "bun x cre-compile src/workflows/read-data-feeds/index.ts dist/read-data-feeds.wasm",
+    "compile:all": "bun run compile:hello && bun run compile:block && bun run compile:feeds",
+
+    "check": "bun run typecheck && bun run compile:all"
   },
   "dependencies": {
     "@chainlink/cre-sdk": "^1.1.2",
-    "zod": "^3.25.76",
-    "viem": "^2.34.0"
+    "viem": "^2.46.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/bun": "^1.3.8",
-    "typescript": "^5.9.2"
+    "@types/bun": "^1.3.9",
+    "typescript": "^5.9.3"
   },
   "engines": {
     "bun": ">=1.2.21"

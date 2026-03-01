@@ -1,43 +1,79 @@
-# Chainlink Convergence Hackathon (TypeScript CRE Setup)
+# Chainlink Convergence Hackathon — TypeScript CRE Starter Kit
 
-This repo is ready for **TypeScript-first CRE workflow development**.
+This repo is now set up for **fast hackathon execution** with a TypeScript-first CRE workflow stack.
 
-## What's prepped
-- Bun runtime installed
-- CRE CLI installed
-- TypeScript CRE starter workflow (`hello-world`)
-- Local simulation + WASM compile scripts
-- Git-ready project structure
+## Included starters
+
+- `hello-world` — minimal cron workflow for smoke testing
+- `block-trigger` — EVM log-triggered workflow (event-driven)
+- `read-data-feeds` — reads Chainlink Data Feeds on a schedule
+
+## Project layout
+
+```text
+src/workflows/
+  hello-world/
+  block-trigger/
+  read-data-feeds/
+.github/workflows/ci.yml
+HACKATHON_CHECKLIST.md
+```
 
 ## Quick start
+
 ```bash
-cd chainlink-convergence-hackathon
 bun install
 bun run setup
-bun run simulate
+bun run check
 ```
 
-## Useful commands
+> Note: `cre workflow simulate` and deployment commands require `cre login`.
+
+## Commands
+
 ```bash
-cre version
+# Setup
+bun run setup
+
+# Validate
 bun run typecheck
-bun run compile
+bun run compile:all
+bun run check
+
+# Simulate (after cre login)
+bun run simulate:hello
+bun run simulate:block
+bun run simulate:feeds
 ```
 
-## Notes
-- `cre init` currently requires CLI login in this environment.
-- You can still build and simulate workflows locally without full deploy auth.
-- For testnet deploy later:
-  1) `cre login`
-  2) add RPC URLs to `project.yaml`
-  3) use `cre workflow ...` deploy/register commands.
+## GitHub remote setup
 
-## Alternate TS templates
-List official templates:
+Use the helper script from repo root:
+
 ```bash
-cre templates list
+./scripts/set-github-remote.sh <github-repo-url>
 ```
-Then scaffold directly (after login), for example:
+
+Then:
+
 ```bash
-cre init --template block-trigger-ts --project-name my-cre-project
+git push -u origin main
 ```
+
+## CI
+
+GitHub Actions (`.github/workflows/ci.yml`) runs:
+1. `bun install --frozen-lockfile`
+2. `bun run setup`
+3. `bun run typecheck`
+4. `bun run compile:all`
+
+## Hackathon execution plan (high level)
+
+1. Pick one starter as your base (likely `read-data-feeds` + custom logic).
+2. Add your differentiator (automation, cross-chain action, agent loop, etc.).
+3. Keep the demo path short and deterministic.
+4. Ensure CI green + reproducible setup.
+5. Ship the pitch + demo + repo before polishing extras.
+
+For action items, use `HACKATHON_CHECKLIST.md`.
