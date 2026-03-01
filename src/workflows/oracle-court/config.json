@@ -1,5 +1,0 @@
-{
-  "note": "Deprecated for execution. Use config.template.json + config.generated.json via sync script.",
-  "templatePath": "./config.template.json",
-  "generatedPath": "./config.generated.json"
-}

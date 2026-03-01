@@ -3,22 +3,16 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "TypeScript CRE starter kit for Chainlink Convergence Hackathon",
+  "description": "Oracle Court — constitutional AI risk governor workflow on Chainlink CRE",
   "scripts": {
     "setup": "bun x cre-setup",
     "typecheck": "tsc --noEmit",
 
-    "simulate:hello": "cre workflow simulate ./src/workflows/hello-world",
-    "simulate:block": "cre workflow simulate ./src/workflows/block-trigger",
-    "simulate:feeds": "cre workflow simulate ./src/workflows/read-data-feeds",
     "simulate:oracle-court": "bun run sync:oracle-court:config && cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0",
     "simulate:oracle-court:broadcast": "bash -o pipefail -c 'bun run sync:oracle-court:config && mkdir -p artifacts && tmp=$(mktemp) && if cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0 --broadcast | tee \"$tmp\"; then cp \"$tmp\" artifacts/oracle-court-sim-latest.log && cp \"$tmp\" artifacts/oracle-court-simulation-output.txt && node scripts/generate-oracle-court-proof.mjs; else rm -f \"$tmp\"; exit 1; fi'",
 
-    "compile:hello": "bun x cre-compile src/workflows/hello-world/index.ts dist/hello-world.wasm",
-    "compile:block": "bun x cre-compile src/workflows/block-trigger/index.ts dist/block-trigger.wasm",
-    "compile:feeds": "bun x cre-compile src/workflows/read-data-feeds/index.ts dist/read-data-feeds.wasm",
     "compile:oracle-court": "bun x cre-compile src/workflows/oracle-court/index.ts dist/oracle-court.wasm",
-    "compile:all": "bun run compile:hello && bun run compile:block && bun run compile:feeds && bun run compile:oracle-court",
+    "compile:all": "bun run compile:oracle-court",
 
     "deploy:oracle-court:stack": "node scripts/deploy-oracle-court-stack.mjs",
     "sync:oracle-court:config": "node scripts/sync-oracle-court-config.mjs",

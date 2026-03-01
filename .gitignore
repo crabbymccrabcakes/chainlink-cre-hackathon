@@ -6,4 +6,5 @@ node_modules/
 *.log
 dist/
 .cre_build_tmp.js
+**/.cre_build_tmp.js
 .DS_Store
