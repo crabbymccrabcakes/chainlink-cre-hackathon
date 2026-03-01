@@ -1,0 +1,17 @@
+local-simulation:
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia
+
+production-testnet:
+  cre-cli:
+    don-family: "zone-a"
+  logging:
+    seth-config-path: ""
+  rpcs:
+    - chain-name: ethereum-testnet-sepolia
+      url: <set-your-sepolia-rpc-url>
+    - chain-name: ethereum-testnet-sepolia-base-1
+      url: <set-your-base-sepolia-rpc-url>
+  dev-platform:
+    don-id: 4
