@@ -114,7 +114,7 @@ Oracle Court scores all three policy modes and compares:
 - false-positive cost
 - operational reversibility
 
-The selected mode is the highest objective score under current evidence.
+The policy simulator produces a provisional mode, then constitutional gates can downgrade enforcement if restrictive action lacks sufficient admissible/fresh evidence.
 
 ### 5) Constitutional + appeal layer
 
@@ -126,11 +126,11 @@ Final decision cites principles:
 - Evidence Sufficiency
 - Freshness Requirement
 
-And emits `appealOutcome` relative to prior onchain snapshot (`ESCALATE` / `RELAX` / `MAINTAIN` / `NO_PRIOR_CASE`).
+And emits `appealOutcome` relative to the prior onchain case summary (`ESCALATE` / `RELAX` / `MAINTAIN` / `NO_PRIOR_CASE`).
 
 ### 6) Deterministic commit + onchain enforcement
 
-CRE writes a signed report to `OracleCourtReceiver`, which stores verdict state and calls:
+CRE writes a signed report to `OracleCourtReceiver`, which stores verdict state, persists appeal-summary fields (contradiction count/severity, freshness, admissibility), and calls:
 
 - `MockRWAVault.setRiskMode(mode)`
 

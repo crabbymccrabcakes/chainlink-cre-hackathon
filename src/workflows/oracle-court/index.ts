@@ -50,6 +50,10 @@ const RWA_VAULT_ABI = parseAbi([
 const RECEIVER_STATE_ABI = parseAbi([
   'function latestMode() view returns (uint8)',
   'function latestRiskScoreBps() view returns (uint16)',
+  'function latestContradictionCount() view returns (uint16)',
+  'function latestContradictionSeverityBps() view returns (uint16)',
+  'function latestEvidenceFreshnessScoreBps() view returns (uint16)',
+  'function latestAdmissibilityScoreBps() view returns (uint16)',
   'function latestTimestamp() view returns (uint32)',
   'function latestCaseId() view returns (bytes32)',
 ])
@@ -168,6 +172,8 @@ interface AppealSummary {
 interface TribunalVerdict {
   mode: TribunalMode
   modeLabel: ModeLabel
+  policyMode: TribunalMode
+  policyModeLabel: ModeLabel
   riskScoreBps: number
   prosecutorScore: number
   defenderScore: number
@@ -180,7 +186,10 @@ interface TribunalVerdict {
   redemptionQueuePenaltyBps: number
   sourceFailurePenaltyBps: number
   macroStressBps: number
+  contradictionCount: number
   contradictionSeverityBps: number
+  evidenceFreshnessScoreBps: number
+  admissibilityScoreBps: number
   timestamp: number
   caseId: `0x${string}`
   prosecutorEvidenceHash: `0x${string}`
@@ -194,6 +203,7 @@ interface TribunalVerdict {
   dossier: EvidenceDossier
   policySimulation: PolicySimulationOutput
   constitutionalAssessments: ConstitutionalPrincipleAssessment[]
+  constitutionalOverrideReason: string | null
   appealOutcome: AppealSummary
 }
 
@@ -246,6 +256,12 @@ const modeToLabel = (mode: TribunalMode): ModeLabel => {
 }
 
 const modeLabelToNumber = (modeLabel: ModeLabel): TribunalMode => {
+  if (modeLabel === 'NORMAL') return 0
+  if (modeLabel === 'THROTTLE') return 1
+  return 2
+}
+
+const modeRank = (modeLabel: ModeLabel): number => {
   if (modeLabel === 'NORMAL') return 0
   if (modeLabel === 'THROTTLE') return 1
   return 2
@@ -652,6 +668,18 @@ const readPreviousReceiverSnapshot = (
       abi: RECEIVER_STATE_ABI,
       functionName: 'latestRiskScoreBps',
     })
+    const latestContradictionCountCall = encodeFunctionData({
+      abi: RECEIVER_STATE_ABI,
+      functionName: 'latestContradictionCount',
+    })
+    const latestContradictionSeverityCall = encodeFunctionData({
+      abi: RECEIVER_STATE_ABI,
+      functionName: 'latestContradictionSeverityBps',
+    })
+    const latestFreshnessCall = encodeFunctionData({
+      abi: RECEIVER_STATE_ABI,
+      functionName: 'latestEvidenceFreshnessScoreBps',
+    })
 
     const latestModeResp = evmClient
       .callContract(runtime, {
@@ -672,6 +700,33 @@ const readPreviousReceiverSnapshot = (
         }),
       })
       .result()
+    const latestContradictionCountResp = evmClient
+      .callContract(runtime, {
+        call: encodeCallMsg({
+          from: zeroAddress,
+          to: runtime.config.receiverAddress as Address,
+          data: latestContradictionCountCall,
+        }),
+      })
+      .result()
+    const latestContradictionSeverityResp = evmClient
+      .callContract(runtime, {
+        call: encodeCallMsg({
+          from: zeroAddress,
+          to: runtime.config.receiverAddress as Address,
+          data: latestContradictionSeverityCall,
+        }),
+      })
+      .result()
+    const latestFreshnessResp = evmClient
+      .callContract(runtime, {
+        call: encodeCallMsg({
+          from: zeroAddress,
+          to: runtime.config.receiverAddress as Address,
+          data: latestFreshnessCall,
+        }),
+      })
+      .result()
 
     const latestMode = Number(
       decodeFunctionResult({
@@ -688,18 +743,143 @@ const readPreviousReceiverSnapshot = (
         data: bytesToHex(latestRiskResp.data),
       }),
     )
+    const latestContradictionCount = Number(
+      decodeFunctionResult({
+        abi: RECEIVER_STATE_ABI,
+        functionName: 'latestContradictionCount',
+        data: bytesToHex(latestContradictionCountResp.data),
+      }),
+    )
+    const latestContradictionSeverityBps = Number(
+      decodeFunctionResult({
+        abi: RECEIVER_STATE_ABI,
+        functionName: 'latestContradictionSeverityBps',
+        data: bytesToHex(latestContradictionSeverityResp.data),
+      }),
+    )
+    const latestEvidenceFreshnessScoreBps = Number(
+      decodeFunctionResult({
+        abi: RECEIVER_STATE_ABI,
+        functionName: 'latestEvidenceFreshnessScoreBps',
+        data: bytesToHex(latestFreshnessResp.data),
+      }),
+    )
 
     const mode = modeToLabel(clamp(latestMode, 0, 2) as TribunalMode)
 
     return {
       mode,
       riskScoreBps: latestRiskScoreBps,
-      contradictionCount: 0,
-      contradictionSeverityBps: 0,
-      evidenceFreshnessScoreBps: 0,
+      contradictionCount: latestContradictionCount,
+      contradictionSeverityBps: latestContradictionSeverityBps,
+      evidenceFreshnessScoreBps: latestEvidenceFreshnessScoreBps,
     }
   } catch {
     return null
+  }
+}
+
+const resolveConstitutionalMode = (
+  config: Config,
+  policySimulation: PolicySimulationOutput,
+  riskScoreBps: number,
+  dossier: EvidenceDossier,
+  proposedModeLabel: ModeLabel,
+): {
+  modeLabel: ModeLabel
+  constitutionalAssessments: ConstitutionalPrincipleAssessment[]
+  constitutionalOverrideReason: string | null
+} => {
+  const modeResultsByMode = new Map(policySimulation.modeResults.map((item) => [item.mode, item]))
+  const evidenceSufficient =
+    dossier.admissibilityScoreBps >= config.constitution.evidenceSufficiencyMinBps
+  const freshnessSatisfied = dossier.evidenceFreshnessScoreBps >= config.constitution.freshnessMinBps
+  const restrictiveModeRequested = proposedModeLabel !== 'NORMAL'
+  const restrictiveModeAllowed = evidenceSufficient && freshnessSatisfied
+
+  const allowedModes = restrictiveModeAllowed
+    ? (['NORMAL', 'THROTTLE', 'REDEMPTION_ONLY'] as const)
+    : (['NORMAL'] as const)
+
+  const allowedResults = allowedModes
+    .map((mode) => modeResultsByMode.get(mode))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+
+  const bestAllowedObjective = Math.max(...allowedResults.map((item) => item.objectiveScoreBps))
+  let effectiveModeLabel: ModeLabel | null = null
+  for (const item of allowedResults) {
+    if (item.objectiveScoreBps !== bestAllowedObjective) {
+      continue
+    }
+
+    if (!effectiveModeLabel || modeRank(item.mode) < modeRank(effectiveModeLabel)) {
+      effectiveModeLabel = item.mode
+    }
+  }
+  if (!effectiveModeLabel) {
+    throw new Error('No constitutionally allowed mode could be selected')
+  }
+
+  const constitutionalOverrideReason =
+    proposedModeLabel !== effectiveModeLabel
+      ? restrictiveModeRequested && !restrictiveModeAllowed
+        ? `Constitutional gate downgraded ${proposedModeLabel} to NORMAL because admissibilityScoreBps=${dossier.admissibilityScoreBps} and evidenceFreshnessScoreBps=${dossier.evidenceFreshnessScoreBps} did not clear restrictive-mode thresholds.`
+        : `Constitutional gate replaced ${proposedModeLabel} with ${effectiveModeLabel} to satisfy minimum necessary restriction among allowed modes.`
+      : null
+
+  const effectiveResult = modeResultsByMode.get(effectiveModeLabel)
+  const lessRestrictiveExists =
+    effectiveResult !== undefined &&
+    policySimulation.modeResults.some(
+      (item) =>
+        modeRank(item.mode) < modeRank(effectiveModeLabel) &&
+        item.objectiveScoreBps >= effectiveResult.objectiveScoreBps,
+    )
+
+  const constitutionalAssessments: ConstitutionalPrincipleAssessment[] = [
+    {
+      principle: 'Solvency First',
+      status:
+        effectiveModeLabel === 'REDEMPTION_ONLY' ||
+        effectiveModeLabel === 'THROTTLE' ||
+        riskScoreBps < 100
+          ? 'SATISFIED'
+          : 'BREACHED',
+      reason:
+        effectiveModeLabel === 'REDEMPTION_ONLY' || effectiveModeLabel === 'THROTTLE'
+          ? 'Effective mode applies active containment under observed stress.'
+          : constitutionalOverrideReason ||
+            'Risk is low enough that solvency-first restrictions were not required.',
+    },
+    {
+      principle: 'Orderly Exit',
+      status: 'SATISFIED',
+      reason: 'Effective modes preserve redemptions to support orderly user exits.',
+    },
+    {
+      principle: 'Minimum Necessary Restriction',
+      status: lessRestrictiveExists ? 'BREACHED' : 'SATISFIED',
+      reason:
+        constitutionalOverrideReason ||
+        effectiveResult?.rationale ||
+        policySimulation.explanation,
+    },
+    {
+      principle: 'Evidence Sufficiency',
+      status: evidenceSufficient ? 'SATISFIED' : 'BREACHED',
+      reason: `admissibilityScoreBps=${dossier.admissibilityScoreBps}`,
+    },
+    {
+      principle: 'Freshness Requirement',
+      status: freshnessSatisfied ? 'SATISFIED' : 'BREACHED',
+      reason: `evidenceFreshnessScoreBps=${dossier.evidenceFreshnessScoreBps}`,
+    },
+  ]
+
+  return {
+    modeLabel: effectiveModeLabel,
+    constitutionalAssessments,
+    constitutionalOverrideReason,
   }
 }
 
@@ -810,53 +990,11 @@ const buildTribunalVerdict = (
     admissibilityScoreBps: dossier.admissibilityScoreBps,
   })
 
-  const modeLabel = policySimulation.selectedMode
+  const policyModeLabel = policySimulation.selectedMode
+  const policyMode = modeLabelToNumber(policyModeLabel)
+  const { modeLabel, constitutionalAssessments, constitutionalOverrideReason } =
+    resolveConstitutionalMode(config, policySimulation, riskScoreBps, dossier, policyModeLabel)
   const mode = modeLabelToNumber(modeLabel)
-
-  const constitutionalAssessments: ConstitutionalPrincipleAssessment[] = [
-    {
-      principle: 'Solvency First',
-      status:
-        modeLabel === 'REDEMPTION_ONLY' || modeLabel === 'THROTTLE' || riskScoreBps < 100
-          ? 'SATISFIED'
-          : 'BREACHED',
-      reason:
-        modeLabel === 'REDEMPTION_ONLY' || modeLabel === 'THROTTLE'
-          ? 'Selected mode prioritizes solvency containment under observed stress.'
-          : 'Risk is low enough that solvency-first restrictions were not required.',
-    },
-    {
-      principle: 'Orderly Exit',
-      status: 'SATISFIED',
-      reason: 'Selected modes preserve redemptions to support orderly user exits.',
-    },
-    {
-      principle: 'Minimum Necessary Restriction',
-      status:
-        policySimulation.modeResults[0].objectiveScoreBps ===
-          Math.max(...policySimulation.modeResults.map((item) => item.objectiveScoreBps)) ||
-        modeLabel !== 'REDEMPTION_ONLY'
-          ? 'SATISFIED'
-          : 'BREACHED',
-      reason: policySimulation.explanation,
-    },
-    {
-      principle: 'Evidence Sufficiency',
-      status:
-        dossier.admissibilityScoreBps >= config.constitution.evidenceSufficiencyMinBps
-          ? 'SATISFIED'
-          : 'BREACHED',
-      reason: `admissibilityScoreBps=${dossier.admissibilityScoreBps}`,
-    },
-    {
-      principle: 'Freshness Requirement',
-      status:
-        dossier.evidenceFreshnessScoreBps >= config.constitution.freshnessMinBps
-          ? 'SATISFIED'
-          : 'BREACHED',
-      reason: `evidenceFreshnessScoreBps=${dossier.evidenceFreshnessScoreBps}`,
-    },
-  ]
 
   const appealOutcome = evaluateAppeal(previousSnapshot, {
     mode: modeLabel,
@@ -900,6 +1038,8 @@ const buildTribunalVerdict = (
   return {
     mode,
     modeLabel,
+    policyMode,
+    policyModeLabel,
     riskScoreBps,
     prosecutorScore,
     defenderScore,
@@ -912,7 +1052,10 @@ const buildTribunalVerdict = (
     redemptionQueuePenaltyBps,
     sourceFailurePenaltyBps,
     macroStressBps,
+    contradictionCount: dossier.contradictionMatrix.length,
     contradictionSeverityBps,
+    evidenceFreshnessScoreBps: dossier.evidenceFreshnessScoreBps,
+    admissibilityScoreBps: dossier.admissibilityScoreBps,
     timestamp,
     caseId,
     prosecutorEvidenceHash,
@@ -926,6 +1069,7 @@ const buildTribunalVerdict = (
     dossier,
     policySimulation,
     constitutionalAssessments,
+    constitutionalOverrideReason,
     appealOutcome,
   }
 }
@@ -937,7 +1081,7 @@ const writeVerdictOnchain = (
 ): string => {
   const encodedVerdict = encodeAbiParameters(
     parseAbiParameters(
-      'uint8 mode,uint16 riskScoreBps,uint16 prosecutorScore,uint16 defenderScore,uint16 auditorScore,uint32 timestamp,bytes32 caseId,bytes32 prosecutorEvidenceHash,bytes32 defenderEvidenceHash,bytes32 auditorEvidenceHash,bytes32 verdictDigest',
+      'uint8 mode,uint16 riskScoreBps,uint16 prosecutorScore,uint16 defenderScore,uint16 auditorScore,uint16 contradictionCount,uint16 contradictionSeverityBps,uint16 evidenceFreshnessScoreBps,uint16 admissibilityScoreBps,uint32 timestamp,bytes32 caseId,bytes32 prosecutorEvidenceHash,bytes32 defenderEvidenceHash,bytes32 auditorEvidenceHash,bytes32 verdictDigest',
     ),
     [
       verdict.mode,
@@ -945,6 +1089,10 @@ const writeVerdictOnchain = (
       verdict.prosecutorScore,
       verdict.defenderScore,
       verdict.auditorScore,
+      verdict.contradictionCount,
+      verdict.contradictionSeverityBps,
+      verdict.evidenceFreshnessScoreBps,
+      verdict.admissibilityScoreBps,
       verdict.timestamp,
       verdict.caseId,
       verdict.prosecutorEvidenceHash,
@@ -982,7 +1130,27 @@ const writeVerdictOnchain = (
   return bytesToHex(writeResult.txHash || new Uint8Array(32))
 }
 
-const onCronTrigger = (runtime: Runtime<Config>) => {
+const onCronTrigger = (
+  runtime: Runtime<Config>,
+): {
+  mode: TribunalMode
+  modeLabel: ModeLabel
+  policyMode: TribunalMode
+  policyModeLabel: ModeLabel
+  riskScoreBps: number
+  prosecutorScore: number
+  defenderScore: number
+  auditorScore: number
+  evidenceRoot: `0x${string}`
+  prosecutorEvidenceHash: `0x${string}`
+  defenderEvidenceHash: `0x${string}`
+  auditorEvidenceHash: `0x${string}`
+  verdictDigest: `0x${string}`
+  caseId: `0x${string}`
+  appealOutcome: AppealSummary['outcome']
+  constitutionalOverrideReason: string
+  txHash: string
+} => {
   const network = getNetwork({
     chainFamily: 'evm',
     chainSelectorName: runtime.config.chainSelectorName,
@@ -1072,12 +1240,15 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
   runtime.log(`[OracleCourt][PolicySimulation] ${stableStringify(verdict.policySimulation)}`)
   runtime.log(`[OracleCourt][Constitution] ${stableStringify(verdict.constitutionalAssessments)}`)
   runtime.log(`[OracleCourt][AppealOutcome] ${stableStringify(verdict.appealOutcome)}`)
+  if (verdict.constitutionalOverrideReason) {
+    runtime.log(`[OracleCourt][ConstitutionalOverride] ${verdict.constitutionalOverrideReason}`)
+  }
 
   runtime.log(
     `[OracleCourt] Tribunal scores prosecutor=${verdict.prosecutorScore} defender=${verdict.defenderScore} auditor=${verdict.auditorScore}`,
   )
   runtime.log(
-    `[OracleCourt] Verdict mode=${verdict.mode} (${verdict.modeLabel}) riskScoreBps=${verdict.riskScoreBps} caseId=${verdict.caseId} evidenceRoot=${verdict.evidenceRoot} verdictDigest=${verdict.verdictDigest}`,
+    `[OracleCourt] Verdict mode=${verdict.mode} (${verdict.modeLabel}) policyMode=${verdict.policyMode} (${verdict.policyModeLabel}) riskScoreBps=${verdict.riskScoreBps} caseId=${verdict.caseId} evidenceRoot=${verdict.evidenceRoot} verdictDigest=${verdict.verdictDigest}`,
   )
 
   const txHash = writeVerdictOnchain(runtime, evmClient, verdict)
@@ -1133,6 +1304,11 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
       selectedMode: verdict.policySimulation.selectedMode,
       explanation: verdict.policySimulation.explanation,
     },
+    constitutionalOutcome: {
+      policyMode: verdict.policyModeLabel,
+      effectiveMode: verdict.modeLabel,
+      overrideReason: verdict.constitutionalOverrideReason,
+    },
     evidenceHashes: {
       evidenceRoot: verdict.evidenceRoot,
       prosecutorEvidenceHash: verdict.prosecutorEvidenceHash,
@@ -1143,6 +1319,8 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
     finalVerdict: {
       mode: verdict.mode,
       modeLabel: verdict.modeLabel,
+      policyMode: verdict.policyMode,
+      policyModeLabel: verdict.policyModeLabel,
       caseId: verdict.caseId,
       txHash,
     },
@@ -1152,10 +1330,12 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
     bulletinVersion: 'oracle-court-ai-governor-v1',
     caseId: verdict.caseId,
     mode: verdict.modeLabel,
+    policyMode: verdict.policyModeLabel,
     riskScoreBps: verdict.riskScoreBps,
     evidenceRoot: verdict.evidenceRoot,
     verdictDigest: verdict.verdictDigest,
     constitutionalAssessments: verdict.constitutionalAssessments,
+    constitutionalOverrideReason: verdict.constitutionalOverrideReason,
     policyExplanation: verdict.policySimulation.explanation,
     appealOutcome: verdict.appealOutcome,
     txHash,
@@ -1167,6 +1347,8 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
   return {
     mode: verdict.mode,
     modeLabel: verdict.modeLabel,
+    policyMode: verdict.policyMode,
+    policyModeLabel: verdict.policyModeLabel,
     riskScoreBps: verdict.riskScoreBps,
     prosecutorScore: verdict.prosecutorScore,
     defenderScore: verdict.defenderScore,
@@ -1178,6 +1360,7 @@ const onCronTrigger = (runtime: Runtime<Config>) => {
     verdictDigest: verdict.verdictDigest,
     caseId: verdict.caseId,
     appealOutcome: verdict.appealOutcome.outcome,
+    constitutionalOverrideReason: verdict.constitutionalOverrideReason || '',
     txHash,
   }
 }

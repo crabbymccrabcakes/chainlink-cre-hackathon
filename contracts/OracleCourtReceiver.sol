@@ -25,6 +25,10 @@ contract OracleCourtReceiver is IReceiver {
     uint16 prosecutorScore;
     uint16 defenderScore;
     uint16 auditorScore;
+    uint16 contradictionCount;
+    uint16 contradictionSeverityBps;
+    uint16 evidenceFreshnessScoreBps;
+    uint16 admissibilityScoreBps;
     uint32 timestamp;
     bytes32 caseId;
     bytes32 prosecutorEvidenceHash;
@@ -40,6 +44,10 @@ contract OracleCourtReceiver is IReceiver {
   uint16 public latestProsecutorScore;
   uint16 public latestDefenderScore;
   uint16 public latestAuditorScore;
+  uint16 public latestContradictionCount;
+  uint16 public latestContradictionSeverityBps;
+  uint16 public latestEvidenceFreshnessScoreBps;
+  uint16 public latestAdmissibilityScoreBps;
   uint32 public latestTimestamp;
   bytes32 public latestCaseId;
 
@@ -59,6 +67,10 @@ contract OracleCourtReceiver is IReceiver {
     uint16 prosecutorScore,
     uint16 defenderScore,
     uint16 auditorScore,
+    uint16 contradictionCount,
+    uint16 contradictionSeverityBps,
+    uint16 evidenceFreshnessScoreBps,
+    uint16 admissibilityScoreBps,
     bytes32 prosecutorEvidenceHash,
     bytes32 defenderEvidenceHash,
     bytes32 auditorEvidenceHash,
@@ -86,6 +98,10 @@ contract OracleCourtReceiver is IReceiver {
     latestProsecutorScore = verdict.prosecutorScore;
     latestDefenderScore = verdict.defenderScore;
     latestAuditorScore = verdict.auditorScore;
+    latestContradictionCount = verdict.contradictionCount;
+    latestContradictionSeverityBps = verdict.contradictionSeverityBps;
+    latestEvidenceFreshnessScoreBps = verdict.evidenceFreshnessScoreBps;
+    latestAdmissibilityScoreBps = verdict.admissibilityScoreBps;
     latestTimestamp = verdict.timestamp;
     latestCaseId = verdict.caseId;
 
@@ -108,6 +124,10 @@ contract OracleCourtReceiver is IReceiver {
       verdict.prosecutorScore,
       verdict.defenderScore,
       verdict.auditorScore,
+      verdict.contradictionCount,
+      verdict.contradictionSeverityBps,
+      verdict.evidenceFreshnessScoreBps,
+      verdict.admissibilityScoreBps,
       verdict.prosecutorEvidenceHash,
       verdict.defenderEvidenceHash,
       verdict.auditorEvidenceHash,
