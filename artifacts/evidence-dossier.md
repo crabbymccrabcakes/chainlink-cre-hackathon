@@ -2,9 +2,9 @@
 
 ## Canonical Evidence Root
 
-- evidenceRoot: `0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2`
-- admissibilityScoreBps: `8311`
-- evidenceFreshnessScoreBps: `1817`
+- evidenceRoot: `0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3`
+- admissibilityScoreBps: `9095`
+- evidenceFreshnessScoreBps: `1500`
 - protectedSourcesPresent: `true`
 
 ## Claims
@@ -44,13 +44,5 @@
 ## Contradiction Matrix
 
 ```json
-[
-  {
-    "explanation": "Queue stress indicates redemptions are not behaving as claimed",
-    "id": "C-1",
-    "lhs": "Disclosure says redemptions are normal",
-    "rhs": "Telemetry redemptionQueueBps=2800",
-    "severityBps": 4800
-  }
-]
+[]
 ```

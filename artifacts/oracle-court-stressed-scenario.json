@@ -1,4 +1,5 @@
 {
+  "key": "stressed",
   "title": "Scenario B — Stressed evidence and telemetry",
   "expectedModeLabel": "THROTTLE",
   "telemetry": {
@@ -6,77 +7,82 @@
     "attestationAgeSeconds": 172800,
     "redemptionQueueBps": 2800
   },
-  "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
+  "txHash": "0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f",
   "simulationResult": {
+    "appealOfCaseId": "0x41bcf5ceec8e77a02676e5f794c5d3c7ca5e163a030bab86757dc594056ce720",
     "appealOutcome": "ESCALATE",
-    "auditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
-    "auditorScore": 1205,
-    "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
-    "defenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
-    "defenderScore": 1046,
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
+    "auditorEvidenceHash": "0xf9e57bb0caff9682db6e10ac45e7e6612c75c01345685ca1db31ad6f9349048e",
+    "auditorScore": 7701,
+    "caseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
+    "constitutionalOverrideReason": "",
+    "defenderEvidenceHash": "0x856af60642c43f55a3d96ed85bb969aad5c32c8b762835742e43b1840030a006",
+    "defenderScore": 856,
+    "evidenceRoot": "0x55d76866df46f7d2d706c9add644cc134795c1615911ac7bf96694bcf773af73",
     "mode": 1,
     "modeLabel": "THROTTLE",
+    "policyMode": 1,
+    "policyModeLabel": "THROTTLE",
+    "priorCaseId": "0x41bcf5ceec8e77a02676e5f794c5d3c7ca5e163a030bab86757dc594056ce720",
     "prosecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-    "prosecutorScore": 5810,
-    "riskScoreBps": 5969,
-    "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
-    "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
+    "prosecutorScore": 5838,
+    "riskScoreBps": 10000,
+    "txHash": "0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f",
+    "verdictDigest": "0xb2deeaa18fca65f4f6f752d9199abf98c9bb98225d64737d2189cccd26ca50b1"
   },
   "verdictBulletin": {
-    "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+    "caseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
     "mode": "THROTTLE",
-    "riskScoreBps": 5969,
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-    "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b",
+    "riskScoreBps": 10000,
+    "evidenceRoot": "0x55d76866df46f7d2d706c9add644cc134795c1615911ac7bf96694bcf773af73",
+    "verdictDigest": "0xb2deeaa18fca65f4f6f752d9199abf98c9bb98225d64737d2189cccd26ca50b1",
     "policyExplanation": null,
     "constitutionalAssessments": [
       {
         "principle": "Solvency First",
-        "reason": "Selected mode prioritizes solvency containment under observed stress.",
+        "reason": "Effective mode applies active containment under observed stress.",
         "status": "SATISFIED"
       },
       {
         "principle": "Orderly Exit",
-        "reason": "Selected modes preserve redemptions to support orderly user exits.",
+        "reason": "Effective modes preserve redemptions to support orderly user exits.",
         "status": "SATISFIED"
       },
       {
         "principle": "Minimum Necessary Restriction",
-        "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505",
+        "reason": "Balances containment with user access while preserving reversibility.",
         "status": "SATISFIED"
       },
       {
         "principle": "Evidence Sufficiency",
-        "reason": "admissibilityScoreBps=8680",
+        "reason": "admissibilityScoreBps=8295",
         "status": "SATISFIED"
       },
       {
         "principle": "Freshness Requirement",
-        "reason": "evidenceFreshnessScoreBps=9207",
-        "status": "SATISFIED"
+        "reason": "evidenceFreshnessScoreBps=1500",
+        "status": "BREACHED"
       }
     ],
     "appealOutcome": {
-      "confidenceBps": 9035,
+      "confidenceBps": 7807,
       "deltas": {
         "contradictionCountDelta": 1,
         "contradictionSeverityDeltaBps": 4800,
-        "freshnessDeltaBps": 9207,
-        "riskDeltaBps": 5969
+        "freshnessDeltaBps": 0,
+        "riskDeltaBps": 4437
       },
       "outcome": "ESCALATE",
       "rationale": "New evidence increased contradiction pressure or risk score; policy escalated."
     },
-    "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b"
+    "txHash": "0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f"
   },
   "evidenceDossier": {
-    "admissibilityScoreBps": 8680,
+    "admissibilityScoreBps": 8295,
     "claimCount": 3,
     "contradictionCount": 1,
-    "evidenceFreshnessScoreBps": 9207,
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-    "generatedAtUnix": 1772344394,
+    "evidenceFreshnessScoreBps": 1500,
+    "evidenceRoot": "0x55d76866df46f7d2d706c9add644cc134795c1615911ac7bf96694bcf773af73",
+    "generatedAtUnix": 1772838021,
     "protectedSourcesPresent": true,
     "sourceIds": [
       "ATT-2026-02-28",
@@ -122,20 +128,48 @@
       }
     ]
   },
-  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
-  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
+  "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "receiverState": {
     "latestMode": 1,
-    "latestRiskScoreBps": 5969,
-    "latestProsecutorScore": 5810,
-    "latestDefenderScore": 1046,
-    "latestAuditorScore": 1205,
-    "latestTimestamp": 1772344394,
-    "latestCaseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+    "latestRiskScoreBps": 10000,
+    "latestProsecutorScore": 5838,
+    "latestDefenderScore": 856,
+    "latestAuditorScore": 7701,
+    "latestContradictionCount": 1,
+    "latestContradictionSeverityBps": 4800,
+    "latestEvidenceFreshnessScoreBps": 1500,
+    "latestAdmissibilityScoreBps": 8295,
+    "latestTimestamp": 1772838021,
+    "latestCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
+    "latestPriorCaseId": "0x41bcf5ceec8e77a02676e5f794c5d3c7ca5e163a030bab86757dc594056ce720",
+    "latestAppealOfCaseId": "0x41bcf5ceec8e77a02676e5f794c5d3c7ca5e163a030bab86757dc594056ce720",
+    "latestAppealOutcome": 1,
     "latestProsecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-    "latestDefenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
-    "latestAuditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
-    "latestVerdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
+    "latestDefenderEvidenceHash": "0x856af60642c43f55a3d96ed85bb969aad5c32c8b762835742e43b1840030a006",
+    "latestAuditorEvidenceHash": "0xf9e57bb0caff9682db6e10ac45e7e6612c75c01345685ca1db31ad6f9349048e",
+    "latestVerdictDigest": "0xb2deeaa18fca65f4f6f752d9199abf98c9bb98225d64737d2189cccd26ca50b1",
+    "latestCaseSummary": {
+      "exists": true,
+      "mode": 1,
+      "appealOutcome": 1,
+      "riskScoreBps": 10000,
+      "prosecutorScore": 5838,
+      "defenderScore": 856,
+      "auditorScore": 7701,
+      "contradictionCount": 1,
+      "contradictionSeverityBps": 4800,
+      "evidenceFreshnessScoreBps": 1500,
+      "admissibilityScoreBps": 8295,
+      "timestamp": 1772838021,
+      "caseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
+      "priorCaseId": "0x41bcf5ceec8e77a02676e5f794c5d3c7ca5e163a030bab86757dc594056ce720",
+      "appealOfCaseId": "0x41bcf5ceec8e77a02676e5f794c5d3c7ca5e163a030bab86757dc594056ce720",
+      "prosecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
+      "defenderEvidenceHash": "0x856af60642c43f55a3d96ed85bb969aad5c32c8b762835742e43b1840030a006",
+      "auditorEvidenceHash": "0xf9e57bb0caff9682db6e10ac45e7e6612c75c01345685ca1db31ad6f9349048e",
+      "verdictDigest": "0xb2deeaa18fca65f4f6f752d9199abf98c9bb98225d64737d2189cccd26ca50b1"
+    }
   },
   "vaultState": {
     "riskMode": 1,
@@ -145,6 +179,104 @@
     "redemptionQueueBps": 2800,
     "canMint1000": true,
     "canMint5000": false,
-    "canRedeem1000": true
+    "canRedeem1000": true,
+    "totalMinted": "5000",
+    "totalRedeemed": "1000",
+    "actorState": {
+      "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+      "balance": "4000"
+    }
+  },
+  "actionProof": {
+    "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+    "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
+    "outcomes": [
+      {
+        "label": "stressed-mint-5000",
+        "kind": "mint",
+        "amount": "5000",
+        "expectedStatus": "REVERTED",
+        "status": "REVERTED",
+        "txHash": "0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c",
+        "blockNumber": "10398965",
+        "error": "Transaction reverted onchain",
+        "actorBalanceDelta": "0",
+        "totalMintedDelta": "0",
+        "totalRedeemedDelta": "0",
+        "before": {
+          "riskMode": 1,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 9400,
+          "attestationAgeSeconds": 172800,
+          "redemptionQueueBps": 2800,
+          "canMintAmount": false,
+          "canRedeemAmount": true,
+          "actorBalance": "4000",
+          "totalMinted": "5000",
+          "totalRedeemed": "1000"
+        },
+        "after": {
+          "riskMode": 1,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 9400,
+          "attestationAgeSeconds": 172800,
+          "redemptionQueueBps": 2800,
+          "canMintAmount": false,
+          "canRedeemAmount": true,
+          "actorBalance": "4000",
+          "totalMinted": "5000",
+          "totalRedeemed": "1000"
+        }
+      },
+      {
+        "label": "stressed-redeem-1000",
+        "kind": "redeem",
+        "amount": "1000",
+        "expectedStatus": "SUCCESS",
+        "status": "SUCCESS",
+        "txHash": "0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd",
+        "blockNumber": "10398966",
+        "error": null,
+        "actorBalanceDelta": "-1000",
+        "totalMintedDelta": "0",
+        "totalRedeemedDelta": "1000",
+        "before": {
+          "riskMode": 1,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 9400,
+          "attestationAgeSeconds": 172800,
+          "redemptionQueueBps": 2800,
+          "canMintAmount": true,
+          "canRedeemAmount": true,
+          "actorBalance": "4000",
+          "totalMinted": "5000",
+          "totalRedeemed": "1000"
+        },
+        "after": {
+          "riskMode": 1,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 9400,
+          "attestationAgeSeconds": 172800,
+          "redemptionQueueBps": 2800,
+          "canMintAmount": true,
+          "canRedeemAmount": true,
+          "actorBalance": "3000",
+          "totalMinted": "5000",
+          "totalRedeemed": "2000"
+        }
+      }
+    ],
+    "finalState": {
+      "riskMode": 1,
+      "throttleMintLimit": "1000",
+      "reserveCoverageBps": 9400,
+      "attestationAgeSeconds": 172800,
+      "redemptionQueueBps": 2800,
+      "canMintAmount": true,
+      "canRedeemAmount": true,
+      "actorBalance": "3000",
+      "totalMinted": "5000",
+      "totalRedeemed": "2000"
+    }
   }
 }

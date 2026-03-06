@@ -3,6 +3,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { createPublicClient, http, parseAbi } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
 
 const projectRoot = process.cwd()
@@ -66,12 +67,19 @@ const vaultAbi = parseAbi([
   'function redemptionQueueBps() view returns (uint16)',
   'function canMint(uint256 amount) view returns (bool)',
   'function canRedeem(uint256 amount) pure returns (bool)',
+  'function balances(address) view returns (uint256)',
+  'function totalMinted() view returns (uint256)',
+  'function totalRedeemed() view returns (uint256)',
 ])
 
 const client = createPublicClient({
   chain: sepolia,
   transport: http(rpcUrl, { timeout: 30_000 }),
 })
+
+const actorAddress = process.env.CRE_ETH_PRIVATE_KEY
+  ? privateKeyToAccount(process.env.CRE_ETH_PRIVATE_KEY as `0x${string}`).address
+  : null
 
 const [
   latestMode,
@@ -100,6 +108,9 @@ const [
   vaultCanMint1000,
   vaultCanMint5000,
   vaultCanRedeem1000,
+  actorBalance,
+  totalMinted,
+  totalRedeemed,
 ] = await Promise.all([
   client.readContract({ address: receiverAddress, abi: receiverAbi, functionName: 'latestMode' }),
   client.readContract({ address: receiverAddress, abi: receiverAbi, functionName: 'latestRiskScoreBps' }),
@@ -191,6 +202,16 @@ const [
   client.readContract({ address: vaultAddress, abi: vaultAbi, functionName: 'canMint', args: [1000n] }),
   client.readContract({ address: vaultAddress, abi: vaultAbi, functionName: 'canMint', args: [5000n] }),
   client.readContract({ address: vaultAddress, abi: vaultAbi, functionName: 'canRedeem', args: [1000n] }),
+  actorAddress
+    ? client.readContract({
+        address: vaultAddress,
+        abi: vaultAbi,
+        functionName: 'balances',
+        args: [actorAddress],
+      })
+    : Promise.resolve(0n),
+  client.readContract({ address: vaultAddress, abi: vaultAbi, functionName: 'totalMinted' }),
+  client.readContract({ address: vaultAddress, abi: vaultAbi, functionName: 'totalRedeemed' }),
 ])
 
 const latestCaseSummary = await client.readContract({
@@ -255,6 +276,14 @@ console.log(
         canMint1000: Boolean(vaultCanMint1000),
         canMint5000: Boolean(vaultCanMint5000),
         canRedeem1000: Boolean(vaultCanRedeem1000),
+        totalMinted: totalMinted.toString(),
+        totalRedeemed: totalRedeemed.toString(),
+        actorState: actorAddress
+          ? {
+              actorAddress,
+              balance: actorBalance.toString(),
+            }
+          : null,
       },
     },
     null,

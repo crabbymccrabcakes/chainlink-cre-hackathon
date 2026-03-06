@@ -17,6 +17,7 @@
     "deploy:oracle-court:stack": "bun scripts/deploy-oracle-court-stack.ts",
     "sync:oracle-court:config": "bun scripts/sync-oracle-court-config.ts",
     "proof:oracle-court": "bun scripts/generate-oracle-court-proof.ts",
+    "proof:oracle-court:actions": "bun scripts/oracle-court-vault-actions.ts",
     "read:oracle-court:state": "bun scripts/read-oracle-court-state.ts",
     "set:oracle-court:rwa": "bun scripts/set-oracle-court-rwa-telemetry.ts",
     "demo:oracle-court:impact": "bun scripts/demo-oracle-court-policy-impact.ts",

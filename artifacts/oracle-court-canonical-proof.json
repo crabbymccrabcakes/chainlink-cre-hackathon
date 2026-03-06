@@ -1,38 +1,365 @@
 {
-  "packageVersion": "oracle-court-canonical-proof-v1",
-  "generatedAtIso": "2026-03-01T05:53:30.206Z",
-  "story": "healthy evidence -> NORMAL, stressed evidence -> THROTTLE, immediate onchain policy impact",
-  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
-  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "packageVersion": "oracle-court-canonical-proof-v2",
+  "generatedAtIso": "2026-03-06T23:02:05.995Z",
+  "story": "healthy verdict enables mint/redeem, stressed verdict produces a reverted large-mint proof onchain, appeal/retrial records the follow-up execution posture onchain",
+  "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
+  "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "scenarios": {
     "healthy": {
       "title": "Scenario A — Healthy evidence and telemetry",
-      "txHash": "0xf39993d60dec5e885f7eae556c192cbcd1f353171798916fac38cc0da4435a66",
+      "txHash": "0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923",
       "modeLabel": "NORMAL",
       "mode": 0,
-      "riskScoreBps": 0,
-      "evidenceRoot": "0xcc0764202e2c74c770365e48d134e9d0cdf2e22752964691b4f0273cce896bfc",
-      "verdictDigest": "0xe6d24c72e6013f3e94eb15280ae520edf0df1d338d19f93552581bd8db733343",
-      "vaultPolicy": {
+      "policyModeLabel": "NORMAL",
+      "policyMode": 0,
+      "riskScoreBps": 5563,
+      "evidenceRoot": "0x5caf7a46dc78ada8fa67fa3b84afa5a2bdecb4903e58a8514af2a86f6b4a82e1",
+      "verdictDigest": "0x97e0dd8e63e1cbe8d10ad63c1f91a6708f5b20c6520d765adbf6e0ac203e556e",
+      "actionProof": {
+        "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+        "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
+        "outcomes": [
+          {
+            "label": "healthy-mint-5000",
+            "kind": "mint",
+            "amount": "5000",
+            "expectedStatus": "SUCCESS",
+            "status": "SUCCESS",
+            "txHash": "0x20ce725020e635476b57772b5c7dae0b0630bf1ad6acfcc4de2b9ddd208739fe",
+            "blockNumber": "10398961",
+            "error": null,
+            "actorBalanceDelta": "5000",
+            "totalMintedDelta": "5000",
+            "totalRedeemedDelta": "0",
+            "before": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 10000,
+              "attestationAgeSeconds": 300,
+              "redemptionQueueBps": 200,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "0",
+              "totalMinted": "0",
+              "totalRedeemed": "0"
+            },
+            "after": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 10000,
+              "attestationAgeSeconds": 300,
+              "redemptionQueueBps": 200,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "5000",
+              "totalMinted": "5000",
+              "totalRedeemed": "0"
+            }
+          },
+          {
+            "label": "healthy-redeem-1000",
+            "kind": "redeem",
+            "amount": "1000",
+            "expectedStatus": "SUCCESS",
+            "status": "SUCCESS",
+            "txHash": "0x80f22e9bfd80eedc3acd674807c3558664badbef30fb2e39420d328114edf9e2",
+            "blockNumber": "10398962",
+            "error": null,
+            "actorBalanceDelta": "-1000",
+            "totalMintedDelta": "0",
+            "totalRedeemedDelta": "1000",
+            "before": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 10000,
+              "attestationAgeSeconds": 300,
+              "redemptionQueueBps": 200,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "5000",
+              "totalMinted": "5000",
+              "totalRedeemed": "0"
+            },
+            "after": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 10000,
+              "attestationAgeSeconds": 300,
+              "redemptionQueueBps": 200,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "4000",
+              "totalMinted": "5000",
+              "totalRedeemed": "1000"
+            }
+          }
+        ],
+        "finalState": {
+          "riskMode": 0,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 10000,
+          "attestationAgeSeconds": 300,
+          "redemptionQueueBps": 200,
+          "canMintAmount": true,
+          "canRedeemAmount": true,
+          "actorBalance": "4000",
+          "totalMinted": "5000",
+          "totalRedeemed": "1000"
+        }
+      },
+      "vaultState": {
         "riskMode": 0,
+        "throttleMintLimit": "1000",
+        "reserveCoverageBps": 10000,
+        "attestationAgeSeconds": 300,
+        "redemptionQueueBps": 200,
         "canMint1000": true,
         "canMint5000": true,
-        "canRedeem1000": true
+        "canRedeem1000": true,
+        "totalMinted": "0",
+        "totalRedeemed": "0",
+        "actorState": {
+          "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+          "balance": "0"
+        }
       }
     },
     "stressed": {
       "title": "Scenario B — Stressed evidence and telemetry",
-      "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
+      "txHash": "0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f",
       "modeLabel": "THROTTLE",
       "mode": 1,
-      "riskScoreBps": 5969,
-      "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-      "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b",
-      "vaultPolicy": {
+      "policyModeLabel": "THROTTLE",
+      "policyMode": 1,
+      "riskScoreBps": 10000,
+      "evidenceRoot": "0x55d76866df46f7d2d706c9add644cc134795c1615911ac7bf96694bcf773af73",
+      "verdictDigest": "0xb2deeaa18fca65f4f6f752d9199abf98c9bb98225d64737d2189cccd26ca50b1",
+      "actionProof": {
+        "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+        "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
+        "outcomes": [
+          {
+            "label": "stressed-mint-5000",
+            "kind": "mint",
+            "amount": "5000",
+            "expectedStatus": "REVERTED",
+            "status": "REVERTED",
+            "txHash": "0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c",
+            "blockNumber": "10398965",
+            "error": "Transaction reverted onchain",
+            "actorBalanceDelta": "0",
+            "totalMintedDelta": "0",
+            "totalRedeemedDelta": "0",
+            "before": {
+              "riskMode": 1,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9400,
+              "attestationAgeSeconds": 172800,
+              "redemptionQueueBps": 2800,
+              "canMintAmount": false,
+              "canRedeemAmount": true,
+              "actorBalance": "4000",
+              "totalMinted": "5000",
+              "totalRedeemed": "1000"
+            },
+            "after": {
+              "riskMode": 1,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9400,
+              "attestationAgeSeconds": 172800,
+              "redemptionQueueBps": 2800,
+              "canMintAmount": false,
+              "canRedeemAmount": true,
+              "actorBalance": "4000",
+              "totalMinted": "5000",
+              "totalRedeemed": "1000"
+            }
+          },
+          {
+            "label": "stressed-redeem-1000",
+            "kind": "redeem",
+            "amount": "1000",
+            "expectedStatus": "SUCCESS",
+            "status": "SUCCESS",
+            "txHash": "0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd",
+            "blockNumber": "10398966",
+            "error": null,
+            "actorBalanceDelta": "-1000",
+            "totalMintedDelta": "0",
+            "totalRedeemedDelta": "1000",
+            "before": {
+              "riskMode": 1,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9400,
+              "attestationAgeSeconds": 172800,
+              "redemptionQueueBps": 2800,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "4000",
+              "totalMinted": "5000",
+              "totalRedeemed": "1000"
+            },
+            "after": {
+              "riskMode": 1,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9400,
+              "attestationAgeSeconds": 172800,
+              "redemptionQueueBps": 2800,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "3000",
+              "totalMinted": "5000",
+              "totalRedeemed": "2000"
+            }
+          }
+        ],
+        "finalState": {
+          "riskMode": 1,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 9400,
+          "attestationAgeSeconds": 172800,
+          "redemptionQueueBps": 2800,
+          "canMintAmount": true,
+          "canRedeemAmount": true,
+          "actorBalance": "3000",
+          "totalMinted": "5000",
+          "totalRedeemed": "2000"
+        }
+      },
+      "vaultState": {
         "riskMode": 1,
+        "throttleMintLimit": "1000",
+        "reserveCoverageBps": 9400,
+        "attestationAgeSeconds": 172800,
+        "redemptionQueueBps": 2800,
         "canMint1000": true,
         "canMint5000": false,
-        "canRedeem1000": true
+        "canRedeem1000": true,
+        "totalMinted": "5000",
+        "totalRedeemed": "1000",
+        "actorState": {
+          "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+          "balance": "4000"
+        }
+      }
+    },
+    "appeal": {
+      "title": "Scenario C — Appeal / retrial evidence and telemetry",
+      "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
+      "modeLabel": "NORMAL",
+      "mode": 0,
+      "policyModeLabel": "NORMAL",
+      "policyMode": 0,
+      "riskScoreBps": 5567,
+      "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+      "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7",
+      "actionProof": {
+        "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+        "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
+        "outcomes": [
+          {
+            "label": "appeal-mint-5000",
+            "kind": "mint",
+            "amount": "5000",
+            "expectedStatus": "SUCCESS",
+            "status": "SUCCESS",
+            "txHash": "0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889",
+            "blockNumber": "10398970",
+            "error": null,
+            "actorBalanceDelta": "5000",
+            "totalMintedDelta": "5000",
+            "totalRedeemedDelta": "0",
+            "before": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9900,
+              "attestationAgeSeconds": 7200,
+              "redemptionQueueBps": 700,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "3000",
+              "totalMinted": "5000",
+              "totalRedeemed": "2000"
+            },
+            "after": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9900,
+              "attestationAgeSeconds": 7200,
+              "redemptionQueueBps": 700,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "8000",
+              "totalMinted": "10000",
+              "totalRedeemed": "2000"
+            }
+          },
+          {
+            "label": "appeal-redeem-1000",
+            "kind": "redeem",
+            "amount": "1000",
+            "expectedStatus": "SUCCESS",
+            "status": "SUCCESS",
+            "txHash": "0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f",
+            "blockNumber": "10398971",
+            "error": null,
+            "actorBalanceDelta": "-1000",
+            "totalMintedDelta": "0",
+            "totalRedeemedDelta": "1000",
+            "before": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9900,
+              "attestationAgeSeconds": 7200,
+              "redemptionQueueBps": 700,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "8000",
+              "totalMinted": "10000",
+              "totalRedeemed": "2000"
+            },
+            "after": {
+              "riskMode": 0,
+              "throttleMintLimit": "1000",
+              "reserveCoverageBps": 9900,
+              "attestationAgeSeconds": 7200,
+              "redemptionQueueBps": 700,
+              "canMintAmount": true,
+              "canRedeemAmount": true,
+              "actorBalance": "7000",
+              "totalMinted": "10000",
+              "totalRedeemed": "3000"
+            }
+          }
+        ],
+        "finalState": {
+          "riskMode": 0,
+          "throttleMintLimit": "1000",
+          "reserveCoverageBps": 9900,
+          "attestationAgeSeconds": 7200,
+          "redemptionQueueBps": 700,
+          "canMintAmount": true,
+          "canRedeemAmount": true,
+          "actorBalance": "7000",
+          "totalMinted": "10000",
+          "totalRedeemed": "3000"
+        }
+      },
+      "vaultState": {
+        "riskMode": 0,
+        "throttleMintLimit": "1000",
+        "reserveCoverageBps": 9900,
+        "attestationAgeSeconds": 7200,
+        "redemptionQueueBps": 700,
+        "canMint1000": true,
+        "canMint5000": true,
+        "canRedeem1000": true,
+        "totalMinted": "5000",
+        "totalRedeemed": "2000",
+        "actorState": {
+          "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+          "balance": "3000"
+        }
       }
     }
   }

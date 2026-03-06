@@ -6,20 +6,20 @@
 {
   "proofVersion": "oracle-court-ai-governor-v1",
   "proofMode": "onchain-broadcast",
-  "generatedAtIso": "2026-03-06T09:02:39.889Z",
-  "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a",
-  "blockNumber": "10395283",
+  "generatedAtIso": "2026-03-06T23:01:29.287Z",
+  "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
+  "blockNumber": "10398969",
   "chainId": 11155111,
   "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
   "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "inputValues": null,
   "evidenceDossierSummary": {
-    "admissibilityScoreBps": 8311,
+    "admissibilityScoreBps": 9095,
     "claimCount": 3,
-    "contradictionCount": 1,
-    "evidenceFreshnessScoreBps": 1817,
-    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
-    "generatedAtUnix": 1772787753,
+    "contradictionCount": 0,
+    "evidenceFreshnessScoreBps": 1500,
+    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+    "generatedAtUnix": 1772838077,
     "protectedSourcesPresent": true,
     "sourceIds": [
       "ATT-2026-02-28",
@@ -28,12 +28,12 @@
     ]
   },
   "evidenceDossier": {
-    "admissibilityScoreBps": 8311,
+    "admissibilityScoreBps": 9095,
     "claimCount": 3,
-    "contradictionCount": 1,
-    "evidenceFreshnessScoreBps": 1817,
-    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
-    "generatedAtUnix": 1772787753,
+    "contradictionCount": 0,
+    "evidenceFreshnessScoreBps": 1500,
+    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+    "generatedAtUnix": 1772838077,
     "protectedSourcesPresent": true,
     "sourceIds": [
       "ATT-2026-02-28",
@@ -69,15 +69,7 @@
         "topic": "reserves"
       }
     ],
-    "contradictionMatrix": [
-      {
-        "explanation": "Queue stress indicates redemptions are not behaving as claimed",
-        "id": "C-1",
-        "lhs": "Disclosure says redemptions are normal",
-        "rhs": "Telemetry redemptionQueueBps=2800",
-        "severityBps": 4800
-      }
-    ]
+    "contradictionMatrix": []
   },
   "agentBriefs": {
     "prosecutor": {
@@ -91,18 +83,16 @@
         }
       ],
       "claims": [
-        "Reserve gap penalty=500",
-        "Attestation lag penalty=1320",
-        "Redemption queue penalty=3000",
-        "Contradiction severity total=4800"
+        "Reserve gap penalty=0",
+        "Attestation lag penalty=0",
+        "Redemption queue penalty=0",
+        "Contradiction severity total=0"
       ],
-      "confidenceBps": 9100,
-      "contradictionsFound": [
-        "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
-      ],
-      "policyRecommendation": "REDEMPTION_ONLY",
+      "confidenceBps": 5615,
+      "contradictionsFound": [],
+      "policyRecommendation": "NORMAL",
       "position": "restrict",
-      "thesis": "Reserve deterioration, stale attestations, and redemption stress create insolvency propagation risk."
+      "thesis": "Stress indicators are present and justify a precautionary restriction posture."
     },
     "defender": {
       "agent": "DEFENDER",
@@ -116,15 +106,13 @@
       ],
       "claims": [
         "Supportive claims count=1",
-        "Evidence freshness score=1817",
-        "Admissibility score=8311",
+        "Evidence freshness score=1500",
+        "Admissibility score=9095",
         "Residual market stress (depeg+spread)=2"
       ],
-      "confidenceBps": 5574,
-      "contradictionsFound": [
-        "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
-      ],
-      "policyRecommendation": "REDEMPTION_ONLY",
+      "confidenceBps": 6610,
+      "contradictionsFound": [],
+      "policyRecommendation": "NORMAL",
       "position": "hold",
       "thesis": "Current evidence quality is insufficient to justify maximum restrictions."
     },
@@ -145,63 +133,61 @@
         }
       ],
       "claims": [
-        "Contradictions detected=1",
-        "Admissibility score=8311",
-        "Freshness score=1817",
+        "Contradictions detected=0",
+        "Admissibility score=9095",
+        "Freshness score=1500",
         "Source failure penalty=0"
       ],
-      "confidenceBps": 8542,
-      "contradictionsFound": [
-        "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
-      ],
+      "confidenceBps": 7950,
+      "contradictionsFound": [],
       "policyRecommendation": "REDEMPTION_ONLY",
-      "position": "restrict",
-      "thesis": "Narrative claims conflict with telemetry; admissibility and freshness controls require a safety premium."
+      "position": "hold",
+      "thesis": "Evidence coherence is acceptable; no major contradiction penalties detected."
     }
   },
   "agentScores": {
-    "prosecutorScore": 5806,
-    "defenderScore": 856,
-    "auditorScore": 7384,
-    "riskScoreBps": 10000
+    "prosecutorScore": 42,
+    "defenderScore": 976,
+    "auditorScore": 6501,
+    "riskScoreBps": 5567
   },
   "policySimulation": {
-    "explanation": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=7485",
+    "explanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6308",
     "modeResults": [
       {
-        "falsePositiveCostBps": 4700,
+        "falsePositiveCostBps": 3148,
         "mode": "NORMAL",
-        "objectiveScoreBps": 7420,
+        "objectiveScoreBps": 6308,
         "operationalReversibilityBps": 9300,
         "rationale": "Minimizes user harm but offers the least solvency protection.",
-        "solvencyProtectionBps": 9000,
+        "solvencyProtectionBps": 4967,
         "userHarmBps": 1200
       },
       {
-        "falsePositiveCostBps": 1800,
+        "falsePositiveCostBps": 2687,
         "mode": "THROTTLE",
-        "objectiveScoreBps": 7485,
+        "objectiveScoreBps": 6155,
         "operationalReversibilityBps": 7600,
         "rationale": "Balances containment with user access while preserving reversibility.",
-        "solvencyProtectionBps": 9800,
+        "solvencyProtectionBps": 6367,
         "userHarmBps": 4300
       },
       {
-        "falsePositiveCostBps": 2200,
+        "falsePositiveCostBps": 3973,
         "mode": "REDEMPTION_ONLY",
-        "objectiveScoreBps": 6025,
+        "objectiveScoreBps": 4878,
         "operationalReversibilityBps": 3000,
         "rationale": "Maximizes solvency containment under contradiction-heavy evidence.",
-        "solvencyProtectionBps": 10000,
+        "solvencyProtectionBps": 7367,
         "userHarmBps": 8200
       }
     ],
-    "selectedMode": "THROTTLE"
+    "selectedMode": "NORMAL"
   },
   "constitutionalAssessments": [
     {
       "principle": "Solvency First",
-      "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+      "reason": "Risk is low enough that solvency-first restrictions were not required.",
       "status": "BREACHED"
     },
     {
@@ -211,58 +197,58 @@
     },
     {
       "principle": "Minimum Necessary Restriction",
-      "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+      "reason": "Minimizes user harm but offers the least solvency protection.",
       "status": "SATISFIED"
     },
     {
       "principle": "Evidence Sufficiency",
-      "reason": "admissibilityScoreBps=8311",
+      "reason": "admissibilityScoreBps=9095",
       "status": "SATISFIED"
     },
     {
       "principle": "Freshness Requirement",
-      "reason": "evidenceFreshnessScoreBps=1817",
+      "reason": "evidenceFreshnessScoreBps=1500",
       "status": "BREACHED"
     }
   ],
   "appealOutcome": {
-    "confidenceBps": 7877,
+    "confidenceBps": 7807,
     "deltas": {
-      "contradictionCountDelta": 1,
-      "contradictionSeverityDeltaBps": 4800,
-      "freshnessDeltaBps": -2,
-      "riskDeltaBps": 4787
+      "contradictionCountDelta": -1,
+      "contradictionSeverityDeltaBps": -4800,
+      "freshnessDeltaBps": 0,
+      "riskDeltaBps": -4433
     },
-    "outcome": "MAINTAIN",
-    "rationale": "Evidence deltas did not justify a mode transition; policy maintained."
+    "outcome": "RELAX",
+    "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
   },
   "evidenceHashes": {
-    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
-    "prosecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-    "defenderEvidenceHash": "0x40627cf2e159fa0252fb84ca3686bfe40d0d23a7bd546e15a659c9c7f581822b",
-    "auditorEvidenceHash": "0x47a635b2e21fd427750711ae0b9149ce4c15d299b8fbf54ee9a0d5851e97f8ee",
-    "verdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28"
+    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+    "prosecutorEvidenceHash": "0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41",
+    "defenderEvidenceHash": "0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd",
+    "auditorEvidenceHash": "0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef",
+    "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7"
   },
   "finalVerdict": {
     "mode": 0,
     "modeLabel": "NORMAL",
-    "policyMode": 1,
-    "policyModeLabel": "THROTTLE",
-    "caseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
-    "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a",
-    "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=7485"
+    "policyMode": 0,
+    "policyModeLabel": "NORMAL",
+    "caseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
+    "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
+    "reason": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6308"
   },
   "verdictBulletin": {
-    "caseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
+    "caseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
     "mode": "NORMAL",
-    "riskScoreBps": 10000,
-    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
-    "verdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28",
+    "riskScoreBps": 5567,
+    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+    "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7",
     "policyExplanation": null,
     "constitutionalAssessments": [
       {
         "principle": "Solvency First",
-        "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+        "reason": "Risk is low enough that solvency-first restrictions were not required.",
         "status": "BREACHED"
       },
       {
@@ -272,60 +258,66 @@
       },
       {
         "principle": "Minimum Necessary Restriction",
-        "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+        "reason": "Minimizes user harm but offers the least solvency protection.",
         "status": "SATISFIED"
       },
       {
         "principle": "Evidence Sufficiency",
-        "reason": "admissibilityScoreBps=8311",
+        "reason": "admissibilityScoreBps=9095",
         "status": "SATISFIED"
       },
       {
         "principle": "Freshness Requirement",
-        "reason": "evidenceFreshnessScoreBps=1817",
+        "reason": "evidenceFreshnessScoreBps=1500",
         "status": "BREACHED"
       }
     ],
     "appealOutcome": {
-      "confidenceBps": 7877,
+      "confidenceBps": 7807,
       "deltas": {
-        "contradictionCountDelta": 1,
-        "contradictionSeverityDeltaBps": 4800,
-        "freshnessDeltaBps": -2,
-        "riskDeltaBps": 4787
+        "contradictionCountDelta": -1,
+        "contradictionSeverityDeltaBps": -4800,
+        "freshnessDeltaBps": 0,
+        "riskDeltaBps": -4433
       },
-      "outcome": "MAINTAIN",
-      "rationale": "Evidence deltas did not justify a mode transition; policy maintained."
+      "outcome": "RELAX",
+      "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
     },
-    "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a"
+    "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d"
   },
   "onchainState": {
     "receiver": {
       "latestMode": 0,
-      "latestRiskScoreBps": 10000,
-      "latestProsecutorScore": 5806,
-      "latestDefenderScore": 856,
-      "latestAuditorScore": 7384,
-      "latestContradictionCount": 1,
-      "latestContradictionSeverityBps": 4800,
-      "latestEvidenceFreshnessScoreBps": 1817,
-      "latestAdmissibilityScoreBps": 8311,
-      "latestTimestamp": 1772787753,
-      "latestCaseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
-      "latestProsecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-      "latestDefenderEvidenceHash": "0x40627cf2e159fa0252fb84ca3686bfe40d0d23a7bd546e15a659c9c7f581822b",
-      "latestAuditorEvidenceHash": "0x47a635b2e21fd427750711ae0b9149ce4c15d299b8fbf54ee9a0d5851e97f8ee",
-      "latestVerdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28"
+      "latestRiskScoreBps": 5567,
+      "latestProsecutorScore": 42,
+      "latestDefenderScore": 976,
+      "latestAuditorScore": 6501,
+      "latestContradictionCount": 0,
+      "latestContradictionSeverityBps": 0,
+      "latestEvidenceFreshnessScoreBps": 1500,
+      "latestAdmissibilityScoreBps": 9095,
+      "latestTimestamp": 1772838077,
+      "latestCaseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
+      "latestProsecutorEvidenceHash": "0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41",
+      "latestDefenderEvidenceHash": "0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd",
+      "latestAuditorEvidenceHash": "0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef",
+      "latestVerdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7"
     },
     "vault": {
       "riskMode": 0,
       "throttleMintLimit": "1000",
-      "reserveCoverageBps": 9400,
-      "attestationAgeSeconds": 172800,
-      "redemptionQueueBps": 2800,
+      "reserveCoverageBps": 9900,
+      "attestationAgeSeconds": 7200,
+      "redemptionQueueBps": 700,
       "canMint1000": true,
       "canMint5000": true,
-      "canRedeem1000": true
+      "canRedeem1000": true,
+      "totalMinted": "5000",
+      "totalRedeemed": "2000",
+      "actorState": {
+        "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
+        "balance": "3000"
+      }
     }
   }
 }

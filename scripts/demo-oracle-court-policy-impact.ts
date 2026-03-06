@@ -3,6 +3,12 @@ import path from 'node:path'
 import process from 'node:process'
 import { execSync } from 'node:child_process'
 
+import {
+  executeVaultActionPlan,
+  type VaultActionOutcome,
+  type VaultActionPlanItem,
+} from './oracle-court-vault-actions.ts'
+
 const projectRoot = process.cwd()
 const artifactPath = path.join(projectRoot, 'artifacts', 'oracle-court-policy-impact.md')
 
@@ -39,10 +45,10 @@ const runBroadcast = () => {
   }
 }
 
-const readState = () => JSON.parse(run('bun scripts/read-oracle-court-state.ts'))
+const readState = () => JSON.parse(run('bun run read:oracle-court:state'))
 
 const setTelemetry = ({ reserveCoverageBps, attestationAgeSeconds, redemptionQueueBps }) => {
-  run('bun scripts/set-oracle-court-rwa-telemetry.ts', {
+  run('bun run set:oracle-court:rwa', {
     CRE_ETH_PRIVATE_KEY: PRIVATE_KEY,
     ORACLE_COURT_RESERVE_COVERAGE_BPS: String(reserveCoverageBps),
     ORACLE_COURT_ATTESTATION_AGE_SECONDS: String(attestationAgeSeconds),
@@ -50,61 +56,111 @@ const setTelemetry = ({ reserveCoverageBps, attestationAgeSeconds, redemptionQue
   })
 }
 
-// 1) Baseline scenario: healthy telemetry
-setTelemetry({ reserveCoverageBps: 10000, attestationAgeSeconds: 300, redemptionQueueBps: 200 })
-const baselineRun = runBroadcast()
-const baselineState = readState()
+const modeLabelFromValue = (mode: number): string => {
+  switch (mode) {
+    case 0:
+      return 'NORMAL'
+    case 1:
+      return 'THROTTLE'
+    case 2:
+      return 'REDEMPTION_ONLY'
+    default:
+      return `UNKNOWN(${mode})`
+  }
+}
 
-// 2) Stress scenario: reserve shortfall + stale attestation + queue pressure
-setTelemetry({ reserveCoverageBps: 9400, attestationAgeSeconds: 172800, redemptionQueueBps: 2800 })
-const stressRun = runBroadcast()
-const stressState = readState()
-
-// 3) Appeal scenario: new evidence + improved telemetry should relax severity
-setTelemetry({ reserveCoverageBps: 9900, attestationAgeSeconds: 7200, redemptionQueueBps: 700 })
-const appealRun = runBroadcast()
-const appealState = readState()
-
-const report = {
-  generatedAtIso: new Date().toISOString(),
-  baseline: {
+const scenarios = [
+  {
+    key: 'baseline',
+    label: 'Healthy',
     telemetry: {
       reserveCoverageBps: 10000,
       attestationAgeSeconds: 300,
       redemptionQueueBps: 200,
     },
-    txHash: baselineRun.txHash,
-    receiverState: baselineState.receiverState,
-    vaultState: baselineState.vaultState,
+    actionPlan: [
+      { label: 'baseline-mint-5000', kind: 'mint', amount: 5000n },
+      { label: 'baseline-redeem-1000', kind: 'redeem', amount: 1000n },
+    ] satisfies VaultActionPlanItem[],
   },
-  stress: {
+  {
+    key: 'stress',
+    label: 'Stressed',
     telemetry: {
       reserveCoverageBps: 9400,
       attestationAgeSeconds: 172800,
       redemptionQueueBps: 2800,
     },
-    txHash: stressRun.txHash,
-    receiverState: stressState.receiverState,
-    vaultState: stressState.vaultState,
+    actionPlan: [
+      { label: 'stress-mint-5000', kind: 'mint', amount: 5000n, expectedStatus: 'REVERTED' },
+      { label: 'stress-redeem-1000', kind: 'redeem', amount: 1000n },
+    ] satisfies VaultActionPlanItem[],
   },
-  appeal: {
+  {
+    key: 'appeal',
+    label: 'Appeal',
     telemetry: {
       reserveCoverageBps: 9900,
       attestationAgeSeconds: 7200,
       redemptionQueueBps: 700,
     },
-    txHash: appealRun.txHash,
-    receiverState: appealState.receiverState,
-    vaultState: appealState.vaultState,
+    actionPlan: [
+      { label: 'appeal-mint-5000', kind: 'mint', amount: 5000n },
+      { label: 'appeal-redeem-1000', kind: 'redeem', amount: 1000n },
+    ] satisfies VaultActionPlanItem[],
   },
+]
+
+const report = {
+  generatedAtIso: new Date().toISOString(),
+  scenarios: {} as Record<string, any>,
 }
 
-const markdown = `# Oracle Court Policy Impact Demo\n\nThis artifact demonstrates **court verdict -> protocol behavior change** across healthy, stressed, and appeal/retrial scenarios.\n\n## Deterministic Snapshot\n\n\`\`\`json\n${JSON.stringify(report, null, 2)}\n\`\`\`\n\n## Interpretation\n\n- Baseline should remain \`NORMAL\` with minting enabled.\n- Stress should move to \`THROTTLE\` or \`REDEMPTION_ONLY\` with tighter mint controls.\n- Appeal scenario simulates new evidence + improved telemetry and may relax mode severity from stress-state.\n- Compare \`canMint5000\` and \`riskMode\` across all three snapshots.\n`
+for (const scenario of scenarios) {
+  setTelemetry(scenario.telemetry)
+  const broadcast = runBroadcast()
+  const state = readState()
+  const actionProof = await executeVaultActionPlan(scenario.actionPlan)
+
+  report.scenarios[scenario.key] = {
+    key: scenario.key,
+    label: scenario.label,
+    telemetry: scenario.telemetry,
+    txHash: broadcast.txHash,
+    receiverState: state.receiverState,
+    vaultState: state.vaultState,
+    actionProof,
+  }
+}
+
+const baseline = report.scenarios.baseline
+const stress = report.scenarios.stress
+const appeal = report.scenarios.appeal
+
+const findActionOutcome = (outcomes: VaultActionOutcome[], label: string): VaultActionOutcome | null =>
+  outcomes.find((outcome) => outcome.label === label) || null
+
+const describeAction = (action: VaultActionOutcome | null): string => {
+  if (!action) return 'n/a'
+  if (action.status === 'SUCCESS') {
+    return `SUCCESS (${action.kind} ${action.amount}, delta=${action.actorBalanceDelta}, tx=${action.txHash})`
+  }
+  if (action.status === 'REVERTED') {
+    return `REVERTED (${action.kind} ${action.amount}, tx=${action.txHash})`
+  }
+
+  return `BLOCKED (${action.kind} ${action.amount}, error=${action.error})`
+}
+
+const quickRow = (scenario) =>
+  `| ${scenario.label} | ${scenario.txHash} | ${modeLabelFromValue(scenario.receiverState.latestMode)} | ${scenario.receiverState.latestRiskScoreBps} | ${describeAction(findActionOutcome(scenario.actionProof.outcomes, `${scenario.key}-mint-5000`))} | ${describeAction(findActionOutcome(scenario.actionProof.outcomes, `${scenario.key}-redeem-1000`))} |`
+
+const markdown = `# Oracle Court Policy Impact Demo\n\nThis artifact demonstrates **court verdict -> protocol behavior change** across healthy, stressed, and appeal/retrial scenarios.\n\n## Execution Matrix\n\n| Scenario | Tribunal Tx | Effective Mode | Risk Score (bps) | Large Mint 5000 | Redeem 1000 |\n|---|---|---|---:|---|---|\n${quickRow(baseline)}\n${quickRow(stress)}\n${quickRow(appeal)}\n\n## Deterministic Snapshot\n\n\`\`\`json\n${JSON.stringify(report, null, 2)}\n\`\`\`\n\n## Interpretation\n\n- Healthy records successful mint and redeem transactions.\n- Stressed is expected to produce an onchain revert for the large mint while redeem remains testable.\n- Appeal records the follow-up execution posture after improved telemetry and linked case handling.\n- If the stressed mint does not revert onchain, the script fails because the proof target was not met.\n`
 
 fs.mkdirSync(path.dirname(artifactPath), { recursive: true })
 fs.writeFileSync(artifactPath, markdown, 'utf8')
 
 console.log(`Policy impact artifact written: ${artifactPath}`)
-console.log(`Baseline tx: ${baselineRun.txHash}`)
-console.log(`Stress tx:   ${stressRun.txHash}`)
-console.log(`Appeal tx:   ${appealRun.txHash}`)
+console.log(`Baseline tx: ${baseline.txHash}`)
+console.log(`Stress tx:   ${stress.txHash}`)
+console.log(`Appeal tx:   ${appeal.txHash}`)

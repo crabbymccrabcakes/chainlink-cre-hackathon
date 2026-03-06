@@ -1,10 +1,10 @@
 {
-  "admissibilityScoreBps": 8311,
+  "admissibilityScoreBps": 9095,
   "claimCount": 3,
-  "contradictionCount": 1,
-  "evidenceFreshnessScoreBps": 1817,
-  "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
-  "generatedAtUnix": 1772787753,
+  "contradictionCount": 0,
+  "evidenceFreshnessScoreBps": 1500,
+  "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+  "generatedAtUnix": 1772838077,
   "protectedSourcesPresent": true,
   "sourceIds": [
     "ATT-2026-02-28",
@@ -40,13 +40,7 @@
       "topic": "reserves"
     }
   ],
-  "contradictionMatrix": [
-    {
-      "explanation": "Queue stress indicates redemptions are not behaving as claimed",
-      "id": "C-1",
-      "lhs": "Disclosure says redemptions are normal",
-      "rhs": "Telemetry redemptionQueueBps=2800",
-      "severityBps": 4800
-    }
-  ]
+  "contradictionMatrix": [],
+  "scenario": "appeal-canonical",
+  "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d"
 }

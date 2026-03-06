@@ -10,7 +10,7 @@ Oracle Court
 
 **How CRE is used:** CRE HTTP is used for offchain data and dossier ingestion, CRE EVM is used for onchain feed/telemetry reads, deterministic workflow logic compiles tribunal outputs, and `runtime.report` + `evmClient.writeReport` delivers signed onchain reports.
 
-**On-chain interaction:** The workflow writes tribunal verdict data (mode, scores, evidence hashes, digest, `caseId`, `priorCaseId`, `appealOfCaseId`, appeal outcome) to `OracleCourtReceiver`, which stores the case in an onchain docket and immediately applies vault policy mode (`NORMAL` / `THROTTLE` / `REDEMPTION_ONLY`) on `MockRWAVault`.
+**On-chain interaction:** The workflow writes tribunal verdict data (mode, scores, evidence hashes, digest, `caseId`, `priorCaseId`, `appealOfCaseId`, appeal outcome) to `OracleCourtReceiver`, which stores the case in an onchain docket and immediately applies vault policy mode (`NORMAL` / `THROTTLE` / `REDEMPTION_ONLY`) on `MockRWAVault`. The canonical proof flow then executes real post-verdict `mint` / `redeem` transactions against `MockRWAVault` to prove the enforcement surface with actual user actions.
 
 ## GitHub Repository
 
@@ -57,14 +57,15 @@ These commands produce execution logs, onchain writes, and transaction hashes fr
 5. Run policy simulation across `NORMAL`, `THROTTLE`, and `REDEMPTION_ONLY` and apply constitutional checks.
 6. Compute deterministic evidence hashes + verdict digest and write signed report onchain.
 7. Receiver stores the case in an onchain docket, preserves prior-case/appeal linkage, and enforces vault policy mode immediately.
+8. Canonical proof scripts execute real `mint` / `redeem` transactions after each verdict so the artifact set includes action tx hashes and a stressed-case reverted mint.
 
 ## On-Chain Write Explanation
 
 **Network:** Ethereum Sepolia (`ethereum-testnet-sepolia`)
 
-**Operation:** CRE signed report is written to `OracleCourtReceiver` at `0x4f89381387bcc29a4f7d12581314d69fad2bb67d`, which commits verdict state plus docket lineage and calls `MockRWAVault.setRiskMode(mode)` at `0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20`.
+**Operation:** CRE signed report is written to `OracleCourtReceiver` at `0x4f89381387bcc29a4f7d12581314d69fad2bb67d`, which commits verdict state plus docket lineage and calls `MockRWAVault.setRiskMode(mode)` at `0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20`. The canonical proof also sends actor-driven `mint` / `redeem` transactions to `MockRWAVault` to prove the enforced policy in live Sepolia execution.
 
-**Purpose:** This write is required to convert tribunal reasoning into enforceable protocol behavior (mint/redeem policy changes). The workflow is not read-only.
+**Purpose:** These writes are required to convert tribunal reasoning into enforceable protocol behavior and then prove that behavior with real user-action transactions. The workflow is not read-only.
 
 ## Evidence Artifact
 
@@ -75,6 +76,7 @@ Canonical artifact set (judge-scannable):
 - `artifacts/oracle-court-policy-impact.md`
 - `artifacts/oracle-court-healthy-scenario.json`
 - `artifacts/oracle-court-stressed-scenario.json`
+- `artifacts/oracle-court-appeal-scenario.json`
 - `artifacts/evidence-dossier.json`
 - `artifacts/tribunal-briefs.md`
 - `artifacts/policy-simulation.md`
@@ -82,19 +84,29 @@ Canonical artifact set (judge-scannable):
 - `artifacts/oracle-court-proof.md`
 - `artifacts/ARTIFACT_MAP.md`
 
-Canonical outcome represented in final artifacts:
+Canonical outcome represented in current checked-in artifact set:
 
-- Healthy scenario -> `NORMAL` (minting allowed)
-- Stressed scenario -> `THROTTLE` (mint restricted)
+- Healthy scenario -> `NORMAL`; `mint(5000)` tx `0x20ce725020e635476b57772b5c7dae0b0630bf1ad6acfcc4de2b9ddd208739fe`; `redeem(1000)` tx `0x80f22e9bfd80eedc3acd674807c3558664badbef30fb2e39420d328114edf9e2`
+- Stressed scenario -> `THROTTLE`; `mint(5000)` reverted tx `0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c`; `redeem(1000)` tx `0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd`
+- Appeal scenario -> `NORMAL`; `mint(5000)` tx `0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889`; `redeem(1000)` tx `0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f`
 
-**Transaction Hash:** `0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a`
+Latest canonical proof run on upgraded stack:
+
+- Healthy tribunal tx: `0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923`
+- Stressed tribunal tx: `0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f`
+- Appeal tribunal tx: `0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d`
+- Latest case id: `0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844`
+- Latest `priorCaseId` / `appealOfCaseId`: `0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383`
+- Latest appeal outcome: `RELAX`
+- Latest effective mode committed onchain: `NORMAL`
+- Final vault totals after proof run: `totalMinted=10000`, `totalRedeemed=3000`, actor balance `7000`
 
 Linked prior-case proof:
 
-- Previous case tx: `0x3c30739a08d393a9ebd62c741443604e3567c75c9e81f153b3f603af32f584f0`
-- Previous case id: `0x77501b708cfe46c615496a84b69e358957b90fa5334406f5122b2b308d8378cf`
-- Latest case id: `0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566`
-- Latest `priorCaseId` / `appealOfCaseId`: `0x77501b708cfe46c615496a84b69e358957b90fa5334406f5122b2b308d8378cf`
+- Stressed case tx: `0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f`
+- Stressed case id: `0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383`
+- Appeal case tx: `0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d`
+- Appeal case id: `0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844`
 
 ## CRE Experience Feedback
 

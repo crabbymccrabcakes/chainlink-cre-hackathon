@@ -1,3 +1,5 @@
+> Scenario: appeal-canonical (tx: 0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d)
+
 # Tribunal Briefs
 
 ## Prosecutor
@@ -14,18 +16,16 @@
     }
   ],
   "claims": [
-    "Reserve gap penalty=500",
-    "Attestation lag penalty=1320",
-    "Redemption queue penalty=3000",
-    "Contradiction severity total=4800"
+    "Reserve gap penalty=0",
+    "Attestation lag penalty=0",
+    "Redemption queue penalty=0",
+    "Contradiction severity total=0"
   ],
-  "confidenceBps": 9100,
-  "contradictionsFound": [
-    "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
-  ],
-  "policyRecommendation": "REDEMPTION_ONLY",
+  "confidenceBps": 5615,
+  "contradictionsFound": [],
+  "policyRecommendation": "NORMAL",
   "position": "restrict",
-  "thesis": "Reserve deterioration, stale attestations, and redemption stress create insolvency propagation risk."
+  "thesis": "Stress indicators are present and justify a precautionary restriction posture."
 }
 ```
 
@@ -44,15 +44,13 @@
   ],
   "claims": [
     "Supportive claims count=1",
-    "Evidence freshness score=1817",
-    "Admissibility score=8311",
+    "Evidence freshness score=1500",
+    "Admissibility score=9095",
     "Residual market stress (depeg+spread)=2"
   ],
-  "confidenceBps": 5574,
-  "contradictionsFound": [
-    "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
-  ],
-  "policyRecommendation": "REDEMPTION_ONLY",
+  "confidenceBps": 6610,
+  "contradictionsFound": [],
+  "policyRecommendation": "NORMAL",
   "position": "hold",
   "thesis": "Current evidence quality is insufficient to justify maximum restrictions."
 }
@@ -78,23 +76,21 @@
     }
   ],
   "claims": [
-    "Contradictions detected=1",
-    "Admissibility score=8311",
-    "Freshness score=1817",
+    "Contradictions detected=0",
+    "Admissibility score=9095",
+    "Freshness score=1500",
     "Source failure penalty=0"
   ],
-  "confidenceBps": 8542,
-  "contradictionsFound": [
-    "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
-  ],
+  "confidenceBps": 7950,
+  "contradictionsFound": [],
   "policyRecommendation": "REDEMPTION_ONLY",
-  "position": "restrict",
-  "thesis": "Narrative claims conflict with telemetry; admissibility and freshness controls require a safety premium."
+  "position": "hold",
+  "thesis": "Evidence coherence is acceptable; no major contradiction penalties detected."
 }
 ```
 
 ## Evidence Hashes
 
-- prosecutorEvidenceHash: `0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa`
-- defenderEvidenceHash: `0x40627cf2e159fa0252fb84ca3686bfe40d0d23a7bd546e15a659c9c7f581822b`
-- auditorEvidenceHash: `0x47a635b2e21fd427750711ae0b9149ce4c15d299b8fbf54ee9a0d5851e97f8ee`
+- prosecutorEvidenceHash: `0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41`
+- defenderEvidenceHash: `0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd`
+- auditorEvidenceHash: `0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef`

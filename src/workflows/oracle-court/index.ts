@@ -823,12 +823,13 @@ const resolveConstitutionalMode = (
   const evidenceSufficient =
     dossier.admissibilityScoreBps >= config.constitution.evidenceSufficiencyMinBps
   const freshnessSatisfied = dossier.evidenceFreshnessScoreBps >= config.constitution.freshnessMinBps
-  const restrictiveModeRequested = proposedModeLabel !== 'NORMAL'
-  const restrictiveModeAllowed = evidenceSufficient && freshnessSatisfied
+  const maxRestrictionAllowed = evidenceSufficient && freshnessSatisfied
 
-  const allowedModes = restrictiveModeAllowed
+  // Weak or stale evidence can block the most severe action, but still permit
+  // a bounded fallback when policy simulation supports containment.
+  const allowedModes = maxRestrictionAllowed
     ? (['NORMAL', 'THROTTLE', 'REDEMPTION_ONLY'] as const)
-    : (['NORMAL'] as const)
+    : (['NORMAL', 'THROTTLE'] as const)
 
   const allowedResults = allowedModes
     .map((mode) => modeResultsByMode.get(mode))
@@ -851,8 +852,8 @@ const resolveConstitutionalMode = (
 
   const constitutionalOverrideReason =
     proposedModeLabel !== effectiveModeLabel
-      ? restrictiveModeRequested && !restrictiveModeAllowed
-        ? `Constitutional gate downgraded ${proposedModeLabel} to NORMAL because admissibilityScoreBps=${dossier.admissibilityScoreBps} and evidenceFreshnessScoreBps=${dossier.evidenceFreshnessScoreBps} did not clear restrictive-mode thresholds.`
+      ? proposedModeLabel === 'REDEMPTION_ONLY' && !maxRestrictionAllowed
+        ? `Constitutional gate downgraded REDEMPTION_ONLY to ${effectiveModeLabel} because admissibilityScoreBps=${dossier.admissibilityScoreBps} and evidenceFreshnessScoreBps=${dossier.evidenceFreshnessScoreBps} did not clear maximum-restriction thresholds; THROTTLE remained available as a bounded fallback.`
         : `Constitutional gate replaced ${proposedModeLabel} with ${effectiveModeLabel} to satisfy minimum necessary restriction among allowed modes.`
       : null
 
