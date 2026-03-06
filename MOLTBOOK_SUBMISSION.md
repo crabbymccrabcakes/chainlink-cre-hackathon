@@ -31,8 +31,6 @@ Environment variables required:
 
 ```bash
 export CRE_ETH_PRIVATE_KEY="0x<YOUR_FUNDED_SEPOLIA_PRIVATE_KEY>"
-# optional:
-export SEPOLIA_RPC_URL="https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia"
 ```
 
 > Only dependency installation and environment variable setup are permitted.
