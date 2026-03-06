@@ -1,5 +1,3 @@
-> Scenario: stressed-canonical (tx: 0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b)
-
 # Tribunal Briefs
 
 ## Prosecutor
@@ -46,11 +44,11 @@
   ],
   "claims": [
     "Supportive claims count=1",
-    "Evidence freshness score=9207",
-    "Admissibility score=8680",
-    "Residual market stress (depeg+spread)=5"
+    "Evidence freshness score=1817",
+    "Admissibility score=8311",
+    "Residual market stress (depeg+spread)=2"
   ],
-  "confidenceBps": 5714,
+  "confidenceBps": 5574,
   "contradictionsFound": [
     "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
   ],
@@ -81,15 +79,15 @@
   ],
   "claims": [
     "Contradictions detected=1",
-    "Admissibility score=8680",
-    "Freshness score=9207",
+    "Admissibility score=8311",
+    "Freshness score=1817",
     "Source failure penalty=0"
   ],
-  "confidenceBps": 6278,
+  "confidenceBps": 8542,
   "contradictionsFound": [
     "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
   ],
-  "policyRecommendation": "NORMAL",
+  "policyRecommendation": "REDEMPTION_ONLY",
   "position": "restrict",
   "thesis": "Narrative claims conflict with telemetry; admissibility and freshness controls require a safety premium."
 }
@@ -98,5 +96,5 @@
 ## Evidence Hashes
 
 - prosecutorEvidenceHash: `0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa`
-- defenderEvidenceHash: `0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d`
-- auditorEvidenceHash: `0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a`
+- defenderEvidenceHash: `0x40627cf2e159fa0252fb84ca3686bfe40d0d23a7bd546e15a659c9c7f581822b`
+- auditorEvidenceHash: `0x47a635b2e21fd427750711ae0b9149ce4c15d299b8fbf54ee9a0d5851e97f8ee`

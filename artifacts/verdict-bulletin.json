@@ -1,56 +1,47 @@
 {
-  "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
-  "mode": "THROTTLE",
-  "riskScoreBps": 5969,
-  "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-  "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b",
-  "policyExplanation": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility.",
+  "caseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
+  "mode": "NORMAL",
+  "riskScoreBps": 10000,
+  "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
+  "verdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28",
+  "policyExplanation": null,
   "constitutionalAssessments": [
     {
       "principle": "Solvency First",
-      "reason": "Selected mode prioritizes solvency containment under observed stress.",
-      "status": "SATISFIED"
+      "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+      "status": "BREACHED"
     },
     {
       "principle": "Orderly Exit",
-      "reason": "Selected modes preserve redemptions to support orderly user exits.",
+      "reason": "Effective modes preserve redemptions to support orderly user exits.",
       "status": "SATISFIED"
     },
     {
       "principle": "Minimum Necessary Restriction",
-      "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505",
+      "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
       "status": "SATISFIED"
     },
     {
       "principle": "Evidence Sufficiency",
-      "reason": "admissibilityScoreBps=8680",
+      "reason": "admissibilityScoreBps=8311",
       "status": "SATISFIED"
     },
     {
       "principle": "Freshness Requirement",
-      "reason": "evidenceFreshnessScoreBps=9207",
-      "status": "SATISFIED"
+      "reason": "evidenceFreshnessScoreBps=1817",
+      "status": "BREACHED"
     }
   ],
   "appealOutcome": {
-    "confidenceBps": 9035,
+    "confidenceBps": 7877,
     "deltas": {
       "contradictionCountDelta": 1,
       "contradictionSeverityDeltaBps": 4800,
-      "freshnessDeltaBps": 9207,
-      "riskDeltaBps": 5969
+      "freshnessDeltaBps": -2,
+      "riskDeltaBps": 4787
     },
-    "outcome": "ESCALATE",
-    "rationale": "New evidence increased contradiction pressure or risk score; policy escalated."
+    "outcome": "MAINTAIN",
+    "rationale": "Evidence deltas did not justify a mode transition; policy maintained."
   },
-  "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
-  "scenario": "stressed-canonical",
-  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
-  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
-  "resultingVaultMode": 1,
-  "policyEffect": {
-    "canMint1000": true,
-    "canMint5000": false,
-    "canRedeem1000": true
-  }
+  "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a"
 }

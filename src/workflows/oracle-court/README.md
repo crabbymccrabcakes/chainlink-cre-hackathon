@@ -25,7 +25,7 @@ Oracle Court is a CRE workflow for **constitutional AI risk governance** over to
 
 ## Onchain Payload
 
-The report payload sent to `OracleCourtReceiver` includes the enforced mode plus the summary needed for later appeals:
+The report payload sent to `OracleCourtReceiver` includes the enforced mode plus the summary needed for docketing and appeal reconstruction:
 
 ```solidity
 (
@@ -40,6 +40,9 @@ The report payload sent to `OracleCourtReceiver` includes the enforced mode plus
   uint16 admissibilityScoreBps,
   uint32 timestamp,
   bytes32 caseId,
+  bytes32 priorCaseId,
+  bytes32 appealOfCaseId,
+  uint8 appealOutcome,
   bytes32 prosecutorEvidenceHash,
   bytes32 defenderEvidenceHash,
   bytes32 auditorEvidenceHash,
@@ -47,7 +50,7 @@ The report payload sent to `OracleCourtReceiver` includes the enforced mode plus
 )
 ```
 
-`OracleCourtReceiver` persists that summary onchain and enforces protocol impact via `MockRWAVault.setRiskMode(mode)`.
+`OracleCourtReceiver` persists that summary in an onchain docket keyed by `caseId`, exposes `getCaseSummary(caseId)`, and enforces protocol impact via `MockRWAVault.setRiskMode(mode)`.
 
 ## Artifacts
 

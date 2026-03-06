@@ -2,9 +2,9 @@
 
 ## Canonical Evidence Root
 
-- evidenceRoot: `0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14`
-- admissibilityScoreBps: `8680`
-- evidenceFreshnessScoreBps: `9207`
+- evidenceRoot: `0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2`
+- admissibilityScoreBps: `8311`
+- evidenceFreshnessScoreBps: `1817`
 - protectedSourcesPresent: `true`
 
 ## Claims

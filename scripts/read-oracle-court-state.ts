@@ -36,6 +36,8 @@ if (!receiverAddress || !vaultAddress) {
 }
 
 const receiverAbi = parseAbi([
+  'function hasCase(bytes32 caseId) view returns (bool)',
+  'function getCaseSummary(bytes32 caseId) view returns ((bool exists,uint8 mode,uint8 appealOutcome,uint16 riskScoreBps,uint16 prosecutorScore,uint16 defenderScore,uint16 auditorScore,uint16 contradictionCount,uint16 contradictionSeverityBps,uint16 evidenceFreshnessScoreBps,uint16 admissibilityScoreBps,uint32 timestamp,bytes32 caseId,bytes32 priorCaseId,bytes32 appealOfCaseId,bytes32 prosecutorEvidenceHash,bytes32 defenderEvidenceHash,bytes32 auditorEvidenceHash,bytes32 verdictDigest))',
   'function latestMode() view returns (uint8)',
   'function latestRiskScoreBps() view returns (uint16)',
   'function latestProsecutorScore() view returns (uint16)',
@@ -47,6 +49,9 @@ const receiverAbi = parseAbi([
   'function latestAdmissibilityScoreBps() view returns (uint16)',
   'function latestTimestamp() view returns (uint32)',
   'function latestCaseId() view returns (bytes32)',
+  'function latestPriorCaseId() view returns (bytes32)',
+  'function latestAppealOfCaseId() view returns (bytes32)',
+  'function latestAppealOutcome() view returns (uint8)',
   'function latestProsecutorEvidenceHash() view returns (bytes32)',
   'function latestDefenderEvidenceHash() view returns (bytes32)',
   'function latestAuditorEvidenceHash() view returns (bytes32)',
@@ -80,6 +85,9 @@ const [
   latestAdmissibilityScoreBps,
   latestTimestamp,
   latestCaseId,
+  latestPriorCaseId,
+  latestAppealOfCaseId,
+  latestAppealOutcome,
   latestProsecutorEvidenceHash,
   latestDefenderEvidenceHash,
   latestAuditorEvidenceHash,
@@ -132,6 +140,13 @@ const [
   }),
   client.readContract({ address: receiverAddress, abi: receiverAbi, functionName: 'latestTimestamp' }),
   client.readContract({ address: receiverAddress, abi: receiverAbi, functionName: 'latestCaseId' }),
+  client.readContract({ address: receiverAddress, abi: receiverAbi, functionName: 'latestPriorCaseId' }),
+  client.readContract({
+    address: receiverAddress,
+    abi: receiverAbi,
+    functionName: 'latestAppealOfCaseId',
+  }),
+  client.readContract({ address: receiverAddress, abi: receiverAbi, functionName: 'latestAppealOutcome' }),
   client.readContract({
     address: receiverAddress,
     abi: receiverAbi,
@@ -178,6 +193,13 @@ const [
   client.readContract({ address: vaultAddress, abi: vaultAbi, functionName: 'canRedeem', args: [1000n] }),
 ])
 
+const latestCaseSummary = await client.readContract({
+  address: receiverAddress,
+  abi: receiverAbi,
+  functionName: 'getCaseSummary',
+  args: [latestCaseId],
+})
+
 console.log(
   JSON.stringify(
     {
@@ -195,10 +217,34 @@ console.log(
         latestAdmissibilityScoreBps: Number(latestAdmissibilityScoreBps),
         latestTimestamp: Number(latestTimestamp),
         latestCaseId,
+        latestPriorCaseId,
+        latestAppealOfCaseId,
+        latestAppealOutcome: Number(latestAppealOutcome),
         latestProsecutorEvidenceHash,
         latestDefenderEvidenceHash,
         latestAuditorEvidenceHash,
         latestVerdictDigest,
+        latestCaseSummary: {
+          exists: latestCaseSummary.exists,
+          mode: Number(latestCaseSummary.mode),
+          appealOutcome: Number(latestCaseSummary.appealOutcome),
+          riskScoreBps: Number(latestCaseSummary.riskScoreBps),
+          prosecutorScore: Number(latestCaseSummary.prosecutorScore),
+          defenderScore: Number(latestCaseSummary.defenderScore),
+          auditorScore: Number(latestCaseSummary.auditorScore),
+          contradictionCount: Number(latestCaseSummary.contradictionCount),
+          contradictionSeverityBps: Number(latestCaseSummary.contradictionSeverityBps),
+          evidenceFreshnessScoreBps: Number(latestCaseSummary.evidenceFreshnessScoreBps),
+          admissibilityScoreBps: Number(latestCaseSummary.admissibilityScoreBps),
+          timestamp: Number(latestCaseSummary.timestamp),
+          caseId: latestCaseSummary.caseId,
+          priorCaseId: latestCaseSummary.priorCaseId,
+          appealOfCaseId: latestCaseSummary.appealOfCaseId,
+          prosecutorEvidenceHash: latestCaseSummary.prosecutorEvidenceHash,
+          defenderEvidenceHash: latestCaseSummary.defenderEvidenceHash,
+          auditorEvidenceHash: latestCaseSummary.auditorEvidenceHash,
+          verdictDigest: latestCaseSummary.verdictDigest,
+        },
       },
       vaultState: {
         riskMode: Number(vaultRiskMode),

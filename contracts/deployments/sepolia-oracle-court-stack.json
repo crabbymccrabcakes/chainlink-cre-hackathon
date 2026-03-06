@@ -2,14 +2,14 @@
   "network": "ethereum-testnet-sepolia",
   "chainId": 11155111,
   "rpcUrl": "https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia",
-  "deployedAt": "2026-03-01T04:14:01.529Z",
+  "deployedAt": "2026-03-06T08:58:15.713Z",
   "deployer": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
   "stackVersion": "oracle-court-v3",
   "vault": {
     "contractName": "MockRWAVault",
-    "address": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
-    "deployTxHash": "0x2ddcc968f4f60383f0ee5a273e911aa7ec4f2d00dee5567d73bdb64bfee1f85c",
-    "deployBlockNumber": "10359131",
+    "address": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
+    "deployTxHash": "0xd0456fcd929d25923538f42816743d792257e3ff03e67d154d11590af0a7a5a0",
+    "deployBlockNumber": "10395262",
     "throttleMintLimit": "1000",
     "reserveCoverageBps": 10000,
     "attestationAgeSeconds": 300,
@@ -17,13 +17,13 @@
   },
   "receiver": {
     "contractName": "OracleCourtReceiver",
-    "address": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
-    "deployTxHash": "0x81c1e204f9368f2599ca8b5095bedc3bc2945bcae2c91e90745b197d198b7c58",
-    "deployBlockNumber": "10359132"
+    "address": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
+    "deployTxHash": "0x49788a43d88dcc2af47ad95cecdc403aaefc9dfbc27a287813627d14cfb7491f",
+    "deployBlockNumber": "10395263"
   },
   "wiring": {
-    "setCourtTxHash": "0xa8786b391f879d859fc51e7b825b1756d1667a8136955fd86887b8430e47a373",
-    "setCourtBlockNumber": "10359133"
+    "setCourtTxHash": "0xebffa9a4a84af9fa9eac5a5b87de452f07ff676550daa5436fb0e21704efe135",
+    "setCourtBlockNumber": "10395264"
   },
   "abi": {
     "mockRWAVault": [
@@ -560,6 +560,28 @@
       {
         "inputs": [
           {
+            "internalType": "bytes32",
+            "name": "caseId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "DuplicateCaseId",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "uint8",
+            "name": "provided",
+            "type": "uint8"
+          }
+        ],
+        "name": "InvalidAppealOutcome",
+        "type": "error"
+      },
+      {
+        "inputs": [
+          {
             "internalType": "uint8",
             "name": "provided",
             "type": "uint8"
@@ -620,6 +642,30 @@
           },
           {
             "indexed": false,
+            "internalType": "uint16",
+            "name": "contradictionCount",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "contradictionSeverityBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "evidenceFreshnessScoreBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
+            "internalType": "uint16",
+            "name": "admissibilityScoreBps",
+            "type": "uint16"
+          },
+          {
+            "indexed": false,
             "internalType": "bytes32",
             "name": "prosecutorEvidenceHash",
             "type": "bytes32"
@@ -665,6 +711,180 @@
         "type": "event"
       },
       {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "caseId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "getCaseSummary",
+        "outputs": [
+          {
+            "components": [
+              {
+                "internalType": "bool",
+                "name": "exists",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint8",
+                "name": "mode",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint8",
+                "name": "appealOutcome",
+                "type": "uint8"
+              },
+              {
+                "internalType": "uint16",
+                "name": "riskScoreBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "prosecutorScore",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "defenderScore",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "auditorScore",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "contradictionCount",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "contradictionSeverityBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "evidenceFreshnessScoreBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint16",
+                "name": "admissibilityScoreBps",
+                "type": "uint16"
+              },
+              {
+                "internalType": "uint32",
+                "name": "timestamp",
+                "type": "uint32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "caseId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "priorCaseId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "appealOfCaseId",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "prosecutorEvidenceHash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "defenderEvidenceHash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "auditorEvidenceHash",
+                "type": "bytes32"
+              },
+              {
+                "internalType": "bytes32",
+                "name": "verdictDigest",
+                "type": "bytes32"
+              }
+            ],
+            "internalType": "struct OracleCourtReceiver.CaseSummary",
+            "name": "",
+            "type": "tuple"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          {
+            "internalType": "bytes32",
+            "name": "caseId",
+            "type": "bytes32"
+          }
+        ],
+        "name": "hasCase",
+        "outputs": [
+          {
+            "internalType": "bool",
+            "name": "",
+            "type": "bool"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestAdmissibilityScoreBps",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestAppealOfCaseId",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestAppealOutcome",
+        "outputs": [
+          {
+            "internalType": "uint8",
+            "name": "",
+            "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "inputs": [],
         "name": "latestAuditorEvidenceHash",
         "outputs": [
@@ -705,6 +925,32 @@
       },
       {
         "inputs": [],
+        "name": "latestContradictionCount",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestContradictionSeverityBps",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
         "name": "latestDefenderEvidenceHash",
         "outputs": [
           {
@@ -719,6 +965,19 @@
       {
         "inputs": [],
         "name": "latestDefenderScore",
+        "outputs": [
+          {
+            "internalType": "uint16",
+            "name": "",
+            "type": "uint16"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestEvidenceFreshnessScoreBps",
         "outputs": [
           {
             "internalType": "uint16",
@@ -750,6 +1009,19 @@
             "internalType": "uint8",
             "name": "",
             "type": "uint8"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "latestPriorCaseId",
+        "outputs": [
+          {
+            "internalType": "bytes32",
+            "name": "",
+            "type": "bytes32"
           }
         ],
         "stateMutability": "view",

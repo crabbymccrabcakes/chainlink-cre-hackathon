@@ -27,7 +27,7 @@ import {
 import { z } from 'zod'
 
 import { AGGREGATOR_V3_ABI } from './aggregator-v3-abi'
-import { evaluateAppeal, type AppealSnapshot } from './appeal'
+import { appealOutcomeToCode, evaluateAppeal, type AppealSnapshot } from './appeal'
 import { clamp, digestObject, round, stableStringify } from './canonical'
 import {
   averageClaimConfidence,
@@ -56,6 +56,9 @@ const RECEIVER_STATE_ABI = parseAbi([
   'function latestAdmissibilityScoreBps() view returns (uint16)',
   'function latestTimestamp() view returns (uint32)',
   'function latestCaseId() view returns (bytes32)',
+  'function latestPriorCaseId() view returns (bytes32)',
+  'function latestAppealOfCaseId() view returns (bytes32)',
+  'function latestAppealOutcome() view returns (uint8)',
 ])
 
 const configSchema = z.object({
@@ -192,6 +195,9 @@ interface TribunalVerdict {
   admissibilityScoreBps: number
   timestamp: number
   caseId: `0x${string}`
+  priorCaseId: `0x${string}`
+  appealOfCaseId: `0x${string}`
+  appealOutcomeCode: number
   prosecutorEvidenceHash: `0x${string}`
   defenderEvidenceHash: `0x${string}`
   auditorEvidenceHash: `0x${string}`
@@ -680,6 +686,10 @@ const readPreviousReceiverSnapshot = (
       abi: RECEIVER_STATE_ABI,
       functionName: 'latestEvidenceFreshnessScoreBps',
     })
+    const latestCaseIdCall = encodeFunctionData({
+      abi: RECEIVER_STATE_ABI,
+      functionName: 'latestCaseId',
+    })
 
     const latestModeResp = evmClient
       .callContract(runtime, {
@@ -727,6 +737,15 @@ const readPreviousReceiverSnapshot = (
         }),
       })
       .result()
+    const latestCaseIdResp = evmClient
+      .callContract(runtime, {
+        call: encodeCallMsg({
+          from: zeroAddress,
+          to: runtime.config.receiverAddress as Address,
+          data: latestCaseIdCall,
+        }),
+      })
+      .result()
 
     const latestMode = Number(
       decodeFunctionResult({
@@ -764,10 +783,20 @@ const readPreviousReceiverSnapshot = (
         data: bytesToHex(latestFreshnessResp.data),
       }),
     )
+    const latestCaseId = decodeFunctionResult({
+      abi: RECEIVER_STATE_ABI,
+      functionName: 'latestCaseId',
+      data: bytesToHex(latestCaseIdResp.data),
+    })
+
+    if (latestCaseId === '0x0000000000000000000000000000000000000000000000000000000000000000') {
+      return null
+    }
 
     const mode = modeToLabel(clamp(latestMode, 0, 2) as TribunalMode)
 
     return {
+      caseId: latestCaseId,
       mode,
       riskScoreBps: latestRiskScoreBps,
       contradictionCount: latestContradictionCount,
@@ -1003,6 +1032,12 @@ const buildTribunalVerdict = (
     contradictionSeverityBps,
     evidenceFreshnessScoreBps: dossier.evidenceFreshnessScoreBps,
   })
+  const priorCaseId =
+    previousSnapshot?.caseId || '0x0000000000000000000000000000000000000000000000000000000000000000'
+  const appealOfCaseId =
+    appealOutcome.outcome === 'NO_PRIOR_CASE'
+      ? '0x0000000000000000000000000000000000000000000000000000000000000000'
+      : priorCaseId
 
   const prosecutorEvidenceHash = digestObject(briefs.prosecutor)
   const defenderEvidenceHash = digestObject(briefs.defender)
@@ -1020,6 +1055,9 @@ const buildTribunalVerdict = (
     defenderScore,
     auditorScore,
     riskScoreBps,
+    priorCaseId,
+    appealOfCaseId,
+    appealOutcome: appealOutcome.outcome,
     evidenceRoot: dossier.evidenceRoot,
   })
 
@@ -1031,6 +1069,9 @@ const buildTribunalVerdict = (
     mode,
     timestamp,
     caseId,
+    priorCaseId,
+    appealOfCaseId,
+    appealOutcome: appealOutcome.outcome,
     evidenceRoot: dossier.evidenceRoot,
     constitutionalAssessments,
   })
@@ -1058,6 +1099,9 @@ const buildTribunalVerdict = (
     admissibilityScoreBps: dossier.admissibilityScoreBps,
     timestamp,
     caseId,
+    priorCaseId,
+    appealOfCaseId,
+    appealOutcomeCode: appealOutcomeToCode(appealOutcome.outcome),
     prosecutorEvidenceHash,
     defenderEvidenceHash,
     auditorEvidenceHash,
@@ -1081,7 +1125,7 @@ const writeVerdictOnchain = (
 ): string => {
   const encodedVerdict = encodeAbiParameters(
     parseAbiParameters(
-      'uint8 mode,uint16 riskScoreBps,uint16 prosecutorScore,uint16 defenderScore,uint16 auditorScore,uint16 contradictionCount,uint16 contradictionSeverityBps,uint16 evidenceFreshnessScoreBps,uint16 admissibilityScoreBps,uint32 timestamp,bytes32 caseId,bytes32 prosecutorEvidenceHash,bytes32 defenderEvidenceHash,bytes32 auditorEvidenceHash,bytes32 verdictDigest',
+      'uint8 mode,uint16 riskScoreBps,uint16 prosecutorScore,uint16 defenderScore,uint16 auditorScore,uint16 contradictionCount,uint16 contradictionSeverityBps,uint16 evidenceFreshnessScoreBps,uint16 admissibilityScoreBps,uint32 timestamp,bytes32 caseId,bytes32 priorCaseId,bytes32 appealOfCaseId,uint8 appealOutcome,bytes32 prosecutorEvidenceHash,bytes32 defenderEvidenceHash,bytes32 auditorEvidenceHash,bytes32 verdictDigest',
     ),
     [
       verdict.mode,
@@ -1095,6 +1139,9 @@ const writeVerdictOnchain = (
       verdict.admissibilityScoreBps,
       verdict.timestamp,
       verdict.caseId,
+      verdict.priorCaseId,
+      verdict.appealOfCaseId,
+      verdict.appealOutcomeCode,
       verdict.prosecutorEvidenceHash,
       verdict.defenderEvidenceHash,
       verdict.auditorEvidenceHash,
@@ -1147,6 +1194,8 @@ const onCronTrigger = (
   auditorEvidenceHash: `0x${string}`
   verdictDigest: `0x${string}`
   caseId: `0x${string}`
+  priorCaseId: `0x${string}`
+  appealOfCaseId: `0x${string}`
   appealOutcome: AppealSummary['outcome']
   constitutionalOverrideReason: string
   txHash: string
@@ -1322,6 +1371,9 @@ const onCronTrigger = (
       policyMode: verdict.policyMode,
       policyModeLabel: verdict.policyModeLabel,
       caseId: verdict.caseId,
+      priorCaseId: verdict.priorCaseId,
+      appealOfCaseId: verdict.appealOfCaseId,
+      appealOutcome: verdict.appealOutcome.outcome,
       txHash,
     },
   }
@@ -1329,6 +1381,8 @@ const onCronTrigger = (
   const verdictBulletin = {
     bulletinVersion: 'oracle-court-ai-governor-v1',
     caseId: verdict.caseId,
+    priorCaseId: verdict.priorCaseId,
+    appealOfCaseId: verdict.appealOfCaseId,
     mode: verdict.modeLabel,
     policyMode: verdict.policyModeLabel,
     riskScoreBps: verdict.riskScoreBps,
@@ -1359,6 +1413,8 @@ const onCronTrigger = (
     auditorEvidenceHash: verdict.auditorEvidenceHash,
     verdictDigest: verdict.verdictDigest,
     caseId: verdict.caseId,
+    priorCaseId: verdict.priorCaseId,
+    appealOfCaseId: verdict.appealOfCaseId,
     appealOutcome: verdict.appealOutcome.outcome,
     constitutionalOverrideReason: verdict.constitutionalOverrideReason || '',
     txHash,

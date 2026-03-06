@@ -16,6 +16,36 @@ This implementation already ships:
 - Counterfactual policy simulation (`NORMAL`, `THROTTLE`, `REDEMPTION_ONLY`)
 - Constitutional principle checks + appeal/retrial delta output
 - Onchain verdict commit + vault policy enforcement via `setRiskMode(mode)`
+- Onchain case docket keyed by `caseId`, including prior-case and appeal lineage
+
+---
+
+## Latest Sepolia Verification
+
+Current deployed stack:
+
+- `OracleCourtReceiver`: `0x4f89381387bcc29a4f7d12581314d69fad2bb67d`
+- `MockRWAVault`: `0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20`
+
+Deployment transactions:
+
+- Vault deploy: `0xd0456fcd929d25923538f42816743d792257e3ff03e67d154d11590af0a7a5a0`
+- Receiver deploy: `0x49788a43d88dcc2af47ad95cecdc403aaefc9dfbc27a287813627d14cfb7491f`
+- `setCourt`: `0xebffa9a4a84af9fa9eac5a5b87de452f07ff676550daa5436fb0e21704efe135`
+
+Verified tribunal writes:
+
+- Initial case tx: `0x3c30739a08d393a9ebd62c741443604e3567c75c9e81f153b3f603af32f584f0`
+- Linked follow-up case tx: `0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a`
+
+The second case is persisted onchain with:
+
+- `caseId = 0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566`
+- `priorCaseId = 0x77501b708cfe46c615496a84b69e358957b90fa5334406f5122b2b308d8378cf`
+- `appealOfCaseId = 0x77501b708cfe46c615496a84b69e358957b90fa5334406f5122b2b308d8378cf`
+- `appealOutcome = MAINTAIN`
+
+This confirms the receiver now behaves like a docket, not just a latest-state sink.
 
 ---
 
@@ -131,6 +161,8 @@ And emits `appealOutcome` relative to the prior onchain case summary (`ESCALATE`
 ### 6) Deterministic commit + onchain enforcement
 
 CRE writes a signed report to `OracleCourtReceiver`, which stores verdict state, persists appeal-summary fields (contradiction count/severity, freshness, admissibility), and calls:
+- `getCaseSummary(caseId)` exposes the docketed case summary onchain
+- `hasCase(caseId)` allows existence checks for audit/replay flows
 
 - `MockRWAVault.setRiskMode(mode)`
 

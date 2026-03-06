@@ -1,26 +1,25 @@
 # Oracle Court Proof Artifact
 
-> Scenario: stressed-canonical (tx: 0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b)
-
 ## Deterministic Proof Block
 
 ```json
 {
   "proofVersion": "oracle-court-ai-governor-v1",
-  "generatedAtIso": "2026-03-01T05:53:28.515Z",
-  "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
-  "blockNumber": "10359612",
+  "proofMode": "onchain-broadcast",
+  "generatedAtIso": "2026-03-06T09:02:39.889Z",
+  "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a",
+  "blockNumber": "10395283",
   "chainId": 11155111,
-  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
-  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
+  "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "inputValues": null,
   "evidenceDossierSummary": {
-    "admissibilityScoreBps": 8680,
+    "admissibilityScoreBps": 8311,
     "claimCount": 3,
     "contradictionCount": 1,
-    "evidenceFreshnessScoreBps": 9207,
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-    "generatedAtUnix": 1772344394,
+    "evidenceFreshnessScoreBps": 1817,
+    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
+    "generatedAtUnix": 1772787753,
     "protectedSourcesPresent": true,
     "sourceIds": [
       "ATT-2026-02-28",
@@ -29,12 +28,12 @@
     ]
   },
   "evidenceDossier": {
-    "admissibilityScoreBps": 8680,
+    "admissibilityScoreBps": 8311,
     "claimCount": 3,
     "contradictionCount": 1,
-    "evidenceFreshnessScoreBps": 9207,
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-    "generatedAtUnix": 1772344394,
+    "evidenceFreshnessScoreBps": 1817,
+    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
+    "generatedAtUnix": 1772787753,
     "protectedSourcesPresent": true,
     "sourceIds": [
       "ATT-2026-02-28",
@@ -117,11 +116,11 @@
       ],
       "claims": [
         "Supportive claims count=1",
-        "Evidence freshness score=9207",
-        "Admissibility score=8680",
-        "Residual market stress (depeg+spread)=5"
+        "Evidence freshness score=1817",
+        "Admissibility score=8311",
+        "Residual market stress (depeg+spread)=2"
       ],
-      "confidenceBps": 5714,
+      "confidenceBps": 5574,
       "contradictionsFound": [
         "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
       ],
@@ -147,53 +146,53 @@
       ],
       "claims": [
         "Contradictions detected=1",
-        "Admissibility score=8680",
-        "Freshness score=9207",
+        "Admissibility score=8311",
+        "Freshness score=1817",
         "Source failure penalty=0"
       ],
-      "confidenceBps": 6278,
+      "confidenceBps": 8542,
       "contradictionsFound": [
         "C-1: Queue stress indicates redemptions are not behaving as claimed (severity=4800)"
       ],
-      "policyRecommendation": "NORMAL",
+      "policyRecommendation": "REDEMPTION_ONLY",
       "position": "restrict",
       "thesis": "Narrative claims conflict with telemetry; admissibility and freshness controls require a safety premium."
     }
   },
   "agentScores": {
-    "prosecutorScore": 5810,
-    "defenderScore": 1046,
-    "auditorScore": 1205,
-    "riskScoreBps": 5969
+    "prosecutorScore": 5806,
+    "defenderScore": 856,
+    "auditorScore": 7384,
+    "riskScoreBps": 10000
   },
   "policySimulation": {
-    "explanation": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505",
+    "explanation": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=7485",
     "modeResults": [
       {
-        "falsePositiveCostBps": 3289,
+        "falsePositiveCostBps": 4700,
         "mode": "NORMAL",
-        "objectiveScoreBps": 6253,
+        "objectiveScoreBps": 7420,
         "operationalReversibilityBps": 9300,
         "rationale": "Minimizes user harm but offers the least solvency protection.",
-        "solvencyProtectionBps": 5369,
+        "solvencyProtectionBps": 9000,
         "userHarmBps": 1200
       },
       {
-        "falsePositiveCostBps": 2606,
+        "falsePositiveCostBps": 1800,
         "mode": "THROTTLE",
-        "objectiveScoreBps": 6505,
+        "objectiveScoreBps": 7485,
         "operationalReversibilityBps": 7600,
         "rationale": "Balances containment with user access while preserving reversibility.",
-        "solvencyProtectionBps": 7569,
+        "solvencyProtectionBps": 9800,
         "userHarmBps": 4300
       },
       {
-        "falsePositiveCostBps": 3812,
+        "falsePositiveCostBps": 2200,
         "mode": "REDEMPTION_ONLY",
-        "objectiveScoreBps": 5244,
+        "objectiveScoreBps": 6025,
         "operationalReversibilityBps": 3000,
         "rationale": "Maximizes solvency containment under contradiction-heavy evidence.",
-        "solvencyProtectionBps": 8569,
+        "solvencyProtectionBps": 10000,
         "userHarmBps": 8200
       }
     ],
@@ -202,124 +201,130 @@
   "constitutionalAssessments": [
     {
       "principle": "Solvency First",
-      "reason": "Selected mode prioritizes solvency containment under observed stress.",
-      "status": "SATISFIED"
+      "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+      "status": "BREACHED"
     },
     {
       "principle": "Orderly Exit",
-      "reason": "Selected modes preserve redemptions to support orderly user exits.",
+      "reason": "Effective modes preserve redemptions to support orderly user exits.",
       "status": "SATISFIED"
     },
     {
       "principle": "Minimum Necessary Restriction",
-      "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505",
+      "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
       "status": "SATISFIED"
     },
     {
       "principle": "Evidence Sufficiency",
-      "reason": "admissibilityScoreBps=8680",
+      "reason": "admissibilityScoreBps=8311",
       "status": "SATISFIED"
     },
     {
       "principle": "Freshness Requirement",
-      "reason": "evidenceFreshnessScoreBps=9207",
-      "status": "SATISFIED"
+      "reason": "evidenceFreshnessScoreBps=1817",
+      "status": "BREACHED"
     }
   ],
   "appealOutcome": {
-    "confidenceBps": 9035,
+    "confidenceBps": 7877,
     "deltas": {
       "contradictionCountDelta": 1,
       "contradictionSeverityDeltaBps": 4800,
-      "freshnessDeltaBps": 9207,
-      "riskDeltaBps": 5969
+      "freshnessDeltaBps": -2,
+      "riskDeltaBps": 4787
     },
-    "outcome": "ESCALATE",
-    "rationale": "New evidence increased contradiction pressure or risk score; policy escalated."
+    "outcome": "MAINTAIN",
+    "rationale": "Evidence deltas did not justify a mode transition; policy maintained."
   },
   "evidenceHashes": {
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
+    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
     "prosecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-    "defenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
-    "auditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
-    "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
+    "defenderEvidenceHash": "0x40627cf2e159fa0252fb84ca3686bfe40d0d23a7bd546e15a659c9c7f581822b",
+    "auditorEvidenceHash": "0x47a635b2e21fd427750711ae0b9149ce4c15d299b8fbf54ee9a0d5851e97f8ee",
+    "verdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28"
   },
   "finalVerdict": {
-    "mode": 1,
-    "modeLabel": "THROTTLE",
-    "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
-    "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b",
-    "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505"
+    "mode": 0,
+    "modeLabel": "NORMAL",
+    "policyMode": 1,
+    "policyModeLabel": "THROTTLE",
+    "caseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
+    "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a",
+    "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=7485"
   },
   "verdictBulletin": {
-    "caseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
-    "mode": "THROTTLE",
-    "riskScoreBps": 5969,
-    "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-    "verdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b",
+    "caseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
+    "mode": "NORMAL",
+    "riskScoreBps": 10000,
+    "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
+    "verdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28",
     "policyExplanation": null,
     "constitutionalAssessments": [
       {
         "principle": "Solvency First",
-        "reason": "Selected mode prioritizes solvency containment under observed stress.",
-        "status": "SATISFIED"
+        "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
+        "status": "BREACHED"
       },
       {
         "principle": "Orderly Exit",
-        "reason": "Selected modes preserve redemptions to support orderly user exits.",
+        "reason": "Effective modes preserve redemptions to support orderly user exits.",
         "status": "SATISFIED"
       },
       {
         "principle": "Minimum Necessary Restriction",
-        "reason": "THROTTLE selected by counterfactual policy simulation: Balances containment with user access while preserving reversibility. objective=6505",
+        "reason": "Constitutional gate downgraded THROTTLE to NORMAL because admissibilityScoreBps=8311 and evidenceFreshnessScoreBps=1817 did not clear restrictive-mode thresholds.",
         "status": "SATISFIED"
       },
       {
         "principle": "Evidence Sufficiency",
-        "reason": "admissibilityScoreBps=8680",
+        "reason": "admissibilityScoreBps=8311",
         "status": "SATISFIED"
       },
       {
         "principle": "Freshness Requirement",
-        "reason": "evidenceFreshnessScoreBps=9207",
-        "status": "SATISFIED"
+        "reason": "evidenceFreshnessScoreBps=1817",
+        "status": "BREACHED"
       }
     ],
     "appealOutcome": {
-      "confidenceBps": 9035,
+      "confidenceBps": 7877,
       "deltas": {
         "contradictionCountDelta": 1,
         "contradictionSeverityDeltaBps": 4800,
-        "freshnessDeltaBps": 9207,
-        "riskDeltaBps": 5969
+        "freshnessDeltaBps": -2,
+        "riskDeltaBps": 4787
       },
-      "outcome": "ESCALATE",
-      "rationale": "New evidence increased contradiction pressure or risk score; policy escalated."
+      "outcome": "MAINTAIN",
+      "rationale": "Evidence deltas did not justify a mode transition; policy maintained."
     },
-    "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b"
+    "txHash": "0xce0682cc84d0460812126e3cf8f4c80836c79f7112da592fe5c2afb99f0c637a"
   },
   "onchainState": {
     "receiver": {
-      "latestMode": 1,
-      "latestRiskScoreBps": 5969,
-      "latestProsecutorScore": 5810,
-      "latestDefenderScore": 1046,
-      "latestAuditorScore": 1205,
-      "latestTimestamp": 1772344394,
-      "latestCaseId": "0xdae2b2af11aa58e3e81e9ffd0484a137efdeaf6bef38f2ce078e1e8d749ec4a2",
+      "latestMode": 0,
+      "latestRiskScoreBps": 10000,
+      "latestProsecutorScore": 5806,
+      "latestDefenderScore": 856,
+      "latestAuditorScore": 7384,
+      "latestContradictionCount": 1,
+      "latestContradictionSeverityBps": 4800,
+      "latestEvidenceFreshnessScoreBps": 1817,
+      "latestAdmissibilityScoreBps": 8311,
+      "latestTimestamp": 1772787753,
+      "latestCaseId": "0x99777aefdeade5c1a6b59a3d637c334de4c090733fdfd1aff1833e9c78a63566",
       "latestProsecutorEvidenceHash": "0xb4948bfd8206230ce95f434c5d838861e855e6fe288c2a8376236c475bb677fa",
-      "latestDefenderEvidenceHash": "0x900cc1587bf1009836831a32d3eab9371fa3afbe19a46df8cb06f3932118bf5d",
-      "latestAuditorEvidenceHash": "0xf2c9b58868cb727d5a7a68c474eededcee5ae70046c999690497ae4d99a6394a",
-      "latestVerdictDigest": "0x2ec089dae8f0a84c6944f7c1d4558beb4dcb33dd384c861fbaaff4eef54b726b"
+      "latestDefenderEvidenceHash": "0x40627cf2e159fa0252fb84ca3686bfe40d0d23a7bd546e15a659c9c7f581822b",
+      "latestAuditorEvidenceHash": "0x47a635b2e21fd427750711ae0b9149ce4c15d299b8fbf54ee9a0d5851e97f8ee",
+      "latestVerdictDigest": "0x33e883ede007b5362073c32e0225b7048dffce4e31776ec7fe24a74e5d232f28"
     },
     "vault": {
-      "riskMode": 1,
+      "riskMode": 0,
       "throttleMintLimit": "1000",
       "reserveCoverageBps": 9400,
       "attestationAgeSeconds": 172800,
       "redemptionQueueBps": 2800,
       "canMint1000": true,
-      "canMint5000": false,
+      "canMint5000": true,
       "canRedeem1000": true
     }
   }
@@ -332,3 +337,4 @@
 - Prosecutor / Defender / Auditor briefs are adversarial, citation-backed, and independently hashed.
 - Policy mode is selected via counterfactual simulation across NORMAL / THROTTLE / REDEMPTION_ONLY.
 - Receiver enforces protocol consequence by calling `MockRWAVault.setRiskMode(mode)`.
+- If `proofMode=simulated-placeholder`, treat artifact as simulation-only (not final onchain proof).

@@ -1,10 +1,10 @@
 {
-  "admissibilityScoreBps": 8680,
+  "admissibilityScoreBps": 8311,
   "claimCount": 3,
   "contradictionCount": 1,
-  "evidenceFreshnessScoreBps": 9207,
-  "evidenceRoot": "0x9181fae4b7dbb99dca8b75f560051e9c7a3508529a300317e3d9844f54078b14",
-  "generatedAtUnix": 1772344394,
+  "evidenceFreshnessScoreBps": 1817,
+  "evidenceRoot": "0x5027f9918437199b3327f99f047ec6d56de34843385dbfbbdd27b6c12bb3e3c2",
+  "generatedAtUnix": 1772787753,
   "protectedSourcesPresent": true,
   "sourceIds": [
     "ATT-2026-02-28",
@@ -48,7 +48,5 @@
       "rhs": "Telemetry redemptionQueueBps=2800",
       "severityBps": 4800
     }
-  ],
-  "scenario": "stressed-canonical",
-  "txHash": "0x116b46285fec8335894c1359556917187a202faffb2379094073ecc22aced23b"
+  ]
 }

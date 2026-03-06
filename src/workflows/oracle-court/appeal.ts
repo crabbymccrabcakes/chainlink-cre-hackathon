@@ -2,6 +2,15 @@ import { clamp } from './canonical'
 import type { ModeLabel } from './tribunal'
 
 export interface AppealSnapshot {
+  caseId: `0x${string}`
+  mode: ModeLabel
+  riskScoreBps: number
+  contradictionCount: number
+  contradictionSeverityBps: number
+  evidenceFreshnessScoreBps: number
+}
+
+export interface AppealDeltaSnapshot {
   mode: ModeLabel
   riskScoreBps: number
   contradictionCount: number
@@ -21,6 +30,13 @@ export interface AppealOutcome {
   }
 }
 
+export const appealOutcomeToCode = (outcome: AppealOutcome['outcome']): number => {
+  if (outcome === 'NO_PRIOR_CASE') return 0
+  if (outcome === 'ESCALATE') return 1
+  if (outcome === 'RELAX') return 2
+  return 3
+}
+
 const modeRank = (mode: ModeLabel): number => {
   if (mode === 'NORMAL') return 0
   if (mode === 'THROTTLE') return 1
@@ -29,7 +45,7 @@ const modeRank = (mode: ModeLabel): number => {
 
 export const evaluateAppeal = (
   previous: AppealSnapshot | null,
-  current: AppealSnapshot,
+  current: AppealDeltaSnapshot,
 ): AppealOutcome => {
   if (!previous) {
     return {

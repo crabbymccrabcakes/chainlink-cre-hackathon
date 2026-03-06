@@ -1,8 +1,8 @@
 {
   "schedule": "0 */5 * * * *",
   "chainSelectorName": "ethereum-testnet-sepolia",
-  "receiverAddress": "0x874209ec5beaf34c6b570adc7f8f6ea4b01464f9",
-  "vaultAddress": "0xd730a0f5ef8e419b1dbf3101e019dce9e2c040de",
+  "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
+  "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "gasLimit": "1250000",
   "feeds": {
     "ethUsdProxy": "0x694AA1769357215DE4FAC081bf1f309aDC325306",
