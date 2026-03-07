@@ -1,10 +1,10 @@
 {
-  "caseId": "0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896",
+  "caseId": "0x97cd9c477f26083e083df80d5d7188490bed2af95ae8a8c26b094df407581cb3",
   "mode": "NORMAL",
-  "riskScoreBps": 5566,
-  "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
-  "verdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01",
-  "policyExplanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6307",
+  "riskScoreBps": 5559,
+  "evidenceRoot": "0xe4fbd64e9b97649611ee455059e3242c4a1a1d03d4eab195b7f74720f0b71d55",
+  "verdictDigest": "0xb7ff7856c98774958160bc188048b0f693ea216a1cad3bf565aeb99cbcd922d4",
+  "policyExplanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6304",
   "constitutionalAssessments": [
     {
       "principle": "Solvency First",
@@ -33,123 +33,23 @@
     }
   ],
   "appealOutcome": {
-    "confidenceBps": 7807,
+    "confidenceBps": 6200,
     "deltas": {
-      "contradictionCountDelta": -1,
-      "contradictionSeverityDeltaBps": -4800,
+      "contradictionCountDelta": 0,
+      "contradictionSeverityDeltaBps": 0,
       "freshnessDeltaBps": 0,
-      "riskDeltaBps": -4434
+      "riskDeltaBps": 0
     },
-    "outcome": "RELAX",
-    "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
+    "outcome": "MAINTAIN",
+    "rationale": "Evidence deltas did not justify a mode transition; policy maintained."
   },
-  "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e",
-  "scenario": "appeal-canonical",
-  "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
-  "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
-  "resultingVaultMode": 0,
-  "actionProof": {
-    "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
-    "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
-    "outcomes": [
-      {
-        "label": "appeal-mint-5000",
-        "kind": "mint",
-        "amount": "5000",
-        "expectedStatus": "SUCCESS",
-        "status": "SUCCESS",
-        "txHash": "0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093",
-        "blockNumber": "10399302",
-        "error": null,
-        "actorBalanceDelta": "5000",
-        "totalMintedDelta": "5000",
-        "totalRedeemedDelta": "0",
-        "before": {
-          "riskMode": 0,
-          "throttleMintLimit": "1000",
-          "reserveCoverageBps": 9900,
-          "attestationAgeSeconds": 7200,
-          "redemptionQueueBps": 700,
-          "canMintAmount": true,
-          "canRedeemAmount": true,
-          "actorBalance": "10000",
-          "totalMinted": "15000",
-          "totalRedeemed": "5000"
-        },
-        "after": {
-          "riskMode": 0,
-          "throttleMintLimit": "1000",
-          "reserveCoverageBps": 9900,
-          "attestationAgeSeconds": 7200,
-          "redemptionQueueBps": 700,
-          "canMintAmount": true,
-          "canRedeemAmount": true,
-          "actorBalance": "15000",
-          "totalMinted": "20000",
-          "totalRedeemed": "5000"
-        }
-      },
-      {
-        "label": "appeal-redeem-1000",
-        "kind": "redeem",
-        "amount": "1000",
-        "expectedStatus": "SUCCESS",
-        "status": "SUCCESS",
-        "txHash": "0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a",
-        "blockNumber": "10399303",
-        "error": null,
-        "actorBalanceDelta": "-1000",
-        "totalMintedDelta": "0",
-        "totalRedeemedDelta": "1000",
-        "before": {
-          "riskMode": 0,
-          "throttleMintLimit": "1000",
-          "reserveCoverageBps": 9900,
-          "attestationAgeSeconds": 7200,
-          "redemptionQueueBps": 700,
-          "canMintAmount": true,
-          "canRedeemAmount": true,
-          "actorBalance": "15000",
-          "totalMinted": "20000",
-          "totalRedeemed": "5000"
-        },
-        "after": {
-          "riskMode": 0,
-          "throttleMintLimit": "1000",
-          "reserveCoverageBps": 9900,
-          "attestationAgeSeconds": 7200,
-          "redemptionQueueBps": 700,
-          "canMintAmount": true,
-          "canRedeemAmount": true,
-          "actorBalance": "14000",
-          "totalMinted": "20000",
-          "totalRedeemed": "6000"
-        }
-      }
-    ],
-    "finalState": {
-      "riskMode": 0,
-      "throttleMintLimit": "1000",
-      "reserveCoverageBps": 9900,
-      "attestationAgeSeconds": 7200,
-      "redemptionQueueBps": 700,
-      "canMintAmount": true,
-      "canRedeemAmount": true,
-      "actorBalance": "14000",
-      "totalMinted": "20000",
-      "totalRedeemed": "6000"
-    }
+  "modelGeneration": {
+    "model": "gpt-4.1-mini",
+    "promptDigest": "0xfb8fd9ea70d10fa19dc8050948d5b8c3d028de9d4d16408b28b614363a580c2e",
+    "provider": "openai-responses",
+    "reason": "Schema-validated model-generated findings attached to tribunal briefs through local simulation config fallback (non-confidential).",
+    "responseDigest": "0xdc2fd53ad4c029051de46ae9a9880b5bea944025ba150e884eb7e8484b243c0c",
+    "status": "APPLIED"
   },
-  "postActionVaultState": {
-    "riskMode": 0,
-    "throttleMintLimit": "1000",
-    "reserveCoverageBps": 9900,
-    "attestationAgeSeconds": 7200,
-    "redemptionQueueBps": 700,
-    "canMintAmount": true,
-    "canRedeemAmount": true,
-    "actorBalance": "14000",
-    "totalMinted": "20000",
-    "totalRedeemed": "6000"
-  }
+  "txHash": "0x54f807f421a8b7a2170c753562a65e3cd55f902a76ad0643b8118abdc6a6066a"
 }

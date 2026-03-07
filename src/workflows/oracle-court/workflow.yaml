@@ -3,7 +3,7 @@ local-simulation:
     workflow-name: "oracle-court"
   workflow-artifacts:
     workflow-path: "./index.ts"
-    config-path: "./config.generated.json"
+    config-path: "./config.local.generated.json"
 
 production-testnet:
   user-workflow:

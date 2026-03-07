@@ -1,96 +1,56 @@
-> Scenario: appeal-canonical (tx: 0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e)
-
 # Tribunal Briefs
 
-## Prosecutor
+## Deterministic Prosecutor
+
+```json
+null
+```
+
+## Deterministic Defender
+
+```json
+null
+```
+
+## Deterministic Auditor
+
+```json
+null
+```
+
+## Schema-Validated Model Findings Status
 
 ```json
 {
-  "agent": "PROSECUTOR",
-  "citations": [
-    {
-      "chunkId": "ATT-2026-02-28-chunk-1",
-      "claimId": "CLM-1",
-      "quote": "Independent attestation states reserves are sufficient and fully backed as of Friday close. C...",
-      "sourceId": "ATT-2026-02-28"
-    }
-  ],
-  "claims": [
-    "Reserve gap penalty=0",
-    "Attestation lag penalty=0",
-    "Redemption queue penalty=0",
-    "Contradiction severity total=0"
-  ],
-  "confidenceBps": 5614,
-  "contradictionsFound": [],
-  "policyRecommendation": "NORMAL",
-  "position": "restrict",
-  "thesis": "Stress indicators are present and justify a precautionary restriction posture."
+  "model": "gpt-4.1-mini",
+  "promptDigest": "0xfb8fd9ea70d10fa19dc8050948d5b8c3d028de9d4d16408b28b614363a580c2e",
+  "provider": "openai-responses",
+  "reason": "Schema-validated model-generated findings attached to tribunal briefs through local simulation config fallback (non-confidential).",
+  "responseDigest": "0xdc2fd53ad4c029051de46ae9a9880b5bea944025ba150e884eb7e8484b243c0c",
+  "status": "APPLIED"
 }
 ```
 
-## Defender
+## Model Prosecutor
 
 ```json
-{
-  "agent": "DEFENDER",
-  "citations": [
-    {
-      "chunkId": "DISC-2026-02-28-chunk-1",
-      "claimId": "CLM-2",
-      "quote": "Issuer disclosure reports redemption operations are normal and orderly. The statement also no...",
-      "sourceId": "DISC-2026-02-28"
-    }
-  ],
-  "claims": [
-    "Supportive claims count=1",
-    "Evidence freshness score=1500",
-    "Admissibility score=9095",
-    "Residual market stress (depeg+spread)=2"
-  ],
-  "confidenceBps": 6610,
-  "contradictionsFound": [],
-  "policyRecommendation": "NORMAL",
-  "position": "hold",
-  "thesis": "Current evidence quality is insufficient to justify maximum restrictions."
-}
+null
 ```
 
-## Auditor
+## Model Defender
 
 ```json
-{
-  "agent": "AUDITOR",
-  "citations": [
-    {
-      "chunkId": "ATT-2026-02-28-chunk-1",
-      "claimId": "CLM-1",
-      "quote": "Independent attestation states reserves are sufficient and fully backed as of Friday close. C...",
-      "sourceId": "ATT-2026-02-28"
-    },
-    {
-      "chunkId": "DISC-2026-02-28-chunk-1",
-      "claimId": "CLM-2",
-      "quote": "Issuer disclosure reports redemption operations are normal and orderly. The statement also no...",
-      "sourceId": "DISC-2026-02-28"
-    }
-  ],
-  "claims": [
-    "Contradictions detected=0",
-    "Admissibility score=9095",
-    "Freshness score=1500",
-    "Source failure penalty=0"
-  ],
-  "confidenceBps": 7951,
-  "contradictionsFound": [],
-  "policyRecommendation": "REDEMPTION_ONLY",
-  "position": "hold",
-  "thesis": "Evidence coherence is acceptable; no major contradiction penalties detected."
-}
+null
+```
+
+## Model Auditor
+
+```json
+null
 ```
 
 ## Evidence Hashes
 
-- prosecutorEvidenceHash: `0x40fee3fff61b5923fbaa83a2fd2a9620bd5edda484cd847b115eb310b51ada5e`
-- defenderEvidenceHash: `0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd`
-- auditorEvidenceHash: `0x1e813cdb2da59a86502350139ebf9e6b4feaba651bb1a3bc69edf6941a3f53bc`
+- prosecutorEvidenceHash: `0xc8b94045e0e47e0774d5b0e0b6a00f52639ca61680db2ac8da50128c455a5b97`
+- defenderEvidenceHash: `0x679d2d4da3abf1a05b5af78ea1df8a081c855f145aa9ae3b259227b5423afe21`
+- auditorEvidenceHash: `0xf8c864888b3d26a7b67c624dc285ecb5779e2134ba5c984c304625330d5df8cb`

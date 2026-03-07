@@ -3,8 +3,8 @@
   "claimCount": 3,
   "contradictionCount": 0,
   "evidenceFreshnessScoreBps": 1500,
-  "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
-  "generatedAtUnix": 1772842686,
+  "evidenceRoot": "0xe4fbd64e9b97649611ee455059e3242c4a1a1d03d4eab195b7f74720f0b71d55",
+  "generatedAtUnix": 1772869758,
   "protectedSourcesPresent": true,
   "sourceIds": [
     "ATT-2026-02-28",
@@ -40,7 +40,5 @@
       "topic": "reserves"
     }
   ],
-  "contradictionMatrix": [],
-  "scenario": "appeal-canonical",
-  "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e"
+  "contradictionMatrix": []
 }

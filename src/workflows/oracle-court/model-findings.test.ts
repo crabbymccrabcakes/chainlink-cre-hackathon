@@ -1,6 +1,7 @@
 import { describe, expect } from 'bun:test'
 import {
   ConfidentialHttpMock,
+  HttpActionsMock,
   newTestRuntime,
   test as creTest,
   type Secrets,
@@ -13,7 +14,7 @@ import {
   type ModelGenerationInput,
 } from './model-findings'
 
-const buildConfig = (): ModelConfig => ({
+const buildConfig = (overrides: Partial<ModelConfig> = {}): ModelConfig => ({
   enabled: true,
   provider: 'openai-responses',
   apiUrl: 'https://api.openai.com/v1/responses',
@@ -22,6 +23,7 @@ const buildConfig = (): ModelConfig => ({
   apiKeySecretNamespace: 'default',
   maxOutputTokens: 1200,
   temperature: 0,
+  ...overrides,
 })
 
 const buildInput = (): ModelGenerationInput => {
@@ -166,7 +168,7 @@ const encodeResponseBody = (payload: unknown): string =>
   Buffer.from(JSON.stringify(payload), 'utf8').toString('base64')
 
 describe('model findings', () => {
-  creTest('applies schema-validated model findings', () => {
+  creTest('applies schema-validated model findings', async () => {
     const input = buildInput()
     const [claimId] = input.dossier.claims.map((claim) => claim.claimId)
     const [contradictionId] = input.dossier.contradictionMatrix.map((entry) => entry.id)
@@ -174,7 +176,7 @@ describe('model findings', () => {
     const mock = ConfidentialHttpMock.testInstance()
     mock.sendRequest = (request) => {
       expect(request.request?.url).toBe('https://api.openai.com/v1/responses')
-      expect(request.request?.multiHeaders.authorization?.values[0]).toBe('Bearer test-model-key')
+      expect(request.request?.multiHeaders.Authorization?.values[0]).toBe('Bearer test-model-key')
       expect(request.request?.body.case).toBe('bodyString')
 
       return {
@@ -228,7 +230,7 @@ describe('model findings', () => {
       }
     }
 
-    const result = maybeGenerateModelBriefs(buildRuntime(buildConfig(), buildSecrets()), input)
+    const result = await maybeGenerateModelBriefs(buildRuntime(buildConfig(), buildSecrets()), input)
 
     expect(result.summary.status).toBe('APPLIED')
     expect(result.summary.provider).toBe('openai-responses')
@@ -238,7 +240,7 @@ describe('model findings', () => {
     expect(result.briefs.DEFENDER?.findings.length).toBe(1)
   })
 
-  creTest('falls back when the model references unknown claim ids', () => {
+  creTest('falls back when the model references unknown claim ids', async () => {
     const input = buildInput()
     const [contradictionId] = input.dossier.contradictionMatrix.map((entry) => entry.id)
 
@@ -293,25 +295,97 @@ describe('model findings', () => {
       }),
     })
 
-    const result = maybeGenerateModelBriefs(buildRuntime(buildConfig(), buildSecrets()), input)
+    const result = await maybeGenerateModelBriefs(buildRuntime(buildConfig(), buildSecrets()), input)
 
     expect(result.summary.status).toBe('FALLBACK')
     expect(result.briefs.PROSECUTOR).toBeUndefined()
     expect(result.summary.reason).toContain('unknown claimId=CLM-999')
   })
 
-  creTest('stays disabled when the feature is not configured', () => {
-    const result = maybeGenerateModelBriefs(buildRuntime(undefined, buildSecrets()), buildInput())
+  creTest('stays disabled when the feature is not configured', async () => {
+    const result = await maybeGenerateModelBriefs(buildRuntime(undefined, buildSecrets()), buildInput())
 
     expect(result.summary.status).toBe('DISABLED')
     expect(result.briefs.PROSECUTOR).toBeUndefined()
   })
 
-  creTest('skips model generation when the API key secret is missing', () => {
-    const result = maybeGenerateModelBriefs(buildRuntime(buildConfig()), buildInput())
+  creTest('uses a local simulation config fallback when the CRE secret is missing', async () => {
+    const input = buildInput()
+    const [claimId] = input.dossier.claims.map((claim) => claim.claimId)
+    const [contradictionId] = input.dossier.contradictionMatrix.map((entry) => entry.id)
+
+    const mock = HttpActionsMock.testInstance()
+    mock.sendRequest = (request) => {
+      expect(request.url).toBe('https://api.openai.com/v1/responses')
+      expect(request.method).toBe('POST')
+      expect(request.multiHeaders?.Authorization?.values[0]).toBe('Bearer test-local-model-key')
+
+      return {
+        statusCode: 200,
+        body: encodeResponseBody({
+          output_text: JSON.stringify({
+            prosecutor: {
+              thesis: 'Local fallback prosecutor thesis supporting throttle under stress.',
+              recommendation: 'THROTTLE',
+              confidenceBps: 7800,
+              findings: [
+                {
+                  summary: 'Local fallback identifies reserve and queue stress from validated evidence.',
+                  claimIds: [claimId],
+                  contradictionIds: [contradictionId],
+                  metricKeys: ['reserveCoverageGapBps', 'redemptionQueueBps', 'riskScoreBps'],
+                  severityBps: 7200,
+                },
+              ],
+            },
+            defender: {
+              thesis: 'Local fallback defender thesis favoring a reversible response.',
+              recommendation: 'NORMAL',
+              confidenceBps: 6100,
+              findings: [
+                {
+                  summary: 'Local fallback still finds mitigating evidence in issuer disclosures.',
+                  claimIds: [claimId],
+                  contradictionIds: [],
+                  metricKeys: ['admissibilityScoreBps', 'evidenceFreshnessScoreBps'],
+                  severityBps: 3900,
+                },
+              ],
+            },
+            auditor: {
+              thesis: 'Local fallback auditor thesis emphasizing contradiction pressure.',
+              recommendation: 'THROTTLE',
+              confidenceBps: 7400,
+              findings: [
+                {
+                  summary: 'Local fallback concludes contradiction pressure warrants a safety premium.',
+                  claimIds: [claimId],
+                  contradictionIds: [contradictionId],
+                  metricKeys: ['contradictionSeverityBps', 'riskScoreBps'],
+                  severityBps: 6800,
+                },
+              ],
+            },
+          }),
+        }),
+      }
+    }
+
+    const result = await maybeGenerateModelBriefs(
+      buildRuntime(buildConfig({ localApiKey: 'test-local-model-key' })),
+      input,
+    )
+
+    expect(result.summary.status).toBe('APPLIED')
+    expect(result.summary.reason).toContain('local simulation config fallback')
+    expect(result.briefs.PROSECUTOR?.provider).toBe('openai-responses')
+  })
+
+  creTest('skips model generation when the API key is unavailable everywhere', async () => {
+    const result = await maybeGenerateModelBriefs(buildRuntime(buildConfig()), buildInput())
 
     expect(result.summary.status).toBe('SKIPPED')
-    expect(result.summary.reason).toContain('Model secret unavailable')
+    expect(result.summary.reason).toContain('CRE secret or local simulation config fallback')
     expect(result.briefs.PROSECUTOR).toBeUndefined()
   })
 })

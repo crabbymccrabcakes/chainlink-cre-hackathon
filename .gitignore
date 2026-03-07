@@ -5,7 +5,9 @@ node_modules/
 !.env.example
 secrets.oracle-court.yaml
 *.log
+*.swp
 dist/
 .cre_build_tmp.js
 **/.cre_build_tmp.js
 .DS_Store
+src/workflows/oracle-court/config.local.generated.json

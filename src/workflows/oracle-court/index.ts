@@ -39,6 +39,7 @@ import {
 import {
   maybeGenerateModelBriefs,
   modelConfigSchema,
+  type ModelGenerationResult,
   type ModelGenerationSummary,
 } from './model-findings'
 import { simulatePolicyModes, type PolicySimulationOutput } from './policy-simulator'
@@ -1136,7 +1137,7 @@ const buildTribunalVerdict = (
 
 const attachModelGeneratedBriefs = (
   verdict: TribunalVerdict,
-  modelGeneration: ReturnType<typeof maybeGenerateModelBriefs>,
+  modelGeneration: ModelGenerationResult,
 ): TribunalVerdict => {
   const prosecutorBrief = modelGeneration.briefs.PROSECUTOR
     ? {
@@ -1251,9 +1252,9 @@ const writeVerdictOnchain = (
   return bytesToHex(writeResult.txHash || new Uint8Array(32))
 }
 
-const onCronTrigger = (
+const onCronTrigger = async (
   runtime: Runtime<Config>,
-): {
+): Promise<{
   mode: TribunalMode
   modeLabel: ModeLabel
   policyMode: TribunalMode
@@ -1273,7 +1274,7 @@ const onCronTrigger = (
   appealOutcome: AppealSummary['outcome']
   constitutionalOverrideReason: string
   txHash: string
-} => {
+}> => {
   const network = getNetwork({
     chainFamily: 'evm',
     chainSelectorName: runtime.config.chainSelectorName,
@@ -1304,7 +1305,7 @@ const onCronTrigger = (
     timestamp,
     previousSnapshot,
   )
-  const modelGeneration = maybeGenerateModelBriefs(runtime, {
+  const modelGeneration = await maybeGenerateModelBriefs(runtime, {
     timestamp,
     dossier: deterministicVerdict.dossier,
     previousSnapshot,

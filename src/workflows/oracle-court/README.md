@@ -81,4 +81,4 @@ bun run simulate:oracle-court:broadcast
 bun run proof:oracle-court:canonical
 ```
 
-If `model.enabled=true`, `index.ts` will request the configured API key via `runtime.getSecret(...)`, call the configured OpenAI Responses endpoint through `ConfidentialHTTPClient`, validate all returned claim/contradiction references against the live dossier, attach accepted findings to the agent briefs, and fall back to deterministic-only artifacts on any error.
+If `model.enabled=true`, `index.ts` will first try to request the configured API key via `runtime.getSecret(...)` and call the configured OpenAI Responses endpoint through `ConfidentialHTTPClient`. When that secret path is unavailable during `local-simulation`, `sync-oracle-court-config.ts` can copy `OPENAI_API_KEY` (or the configured secret id) into `config.local.generated.json`, and the workflow will call the same endpoint over ordinary local HTTP. All returned claim/contradiction references are still schema-validated against the live dossier, and the workflow falls back to deterministic-only artifacts on any error.

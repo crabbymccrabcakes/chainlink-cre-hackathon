@@ -1,4 +1,4 @@
-import { cre, type Runtime } from '@chainlink/cre-sdk'
+import { consensusIdenticalAggregation, cre, type Runtime } from '@chainlink/cre-sdk'
 import { z } from 'zod'
 
 import { digestObject, stableStringify } from './canonical'
@@ -124,6 +124,7 @@ export const modelConfigSchema = z.object({
   apiKeySecretId: z.string().min(1),
   apiKeySecretNamespace: z.string().min(1),
   apiKeySecretOwner: z.string().min(1).optional(),
+  localApiKey: z.string().min(1).optional(),
   maxOutputTokens: z.number().int().min(200).max(4_000),
   temperature: z.number().min(0).max(1),
 })
@@ -154,6 +155,88 @@ type ModelBriefPackOutput = z.infer<typeof modelBriefPackSchema>
 type RuntimeWithModel<T> = Runtime<T & { model?: ModelConfig }>
 
 const AGENT_ORDER: ModelAgentName[] = ['PROSECUTOR', 'DEFENDER', 'AUDITOR']
+const MODEL_RESPONSE_JSON_SCHEMA = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['prosecutor', 'defender', 'auditor'],
+  properties: {
+    prosecutor: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['thesis', 'recommendation', 'confidenceBps', 'findings'],
+      properties: {
+        thesis: { type: 'string' },
+        recommendation: { type: 'string', enum: ['NORMAL', 'THROTTLE', 'REDEMPTION_ONLY'] },
+        confidenceBps: { type: 'integer' },
+        findings: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['summary', 'claimIds', 'contradictionIds', 'metricKeys', 'severityBps'],
+            properties: {
+              summary: { type: 'string' },
+              claimIds: { type: 'array', items: { type: 'string' } },
+              contradictionIds: { type: 'array', items: { type: 'string' } },
+              metricKeys: { type: 'array', items: { type: 'string' } },
+              severityBps: { type: 'integer' },
+            },
+          },
+        },
+      },
+    },
+    defender: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['thesis', 'recommendation', 'confidenceBps', 'findings'],
+      properties: {
+        thesis: { type: 'string' },
+        recommendation: { type: 'string', enum: ['NORMAL', 'THROTTLE', 'REDEMPTION_ONLY'] },
+        confidenceBps: { type: 'integer' },
+        findings: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['summary', 'claimIds', 'contradictionIds', 'metricKeys', 'severityBps'],
+            properties: {
+              summary: { type: 'string' },
+              claimIds: { type: 'array', items: { type: 'string' } },
+              contradictionIds: { type: 'array', items: { type: 'string' } },
+              metricKeys: { type: 'array', items: { type: 'string' } },
+              severityBps: { type: 'integer' },
+            },
+          },
+        },
+      },
+    },
+    auditor: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['thesis', 'recommendation', 'confidenceBps', 'findings'],
+      properties: {
+        thesis: { type: 'string' },
+        recommendation: { type: 'string', enum: ['NORMAL', 'THROTTLE', 'REDEMPTION_ONLY'] },
+        confidenceBps: { type: 'integer' },
+        findings: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['summary', 'claimIds', 'contradictionIds', 'metricKeys', 'severityBps'],
+            properties: {
+              summary: { type: 'string' },
+              claimIds: { type: 'array', items: { type: 'string' } },
+              contradictionIds: { type: 'array', items: { type: 'string' } },
+              metricKeys: { type: 'array', items: { type: 'string' } },
+              severityBps: { type: 'integer' },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const
 
 const stripCodeFence = (value: string): string => {
   const trimmed = value.trim()
@@ -289,6 +372,14 @@ const buildModelRequestBody = (config: ModelConfig, input: ModelGenerationInput)
   instructions:
     'You are Oracle Court\'s structured evidence analyst. Produce strict JSON only, grounded exclusively in the supplied dossier, contradictions, and metrics.',
   input: buildPromptPayload(input),
+  text: {
+    format: {
+      type: 'json_schema',
+      name: 'oracle_court_model_brief_pack',
+      strict: true,
+      schema: MODEL_RESPONSE_JSON_SCHEMA,
+    },
+  },
 })
 
 const assertSemanticReferences = (
@@ -404,7 +495,7 @@ const parseModelResponse = (body: Uint8Array | string): unknown => {
   return extractJsonPayload(outerPayload) ?? outerPayload
 }
 
-const invokeModel = <T extends { model?: ModelConfig }>(
+const invokeModelWithConfidentialHttp = <T extends { model?: ModelConfig }>(
   runtime: RuntimeWithModel<T>,
   config: ModelConfig,
   apiKey: string,
@@ -418,10 +509,10 @@ const invokeModel = <T extends { model?: ModelConfig }>(
         method: 'POST',
         bodyString: JSON.stringify(buildModelRequestBody(config, input)),
         multiHeaders: {
-          authorization: {
+          Authorization: {
             values: [`Bearer ${apiKey}`],
           },
-          'content-type': {
+          'Content-Type': {
             values: ['application/json'],
           },
         },
@@ -437,10 +528,59 @@ const invokeModel = <T extends { model?: ModelConfig }>(
   return parseModelResponse(response.body)
 }
 
-export const maybeGenerateModelBriefs = <T extends { model?: ModelConfig }>(
+const readLocalConfigApiKey = (config: ModelConfig): string | null => config.localApiKey?.trim() || null
+
+const invokeModelWithLocalHttp = <T extends { model?: ModelConfig }>(
+  runtime: RuntimeWithModel<T>,
+  config: ModelConfig,
+  apiKey: string,
+  input: ModelGenerationInput,
+) => {
+  const httpClient = new cre.capabilities.HTTPClient()
+  const responseText = httpClient
+    .sendRequest(
+      runtime,
+      (sendRequester) => {
+        const response = sendRequester
+          .sendRequest({
+            url: config.apiUrl,
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: Buffer.from(JSON.stringify(buildModelRequestBody(config, input)), 'utf8').toString(
+              'base64',
+            ),
+            multiHeaders: {
+              Authorization: {
+                values: [`Bearer ${apiKey}`],
+              },
+              'Content-Type': {
+                values: ['application/json'],
+              },
+            },
+          })
+          .result()
+
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          const errorBody = Buffer.from(response.body).toString('utf-8').slice(0, 240)
+          throw new Error(`Model HTTP ${response.statusCode}: ${errorBody}`)
+        }
+
+        return Buffer.from(response.body).toString('utf-8')
+      },
+      consensusIdenticalAggregation<string>(),
+    )()
+    .result()
+
+  return parseModelResponse(responseText)
+}
+
+export const maybeGenerateModelBriefs = async <T extends { model?: ModelConfig }>(
   runtime: RuntimeWithModel<T>,
   input: ModelGenerationInput,
-): ModelGenerationResult => {
+): Promise<ModelGenerationResult> => {
   const config = runtime.config.model
 
   if (!config || !config.enabled) {
@@ -450,7 +590,9 @@ export const maybeGenerateModelBriefs = <T extends { model?: ModelConfig }>(
     }
   }
 
-  let apiKey: string
+  let apiKey: string | null = null
+  let credentialSource: 'cre-secret' | 'local-config' | null = null
+
   try {
     const secret = runtime
       .getSecret({
@@ -459,19 +601,33 @@ export const maybeGenerateModelBriefs = <T extends { model?: ModelConfig }>(
       })
       .result()
 
-    apiKey = secret.value.trim()
-    if (!apiKey) {
-      return {
-        briefs: {},
-        summary: defaultSummary('SKIPPED', config, 'Model API key secret resolved to an empty value.'),
-      }
+    const secretValue = secret.value.trim()
+    if (secretValue) {
+      apiKey = secretValue
+      credentialSource = 'cre-secret'
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    return {
-      briefs: {},
-      summary: defaultSummary('SKIPPED', config, `Model secret unavailable: ${message}`),
+    runtime.log(
+      `[OracleCourt][ModelLayer][SecretUnavailable] ${error instanceof Error ? error.message : String(error)}`,
+    )
+  }
+
+  if (!apiKey) {
+    apiKey = readLocalConfigApiKey(config)
+    if (apiKey) {
+      credentialSource = 'local-config'
     }
+  }
+
+  if (!apiKey || !credentialSource) {
+    return {
+        briefs: {},
+        summary: defaultSummary(
+          'SKIPPED',
+          config,
+          'Model API key unavailable through CRE secret or local simulation config fallback.',
+        ),
+      }
   }
 
   const promptPayload = buildPromptPayload(input)
@@ -482,7 +638,10 @@ export const maybeGenerateModelBriefs = <T extends { model?: ModelConfig }>(
   })
 
   try {
-    const rawResponse = invokeModel(runtime, config, apiKey, input)
+    const rawResponse =
+      credentialSource === 'cre-secret'
+        ? invokeModelWithConfidentialHttp(runtime, config, apiKey, input)
+        : invokeModelWithLocalHttp(runtime, config, apiKey, input)
     const responseDigest = digestObject(rawResponse)
     const parsedResult = modelBriefPackSchema.parse(rawResponse)
     assertSemanticReferences(parsedResult, input)
@@ -493,7 +652,10 @@ export const maybeGenerateModelBriefs = <T extends { model?: ModelConfig }>(
         status: 'APPLIED',
         provider: config.provider,
         model: config.model,
-        reason: 'Schema-validated model-generated findings attached to tribunal briefs.',
+        reason:
+          credentialSource === 'cre-secret'
+            ? 'Schema-validated model-generated findings attached to tribunal briefs through CRE confidential HTTP.'
+            : 'Schema-validated model-generated findings attached to tribunal briefs through local simulation config fallback (non-confidential).',
         promptDigest,
         responseDigest,
       },

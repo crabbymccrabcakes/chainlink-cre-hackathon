@@ -286,8 +286,19 @@ export SEPOLIA_RPC_URL="https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP
 Optional model findings:
 
 - Set `model.enabled=true` in `src/workflows/oracle-court/config.template.json` before syncing config.
-- Store the API key in CRE secrets under the configured `model.apiKeySecretId` / `model.apiKeySecretNamespace`, then provision it with `cre secrets create <secrets-file.yaml>`.
+- For `local-simulation`, `bun run sync:oracle-court:config` copies `OPENAI_API_KEY` (or the configured `model.apiKeySecretId`) into an untracked local config file used only by the local target.
+- For live CRE confidential execution, store the API key in CRE secrets under the configured `model.apiKeySecretId` / `model.apiKeySecretNamespace`, then provision it with `cre secrets create <secrets-file.yaml>`.
 - If the secret or model call is unavailable, Oracle Court logs a model-layer fallback and continues with deterministic tribunal briefs only.
+
+Local-only model path:
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export ORACLE_COURT_MODEL_ENABLED=true
+bun run simulate:oracle-court
+```
+
+This uses ordinary local HTTP for the model call during `local-simulation`. It does not require deploy access, writes the key only to `src/workflows/oracle-court/config.local.generated.json`, and is not the confidential CRE path.
 
 Exact provisioning flow for the current config (`model.apiKeySecretId=OPENAI_API_KEY`, namespace `default`):
 

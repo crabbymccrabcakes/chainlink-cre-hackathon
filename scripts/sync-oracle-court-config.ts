@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url'
 const defaultDeploymentPath = 'contracts/deployments/sepolia-oracle-court-stack.json'
 const defaultTemplatePath = 'src/workflows/oracle-court/config.template.json'
 const defaultGeneratedPath = 'src/workflows/oracle-court/config.generated.json'
+const defaultLocalGeneratedPath = 'src/workflows/oracle-court/config.local.generated.json'
 
 const resolveAddress = (deployment, envValue, fallbackPath) => {
   if (envValue) return envValue
@@ -51,10 +52,12 @@ export function syncOracleCourtConfig({
   deploymentPath = defaultDeploymentPath,
   templatePath = defaultTemplatePath,
   generatedPath = defaultGeneratedPath,
+  localGeneratedPath = defaultLocalGeneratedPath,
 } = {}) {
   const deploymentFile = path.resolve(projectRoot, deploymentPath)
   const templateFile = path.resolve(projectRoot, templatePath)
   const generatedFile = path.resolve(projectRoot, generatedPath)
+  const localGeneratedFile = path.resolve(projectRoot, localGeneratedPath)
 
   if (!fs.existsSync(templateFile)) {
     throw new Error(`Missing Oracle Court config template: ${templateFile}`)
@@ -84,13 +87,13 @@ export function syncOracleCourtConfig({
     )
   }
 
-  const generated = {
+  const baseGenerated = {
     ...template,
     receiverAddress,
     vaultAddress,
   }
 
-  if (generated.model) {
+  if (baseGenerated.model) {
     const enabledOverride = parseOptionalBoolean(process.env.ORACLE_COURT_MODEL_ENABLED)
     const apiUrlOverride = process.env.ORACLE_COURT_MODEL_API_URL
     const modelOverride = process.env.ORACLE_COURT_MODEL_NAME
@@ -106,8 +109,8 @@ export function syncOracleCourtConfig({
       'ORACLE_COURT_MODEL_TEMPERATURE',
     )
 
-    generated.model = {
-      ...generated.model,
+    baseGenerated.model = {
+      ...baseGenerated.model,
       ...(enabledOverride === undefined ? {} : { enabled: enabledOverride }),
       ...(apiUrlOverride ? { apiUrl: apiUrlOverride } : {}),
       ...(modelOverride ? { model: modelOverride } : {}),
@@ -121,11 +124,32 @@ export function syncOracleCourtConfig({
     }
   }
 
+  const generated = JSON.parse(JSON.stringify(baseGenerated))
+  const localGenerated = JSON.parse(JSON.stringify(baseGenerated))
+
+  if (localGenerated.model) {
+    const localApiKeyEnvNames =
+      localGenerated.model.apiKeySecretId === 'OPENAI_API_KEY'
+        ? [localGenerated.model.apiKeySecretId]
+        : [localGenerated.model.apiKeySecretId, 'OPENAI_API_KEY']
+
+    const localApiKey = localApiKeyEnvNames
+      .map((name) => process.env[name]?.trim())
+      .find((value) => value)
+
+    if (localApiKey) {
+      localGenerated.model.localApiKey = localApiKey
+    }
+  }
+
   fs.mkdirSync(path.dirname(generatedFile), { recursive: true })
   fs.writeFileSync(generatedFile, `${JSON.stringify(generated, null, 2)}\n`, 'utf8')
+  fs.mkdirSync(path.dirname(localGeneratedFile), { recursive: true })
+  fs.writeFileSync(localGeneratedFile, `${JSON.stringify(localGenerated, null, 2)}\n`, 'utf8')
 
   return {
     generatedFile,
+    localGeneratedFile,
     receiverAddress,
     vaultAddress,
   }
@@ -134,6 +158,7 @@ export function syncOracleCourtConfig({
 if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = syncOracleCourtConfig()
   console.log(`Synced Oracle Court config: ${result.generatedFile}`)
+  console.log(`Synced Oracle Court local config: ${result.localGeneratedFile}`)
   console.log(`receiverAddress=${result.receiverAddress}`)
   console.log(`vaultAddress=${result.vaultAddress}`)
 }
