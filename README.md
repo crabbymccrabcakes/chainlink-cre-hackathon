@@ -41,6 +41,13 @@ Verified canonical proof writes:
 - Stressed tribunal tx: `0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558`
 - Appeal tribunal tx: `0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e`
 
+Latest model-backed proof write:
+
+- Tribunal tx: `0x54f807f421a8b7a2170c753562a65e3cd55f902a76ad0643b8118abdc6a6066a`
+- `caseId`: `0x97cd9c477f26083e083df80d5d7188490bed2af95ae8a8c26b094df407581cb3`
+- `modelGeneration.status = APPLIED`
+- `modelGeneration.responseDigest = 0xdc2fd53ad4c029051de46ae9a9880b5bea944025ba150e884eb7e8484b243c0c`
+
 Verified post-verdict user action writes:
 
 - Healthy `mint(5000)` tx: `0x535e26a7e32168c780f96da19b8d0c35c539d0776117a95db23c97a871f536bd`
@@ -90,8 +97,8 @@ Canonical proof files:
 - `artifacts/oracle-court-stressed-scenario.json`
 - `artifacts/oracle-court-appeal-scenario.json`
 
-The checked-in canonical package above is the current regenerated Sepolia proof set for the upgraded docketed stack.
-It reflects the deterministic tribunal path; the optional model-generated findings layer is implemented in code but not part of the checked-in live proof artifacts.
+The checked-in canonical package above remains the deterministic three-scenario Sepolia proof set for the upgraded docketed stack.
+Separately, the checked-in single-run proof artifacts (`artifacts/oracle-court-proof.md`, `artifacts/verdict-bulletin.json`, `artifacts/tribunal-briefs.md`) now capture a model-backed Sepolia write with `modelGeneration.status=APPLIED`.
 
 ---
 
@@ -153,7 +160,7 @@ Each brief is hashed with stable canonical JSON:
 - `defenderEvidenceHash`
 - `auditorEvidenceHash`
 
-These deterministic briefs are still the policy-decision source of truth. An optional `model` path can call a language model through CRE confidential HTTP, validate the returned JSON against schema + real dossier IDs, and attach supplemental findings to the tribunal briefs. When that model layer is accepted, the brief hashes and verdict digest are recomputed over the augmented briefs before the report is written onchain.
+These deterministic briefs are still the policy-decision source of truth. The `model` path can call a language model through CRE confidential HTTP in deployable runtimes, or through the local-simulation config fallback for local proof runs, validate the returned JSON against schema + real dossier IDs, and attach supplemental findings to the tribunal briefs. When that model layer is accepted, the brief hashes and verdict digest are recomputed over the augmented briefs before the report is written onchain.
 
 ### 3) Contradiction analysis
 
@@ -299,6 +306,16 @@ bun run simulate:oracle-court
 ```
 
 This uses ordinary local HTTP for the model call during `local-simulation`. It does not require deploy access, writes the key only to `src/workflows/oracle-court/config.local.generated.json`, and is not the confidential CRE path.
+
+Model-backed Sepolia proof run:
+
+```bash
+export OPENAI_API_KEY="sk-..."
+export ORACLE_COURT_MODEL_ENABLED=true
+bun run simulate:oracle-court:broadcast
+```
+
+This regenerates `artifacts/oracle-court-proof.md`, `artifacts/verdict-bulletin.json`, and `artifacts/tribunal-briefs.md` with `modelGeneration.status=APPLIED` when the schema-validated model call succeeds.
 
 Exact provisioning flow for the current config (`model.apiKeySecretId=OPENAI_API_KEY`, namespace `default`):
 

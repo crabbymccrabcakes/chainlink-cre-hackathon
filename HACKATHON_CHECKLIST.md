@@ -4,7 +4,7 @@ Source references:
 - Submission rules post: https://moltbook.com/post/96c35241-13d0-43f9-9bcb-995df05d4bd6
 - Official qualification checklist: https://github.com/smartcontractkit/chainlink-agents-hackathon-skills/blob/main/QUALIFICATION_CHECKLIST.md
 
-Last verified: 2026-03-01 (Australia/Brisbane)
+Last verified: 2026-03-07 (Australia/Brisbane)
 
 ---
 
@@ -59,6 +59,11 @@ Clean-clone qualification run proof (latest):
 - txHash: `0xb2a2f9a804221520c91dcf327680c9b362b89d134ac39e6ac3f5e3fcba7e2a4c`
 - mode: `THROTTLE`
 - vault policy effect: `canMint5000=false`, `canRedeem1000=true`
+
+Latest pushed model-backed proof write:
+- txHash: `0x54f807f421a8b7a2170c753562a65e3cd55f902a76ad0643b8118abdc6a6066a`
+- caseId: `0x97cd9c477f26083e083df80d5d7188490bed2af95ae8a8c26b094df407581cb3`
+- modelGeneration.status: `APPLIED`
 
 ---
 

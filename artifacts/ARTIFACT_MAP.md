@@ -27,19 +27,19 @@
   - Scenario C detailed snapshot (inputs, verdict, tribunal tx hash, action tx hashes, onchain/vault state).
 
 - `artifacts/evidence-dossier.json`
-  - Scenario C (appeal-canonical) evidence dossier with contradiction matrix and evidence root.
+  - Latest single-run Sepolia proof dossier, including contradiction matrix and evidence root for the model-backed workflow run.
 
 - `artifacts/evidence-dossier.md`
-  - Scenario C human-readable evidence dossier.
+  - Human-readable version of the latest single-run Sepolia proof dossier.
 
 - `artifacts/tribunal-briefs.md`
-  - Scenario C adversarial tribunal briefs (prosecutor/defender/auditor) + evidence hashes.
+  - Latest single-run adversarial tribunal briefs (prosecutor/defender/auditor) + evidence hashes. This file now includes `modelGeneration.status=APPLIED` and the attached schema-validated findings.
 
 - `artifacts/policy-simulation.md`
-  - Scenario C counterfactual mode simulation and selected mode rationale.
+  - Latest single-run counterfactual mode simulation and selected mode rationale.
 
 - `artifacts/verdict-bulletin.json`
-  - Scenario C final verdict bulletin including tx hash, receiver/vault addresses, resulting vault mode, and action proof.
+  - Latest single-run final verdict bulletin including model-generation status, tx hash, receiver/vault addresses, and resulting vault mode.
 
 - `artifacts/oracle-court-proof.md`
-  - Scenario C deterministic proof block with onchain readback.
+  - Latest single-run proof block with onchain readback and model-generation summary.
