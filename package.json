@@ -6,6 +6,7 @@
   "description": "Oracle Court — constitutional AI risk governor workflow on Chainlink CRE",
   "scripts": {
     "setup": "bun x cre-setup",
+    "test": "bun test",
     "typecheck": "tsc --noEmit",
 
     "simulate:oracle-court": "bun run sync:oracle-court:config && cre workflow simulate ./src/workflows/oracle-court --target local-simulation --non-interactive --trigger-index 0",
@@ -23,7 +24,7 @@
     "demo:oracle-court:impact": "bun scripts/demo-oracle-court-policy-impact.ts",
     "proof:oracle-court:canonical": "bun scripts/build-oracle-court-canonical-proof.ts",
 
-    "check": "bun run typecheck && bun run compile:all"
+    "check": "bun run typecheck && bun run test && bun run compile:all"
   },
   "dependencies": {
     "@chainlink/cre-sdk": "^1.1.2",

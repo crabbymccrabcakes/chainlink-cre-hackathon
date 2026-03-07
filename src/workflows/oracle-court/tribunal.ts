@@ -1,5 +1,6 @@
 import { clamp } from './canonical'
 import type { ContradictionEntry, EvidenceDossier, ExtractedClaim } from './dossier'
+import type { ModelGeneratedBrief } from './model-findings'
 
 export type ModeLabel = 'NORMAL' | 'THROTTLE' | 'REDEMPTION_ONLY'
 export type AgentName = 'PROSECUTOR' | 'DEFENDER' | 'AUDITOR'
@@ -20,6 +21,7 @@ export interface AgentBrief {
   contradictionsFound: string[]
   policyRecommendation: ModeLabel
   confidenceBps: number
+  modelGenerated?: ModelGeneratedBrief | null
 }
 
 interface BuildBriefInput {

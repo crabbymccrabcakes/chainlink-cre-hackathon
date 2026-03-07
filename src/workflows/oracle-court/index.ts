@@ -36,6 +36,11 @@ import {
   type EvidenceDocumentInput,
   type EvidenceDossier,
 } from './dossier'
+import {
+  maybeGenerateModelBriefs,
+  modelConfigSchema,
+  type ModelGenerationSummary,
+} from './model-findings'
 import { simulatePolicyModes, type PolicySimulationOutput } from './policy-simulator'
 import { buildTribunalBriefs, type AgentBrief, type ModeLabel } from './tribunal'
 
@@ -118,6 +123,7 @@ const configSchema = z.object({
     evidenceSufficiencyMinBps: z.number().int().nonnegative(),
     freshnessMinBps: z.number().int().nonnegative(),
   }),
+  model: modelConfigSchema.optional(),
 })
 
 type Config = z.infer<typeof configSchema>
@@ -211,6 +217,7 @@ interface TribunalVerdict {
   constitutionalAssessments: ConstitutionalPrincipleAssessment[]
   constitutionalOverrideReason: string | null
   appealOutcome: AppealSummary
+  modelGeneration: ModelGenerationSummary
 }
 
 interface SourceReadRequest {
@@ -1116,6 +1123,72 @@ const buildTribunalVerdict = (
     constitutionalAssessments,
     constitutionalOverrideReason,
     appealOutcome,
+    modelGeneration: {
+      status: 'DISABLED',
+      provider: null,
+      model: null,
+      reason: 'Model-generated findings disabled in config.',
+      promptDigest: null,
+      responseDigest: null,
+    },
+  }
+}
+
+const attachModelGeneratedBriefs = (
+  verdict: TribunalVerdict,
+  modelGeneration: ReturnType<typeof maybeGenerateModelBriefs>,
+): TribunalVerdict => {
+  const prosecutorBrief = modelGeneration.briefs.PROSECUTOR
+    ? {
+        ...verdict.prosecutorBrief,
+        modelGenerated: modelGeneration.briefs.PROSECUTOR,
+      }
+    : verdict.prosecutorBrief
+
+  const defenderBrief = modelGeneration.briefs.DEFENDER
+    ? {
+        ...verdict.defenderBrief,
+        modelGenerated: modelGeneration.briefs.DEFENDER,
+      }
+    : verdict.defenderBrief
+
+  const auditorBrief = modelGeneration.briefs.AUDITOR
+    ? {
+        ...verdict.auditorBrief,
+        modelGenerated: modelGeneration.briefs.AUDITOR,
+      }
+    : verdict.auditorBrief
+
+  const prosecutorEvidenceHash = digestObject(prosecutorBrief)
+  const defenderEvidenceHash = digestObject(defenderBrief)
+  const auditorEvidenceHash = digestObject(auditorBrief)
+
+  const verdictDigest = digestObject({
+    prosecutorEvidenceHash,
+    defenderEvidenceHash,
+    auditorEvidenceHash,
+    riskScoreBps: verdict.riskScoreBps,
+    mode: verdict.mode,
+    timestamp: verdict.timestamp,
+    caseId: verdict.caseId,
+    priorCaseId: verdict.priorCaseId,
+    appealOfCaseId: verdict.appealOfCaseId,
+    appealOutcome: verdict.appealOutcome.outcome,
+    evidenceRoot: verdict.evidenceRoot,
+    constitutionalAssessments: verdict.constitutionalAssessments,
+    modelGeneration: modelGeneration.summary,
+  })
+
+  return {
+    ...verdict,
+    prosecutorBrief,
+    defenderBrief,
+    auditorBrief,
+    prosecutorEvidenceHash,
+    defenderEvidenceHash,
+    auditorEvidenceHash,
+    verdictDigest,
+    modelGeneration: modelGeneration.summary,
   }
 }
 
@@ -1223,7 +1296,7 @@ const onCronTrigger = (
 
   const previousSnapshot = readPreviousReceiverSnapshot(runtime, evmClient)
   const timestamp = Math.floor(runtime.now().getTime() / 1000)
-  const verdict = buildTribunalVerdict(
+  const deterministicVerdict = buildTribunalVerdict(
     runtime.config,
     offchainSignals,
     onchainSignals,
@@ -1231,6 +1304,77 @@ const onCronTrigger = (
     timestamp,
     previousSnapshot,
   )
+  const modelGeneration = maybeGenerateModelBriefs(runtime, {
+    timestamp,
+    dossier: deterministicVerdict.dossier,
+    previousSnapshot,
+    offchainSignals: {
+      usdcMedian: offchainSignals.usdcMedian,
+      usdcMin: offchainSignals.usdcMin,
+      usdcMax: offchainSignals.usdcMax,
+      usdc24hChangePct: offchainSignals.usdc24hChangePct,
+      successfulSources: offchainSignals.successfulSources.map((source) => ({
+        name: source.name,
+        price: source.price,
+        change24hPct: source.change24hPct,
+      })),
+      failedSources: offchainSignals.failedSources,
+    },
+    onchainSignals,
+    rwaSignals,
+    derivedMetrics: {
+      depegBps: deterministicVerdict.depegBps,
+      spreadBps: deterministicVerdict.spreadBps,
+      downside24hBps: deterministicVerdict.downside24hBps,
+      reserveCoverageGapBps: deterministicVerdict.reserveCoverageGapBps,
+      attestationLagPenaltyBps: deterministicVerdict.attestationLagPenaltyBps,
+      redemptionQueuePenaltyBps: deterministicVerdict.redemptionQueuePenaltyBps,
+      sourceFailurePenaltyBps: deterministicVerdict.sourceFailurePenaltyBps,
+      macroStressBps: deterministicVerdict.macroStressBps,
+      prosecutorScore: deterministicVerdict.prosecutorScore,
+      defenderScore: deterministicVerdict.defenderScore,
+      auditorScore: deterministicVerdict.auditorScore,
+      riskScoreBps: deterministicVerdict.riskScoreBps,
+      contradictionSeverityBps: deterministicVerdict.contradictionSeverityBps,
+      contradictionCount: deterministicVerdict.contradictionCount,
+      evidenceFreshnessScoreBps: deterministicVerdict.evidenceFreshnessScoreBps,
+      admissibilityScoreBps: deterministicVerdict.admissibilityScoreBps,
+    },
+    policySimulation: {
+      selectedMode: deterministicVerdict.policySimulation.selectedMode,
+      explanation: deterministicVerdict.policySimulation.explanation,
+      modeResults: deterministicVerdict.policySimulation.modeResults.map((result) => ({
+        mode: result.mode,
+        objectiveScoreBps: result.objectiveScoreBps,
+        rationale: result.rationale,
+      })),
+    },
+    deterministicBriefs: {
+      PROSECUTOR: {
+        thesis: deterministicVerdict.prosecutorBrief.thesis,
+        policyRecommendation: deterministicVerdict.prosecutorBrief.policyRecommendation,
+        confidenceBps: deterministicVerdict.prosecutorBrief.confidenceBps,
+        claims: deterministicVerdict.prosecutorBrief.claims,
+        contradictionsFound: deterministicVerdict.prosecutorBrief.contradictionsFound,
+      },
+      DEFENDER: {
+        thesis: deterministicVerdict.defenderBrief.thesis,
+        policyRecommendation: deterministicVerdict.defenderBrief.policyRecommendation,
+        confidenceBps: deterministicVerdict.defenderBrief.confidenceBps,
+        claims: deterministicVerdict.defenderBrief.claims,
+        contradictionsFound: deterministicVerdict.defenderBrief.contradictionsFound,
+      },
+      AUDITOR: {
+        thesis: deterministicVerdict.auditorBrief.thesis,
+        policyRecommendation: deterministicVerdict.auditorBrief.policyRecommendation,
+        confidenceBps: deterministicVerdict.auditorBrief.confidenceBps,
+        claims: deterministicVerdict.auditorBrief.claims,
+        contradictionsFound: deterministicVerdict.auditorBrief.contradictionsFound,
+      },
+    },
+    constitution: runtime.config.constitution,
+  })
+  const verdict = attachModelGeneratedBriefs(deterministicVerdict, modelGeneration)
 
   runtime.log(`[OracleCourt] Offchain signals: ${safeJsonStringify(offchainSignals)}`)
   runtime.log(`[OracleCourt] Onchain signals: ${safeJsonStringify(onchainSignals)}`)
@@ -1290,6 +1434,7 @@ const onCronTrigger = (
   runtime.log(`[OracleCourt][PolicySimulation] ${stableStringify(verdict.policySimulation)}`)
   runtime.log(`[OracleCourt][Constitution] ${stableStringify(verdict.constitutionalAssessments)}`)
   runtime.log(`[OracleCourt][AppealOutcome] ${stableStringify(verdict.appealOutcome)}`)
+  runtime.log(`[OracleCourt][ModelLayer] ${stableStringify(verdict.modelGeneration)}`)
   if (verdict.constitutionalOverrideReason) {
     runtime.log(`[OracleCourt][ConstitutionalOverride] ${verdict.constitutionalOverrideReason}`)
   }
@@ -1304,37 +1449,39 @@ const onCronTrigger = (
   const txHash = writeVerdictOnchain(runtime, evmClient, verdict)
   runtime.log(`[OracleCourt] Write report transaction succeeded: ${txHash}`)
 
+  const inputValuesForArtifacts = {
+    offchain: {
+      usdcMedian: offchainSignals.usdcMedian,
+      usdcMin: offchainSignals.usdcMin,
+      usdcMax: offchainSignals.usdcMax,
+      usdc24hChangePct: offchainSignals.usdc24hChangePct,
+      successfulSourceCount: offchainSignals.successfulSources.length,
+      failedSourceCount: offchainSignals.failedSources.length,
+    },
+    onchain: {
+      ethUsd: onchainSignals.ethUsd,
+      btcUsd: onchainSignals.btcUsd,
+    },
+    rwa: {
+      reserveCoverageBps: rwaSignals.reserveCoverageBps,
+      attestationAgeSeconds: rwaSignals.attestationAgeSeconds,
+      redemptionQueueBps: rwaSignals.redemptionQueueBps,
+    },
+    dossierDocuments: runtime.config.dossier.documents.map((doc) => ({
+      id: doc.id,
+      kind: doc.kind,
+      sourceLabel: doc.sourceLabel,
+      updatedAtUnix: doc.updatedAtUnix,
+      isProtected: Boolean(doc.isProtected),
+    })),
+  }
+
   const proofBlock = {
     timestampUnix: verdict.timestamp,
     timestampIso: new Date(verdict.timestamp * 1000).toISOString(),
     receiverAddress: runtime.config.receiverAddress,
     vaultAddress: runtime.config.vaultAddress,
-    inputValues: {
-      offchain: {
-        usdcMedian: offchainSignals.usdcMedian,
-        usdcMin: offchainSignals.usdcMin,
-        usdcMax: offchainSignals.usdcMax,
-        usdc24hChangePct: offchainSignals.usdc24hChangePct,
-        successfulSourceCount: offchainSignals.successfulSources.length,
-        failedSourceCount: offchainSignals.failedSources.length,
-      },
-      onchain: {
-        ethUsd: onchainSignals.ethUsd,
-        btcUsd: onchainSignals.btcUsd,
-      },
-      rwa: {
-        reserveCoverageBps: rwaSignals.reserveCoverageBps,
-        attestationAgeSeconds: rwaSignals.attestationAgeSeconds,
-        redemptionQueueBps: rwaSignals.redemptionQueueBps,
-      },
-      dossierDocuments: runtime.config.dossier.documents.map((doc) => ({
-        id: doc.id,
-        kind: doc.kind,
-        sourceLabel: doc.sourceLabel,
-        updatedAtUnix: doc.updatedAtUnix,
-        isProtected: Boolean(doc.isProtected),
-      })),
-    },
+    inputValues: inputValuesForArtifacts,
     evidenceDossierSummary: {
       claimBalance: summarizeClaimBalance(verdict.dossier.claims),
       averageClaimConfidenceBps: averageClaimConfidence(verdict.dossier.claims),
@@ -1354,6 +1501,7 @@ const onCronTrigger = (
       selectedMode: verdict.policySimulation.selectedMode,
       explanation: verdict.policySimulation.explanation,
     },
+    modelGeneration: verdict.modelGeneration,
     constitutionalOutcome: {
       policyMode: verdict.policyModeLabel,
       effectiveMode: verdict.modeLabel,
@@ -1393,6 +1541,7 @@ const onCronTrigger = (
     constitutionalOverrideReason: verdict.constitutionalOverrideReason,
     policyExplanation: verdict.policySimulation.explanation,
     appealOutcome: verdict.appealOutcome,
+    modelGeneration: verdict.modelGeneration,
     txHash,
   }
 

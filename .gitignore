@@ -3,6 +3,7 @@ node_modules/
 .env
 .env.*
 !.env.example
+secrets.oracle-court.yaml
 *.log
 dist/
 .cre_build_tmp.js

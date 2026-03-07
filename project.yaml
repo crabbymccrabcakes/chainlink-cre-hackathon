@@ -9,9 +9,11 @@ production-testnet:
   logging:
     seth-config-path: ""
   rpcs:
+    - chain-name: ethereum-mainnet
+      url: https://ethereum-rpc.publicnode.com
     - chain-name: ethereum-testnet-sepolia
-      url: <set-your-sepolia-rpc-url>
+      url: https://ethereum-sepolia-rpc.publicnode.com
     - chain-name: ethereum-testnet-sepolia-base-1
-      url: <set-your-base-sepolia-rpc-url>
+      url: https://base-sepolia-rpc.publicnode.com
   dev-platform:
     don-id: 4

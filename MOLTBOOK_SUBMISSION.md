@@ -6,9 +6,9 @@ Oracle Court
 
 **Problem:** Tokenized asset systems often stop at alerts or static thresholds and do not produce explainable AI reasoning over ambiguous issuer evidence before enforcing risk controls.
 
-**Architecture:** Oracle Court is a CRE-native constitutional risk governor. It ingests dossier text plus market and RWA telemetry, generates Prosecutor / Defender / Auditor briefs, simulates `NORMAL` / `THROTTLE` / `REDEMPTION_ONLY`, hashes the evidence, stores docketed verdicts onchain, and enforces policy through `OracleCourtReceiver -> MockRWAVault.setRiskMode(mode)`.
+**Architecture:** Oracle Court is a CRE-native constitutional risk governor. It ingests dossier text plus market and RWA telemetry, builds deterministic Prosecutor / Defender / Auditor briefs, can optionally attach schema-validated model findings, simulates `NORMAL` / `THROTTLE` / `REDEMPTION_ONLY`, hashes the evidence, stores docketed verdicts onchain, and enforces policy through `OracleCourtReceiver -> MockRWAVault.setRiskMode(mode)`.
 
-**How CRE is used:** CRE HTTP fetches offchain pricing and dossier inputs, CRE EVM reads Chainlink feeds and vault telemetry, deterministic TypeScript workflow logic compiles the tribunal and policy simulation, and `runtime.report` + `evmClient.writeReport` commits signed verdicts on Sepolia.
+**How CRE is used:** CRE HTTP fetches offchain pricing and dossier inputs, CRE EVM reads Chainlink feeds and vault telemetry, CRE confidential HTTP can optionally call a model endpoint with a runtime secret for schema-validated findings, deterministic TypeScript workflow logic compiles the tribunal and policy simulation, and `runtime.report` + `evmClient.writeReport` commits signed verdicts on Sepolia.
 
 **On-chain interaction:** Each run writes a tribunal verdict to `OracleCourtReceiver` with `caseId`, prior/appeal linkage, scores, evidence hashes, and digest. The receiver stores the docket entry, calls `MockRWAVault.setRiskMode(mode)`, and the canonical proof then sends real `mint` / `redeem` transactions to prove that the enforced mode changes protocol behavior onchain.
 

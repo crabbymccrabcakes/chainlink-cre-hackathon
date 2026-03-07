@@ -18,10 +18,11 @@ Oracle Court is a CRE workflow for **constitutional AI risk governance** over to
 ## Processing Stages
 
 1. `dossier.ts` — chunk + claim extraction + contradiction matrix + `evidenceRoot`
-2. `tribunal.ts` — Prosecutor/Defender/Auditor adversarial briefs
-3. `policy-simulator.ts` — counterfactual scoring of mode outcomes
-4. `appeal.ts` — compares prior onchain case summary vs current evidence deltas
-5. `index.ts` — deterministic digesting, constitutional gating, report signing, onchain write
+2. `tribunal.ts` — deterministic Prosecutor/Defender/Auditor adversarial briefs
+3. `model-findings.ts` — optional schema-validated model-generated findings via CRE confidential HTTP
+4. `policy-simulator.ts` — counterfactual scoring of mode outcomes
+5. `appeal.ts` — compares prior onchain case summary vs current evidence deltas
+6. `index.ts` — deterministic digesting, constitutional gating, report signing, onchain write
 
 ## Onchain Payload
 
@@ -58,7 +59,7 @@ The report payload sent to `OracleCourtReceiver` includes the enforced mode plus
 
 - `artifacts/evidence-dossier.json`
 - `artifacts/evidence-dossier.md`
-- `artifacts/tribunal-briefs.md`
+- `artifacts/tribunal-briefs.md` (deterministic briefs + optional model findings)
 - `artifacts/policy-simulation.md`
 - `artifacts/verdict-bulletin.json`
 - `artifacts/oracle-court-proof.md`
@@ -79,3 +80,5 @@ bun run deploy:oracle-court:stack
 bun run simulate:oracle-court:broadcast
 bun run proof:oracle-court:canonical
 ```
+
+If `model.enabled=true`, `index.ts` will request the configured API key via `runtime.getSecret(...)`, call the configured OpenAI Responses endpoint through `ConfidentialHTTPClient`, validate all returned claim/contradiction references against the live dossier, attach accepted findings to the agent briefs, and fall back to deterministic-only artifacts on any error.

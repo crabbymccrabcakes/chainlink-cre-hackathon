@@ -11,7 +11,8 @@ Oracle Court is a **constitutional tribunal workflow** where:
 This implementation already ships:
 
 - Evidence Dossier generation from unstructured/semi-structured text
-- Adversarial Prosecutor / Defender / Auditor briefs with citations
+- Deterministic Prosecutor / Defender / Auditor briefs with citations
+- Optional schema-validated model-generated findings layered on top of the deterministic briefs
 - Contradiction matrix + admissibility/freshness scoring
 - Counterfactual policy simulation (`NORMAL`, `THROTTLE`, `REDEMPTION_ONLY`)
 - Constitutional principle checks + appeal/retrial delta output
@@ -90,6 +91,7 @@ Canonical proof files:
 - `artifacts/oracle-court-appeal-scenario.json`
 
 The checked-in canonical package above is the current regenerated Sepolia proof set for the upgraded docketed stack.
+It reflects the deterministic tribunal path; the optional model-generated findings layer is implemented in code but not part of the checked-in live proof artifacts.
 
 ---
 
@@ -150,6 +152,8 @@ Each brief is hashed with stable canonical JSON:
 - `prosecutorEvidenceHash`
 - `defenderEvidenceHash`
 - `auditorEvidenceHash`
+
+These deterministic briefs are still the policy-decision source of truth. An optional `model` path can call a language model through CRE confidential HTTP, validate the returned JSON against schema + real dossier IDs, and attach supplemental findings to the tribunal briefs. When that model layer is accepted, the brief hashes and verdict digest are recomputed over the augmented briefs before the report is written onchain.
 
 ### 3) Contradiction analysis
 
@@ -233,9 +237,11 @@ src/workflows/oracle-court/
   index.ts
   canonical.ts
   dossier.ts
+  model-findings.ts
   tribunal.ts
   policy-simulator.ts
   appeal.ts
+  model-findings.test.ts
   workflow.yaml
   config.template.json
   config.generated.json   # generated automatically
@@ -277,6 +283,39 @@ export CRE_ETH_PRIVATE_KEY="0x<funded-sepolia-private-key>"
 export SEPOLIA_RPC_URL="https://por.bcy-p.metalhosts.com/cre-alpha/MvqtrdftrbxcP3ZgGBJb3bK5/ethereum/sepolia"
 ```
 
+Optional model findings:
+
+- Set `model.enabled=true` in `src/workflows/oracle-court/config.template.json` before syncing config.
+- Store the API key in CRE secrets under the configured `model.apiKeySecretId` / `model.apiKeySecretNamespace`, then provision it with `cre secrets create <secrets-file.yaml>`.
+- If the secret or model call is unavailable, Oracle Court logs a model-layer fallback and continues with deterministic tribunal briefs only.
+
+Exact provisioning flow for the current config (`model.apiKeySecretId=OPENAI_API_KEY`, namespace `default`):
+
+```bash
+# 1. Put the OpenAI key in your local .env (do not commit it)
+echo 'OPENAI_API_KEY=sk-...' >> .env
+
+# 2. Use the example secret manifest
+cp secrets.oracle-court.example.yaml secrets.oracle-court.yaml
+
+# 3. Log in to CRE if needed
+bun x cre login
+
+# 4. Create the secret in Vault DON
+bun x cre secrets create secrets.oracle-court.yaml --yes
+
+# 5. Optionally verify it exists
+bun x cre secrets list
+```
+
+Notes:
+
+- `secrets.oracle-court.yaml` only lists the secret names; the values are read from `.env`.
+- The YAML is namespace-keyed. For the current config it should be:
+  `secretsNames: { default: [OPENAI_API_KEY] }`
+- If you use `--unsigned`, CRE also requires `project.yaml` to set `account.workflow-owner-address`.
+- After provisioning the secret, enable `model.enabled=true`, run `bun run sync:oracle-court:config`, then run a simulation or broadcast proof.
+
 Deploy + sync:
 
 ```bash
@@ -305,6 +344,12 @@ Build canonical healthy->stressed->appeal proof package (used in submission):
 
 ```bash
 bun run proof:oracle-court:canonical
+```
+
+Run tests:
+
+```bash
+bun test
 ```
 
 ---

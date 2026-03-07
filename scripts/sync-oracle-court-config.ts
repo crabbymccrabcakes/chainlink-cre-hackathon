@@ -21,6 +21,31 @@ const resolveAddress = (deployment, envValue, fallbackPath) => {
   return null
 }
 
+const parseOptionalBoolean = (value) => {
+  if (value === undefined) return undefined
+  if (value === '1' || value === 'true') return true
+  if (value === '0' || value === 'false') return false
+  throw new Error(`Invalid boolean env value: ${value}`)
+}
+
+const parseOptionalInteger = (value, label) => {
+  if (value === undefined) return undefined
+  const parsed = Number.parseInt(value, 10)
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`Invalid integer env value for ${label}: ${value}`)
+  }
+  return parsed
+}
+
+const parseOptionalFloat = (value, label) => {
+  if (value === undefined) return undefined
+  const parsed = Number.parseFloat(value)
+  if (!Number.isFinite(parsed)) {
+    throw new Error(`Invalid number env value for ${label}: ${value}`)
+  }
+  return parsed
+}
+
 export function syncOracleCourtConfig({
   projectRoot = process.cwd(),
   deploymentPath = defaultDeploymentPath,
@@ -63,6 +88,37 @@ export function syncOracleCourtConfig({
     ...template,
     receiverAddress,
     vaultAddress,
+  }
+
+  if (generated.model) {
+    const enabledOverride = parseOptionalBoolean(process.env.ORACLE_COURT_MODEL_ENABLED)
+    const apiUrlOverride = process.env.ORACLE_COURT_MODEL_API_URL
+    const modelOverride = process.env.ORACLE_COURT_MODEL_NAME
+    const secretIdOverride = process.env.ORACLE_COURT_MODEL_SECRET_ID
+    const secretNamespaceOverride = process.env.ORACLE_COURT_MODEL_SECRET_NAMESPACE
+    const secretOwnerOverride = process.env.ORACLE_COURT_MODEL_SECRET_OWNER
+    const maxOutputTokensOverride = parseOptionalInteger(
+      process.env.ORACLE_COURT_MODEL_MAX_OUTPUT_TOKENS,
+      'ORACLE_COURT_MODEL_MAX_OUTPUT_TOKENS',
+    )
+    const temperatureOverride = parseOptionalFloat(
+      process.env.ORACLE_COURT_MODEL_TEMPERATURE,
+      'ORACLE_COURT_MODEL_TEMPERATURE',
+    )
+
+    generated.model = {
+      ...generated.model,
+      ...(enabledOverride === undefined ? {} : { enabled: enabledOverride }),
+      ...(apiUrlOverride ? { apiUrl: apiUrlOverride } : {}),
+      ...(modelOverride ? { model: modelOverride } : {}),
+      ...(secretIdOverride ? { apiKeySecretId: secretIdOverride } : {}),
+      ...(secretNamespaceOverride ? { apiKeySecretNamespace: secretNamespaceOverride } : {}),
+      ...(secretOwnerOverride ? { apiKeySecretOwner: secretOwnerOverride } : {}),
+      ...(maxOutputTokensOverride === undefined
+        ? {}
+        : { maxOutputTokens: maxOutputTokensOverride }),
+      ...(temperatureOverride === undefined ? {} : { temperature: temperatureOverride }),
+    }
   }
 
   fs.mkdirSync(path.dirname(generatedFile), { recursive: true })

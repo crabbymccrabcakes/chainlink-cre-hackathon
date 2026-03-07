@@ -221,6 +221,7 @@ const contradictionMatrix = parseTaggedJson('[OracleCourt][ContradictionMatrix] 
 const prosecutorBriefBlob = parseTaggedJson('[OracleCourt][AgentBrief][PROSECUTOR] ')
 const defenderBriefBlob = parseTaggedJson('[OracleCourt][AgentBrief][DEFENDER] ')
 const auditorBriefBlob = parseTaggedJson('[OracleCourt][AgentBrief][AUDITOR] ')
+const modelLayer = parseTaggedJson('[OracleCourt][ModelLayer] ')
 const policySimulation = parseTaggedJson('[OracleCourt][PolicySimulation] ')
 const constitutionalAssessments = parseTaggedJson('[OracleCourt][Constitution] ')
 const appealOutcome = parseTaggedJson('[OracleCourt][AppealOutcome] ')
@@ -249,6 +250,7 @@ const verdictBulletin =
     policyExplanation: proofBlock?.policySimulation?.explanation || policySimulation?.explanation || null,
     constitutionalAssessments: constitutionalAssessments || [],
     appealOutcome: appealOutcome || null,
+    modelGeneration: proofBlock?.modelGeneration || modelLayer || null,
     txHash,
   }
 
@@ -447,6 +449,13 @@ const parsedBriefs = {
   auditor: auditorBriefBlob?.brief || proofBlock?.agentBriefs?.auditor || null,
 }
 
+const parsedModelFindings = {
+  status: proofBlock?.modelGeneration || verdictBulletin?.modelGeneration || modelLayer || null,
+  prosecutor: parsedBriefs.prosecutor?.modelGenerated || null,
+  defender: parsedBriefs.defender?.modelGenerated || null,
+  auditor: parsedBriefs.auditor?.modelGenerated || null,
+}
+
 const parsedEvidenceHashes = {
   evidenceRoot:
     proofBlock?.evidenceHashes?.evidenceRoot || simulationResult?.evidenceRoot || verdictBulletin?.evidenceRoot || null,
@@ -497,6 +506,14 @@ const deterministicProofBlock = {
   policySimulation: policySimulation || proofBlock?.policySimulation || null,
   constitutionalAssessments: constitutionalAssessments || proofBlock?.constitutionalAssessments || [],
   appealOutcome: appealOutcome || proofBlock?.appealOutcome || null,
+  modelGeneration: {
+    summary: parsedModelFindings.status,
+    briefs: {
+      prosecutor: parsedModelFindings.prosecutor,
+      defender: parsedModelFindings.defender,
+      auditor: parsedModelFindings.auditor,
+    },
+  },
   evidenceHashes: parsedEvidenceHashes,
   finalVerdict,
   verdictBulletin,
@@ -544,11 +561,11 @@ const briefs = parsedBriefs
 
 const dossierMarkdown = `# Evidence Dossier\n\n## Canonical Evidence Root\n\n- evidenceRoot: \`${parsedEvidenceHashes.evidenceRoot || 'n/a'}\`\n- admissibilityScoreBps: \`${dossier?.admissibilityScoreBps ?? 'n/a'}\`\n- evidenceFreshnessScoreBps: \`${dossier?.evidenceFreshnessScoreBps ?? 'n/a'}\`\n- protectedSourcesPresent: \`${dossier?.protectedSourcesPresent ?? 'n/a'}\`\n\n## Claims\n\n\`\`\`json\n${JSON.stringify(dossier?.claims || [], null, 2)}\n\`\`\`\n\n## Contradiction Matrix\n\n\`\`\`json\n${JSON.stringify(dossier?.contradictionMatrix || [], null, 2)}\n\`\`\`\n`
 
-const briefsMarkdown = `# Tribunal Briefs\n\n## Prosecutor\n\n\`\`\`json\n${JSON.stringify(briefs.prosecutor || null, null, 2)}\n\`\`\`\n\n## Defender\n\n\`\`\`json\n${JSON.stringify(briefs.defender || null, null, 2)}\n\`\`\`\n\n## Auditor\n\n\`\`\`json\n${JSON.stringify(briefs.auditor || null, null, 2)}\n\`\`\`\n\n## Evidence Hashes\n\n- prosecutorEvidenceHash: \`${parsedEvidenceHashes.prosecutorEvidenceHash || 'n/a'}\`\n- defenderEvidenceHash: \`${parsedEvidenceHashes.defenderEvidenceHash || 'n/a'}\`\n- auditorEvidenceHash: \`${parsedEvidenceHashes.auditorEvidenceHash || 'n/a'}\`\n`
+const briefsMarkdown = `# Tribunal Briefs\n\n## Deterministic Prosecutor\n\n\`\`\`json\n${JSON.stringify(briefs.prosecutor || null, null, 2)}\n\`\`\`\n\n## Deterministic Defender\n\n\`\`\`json\n${JSON.stringify(briefs.defender || null, null, 2)}\n\`\`\`\n\n## Deterministic Auditor\n\n\`\`\`json\n${JSON.stringify(briefs.auditor || null, null, 2)}\n\`\`\`\n\n## Schema-Validated Model Findings Status\n\n\`\`\`json\n${JSON.stringify(parsedModelFindings.status || null, null, 2)}\n\`\`\`\n\n## Model Prosecutor\n\n\`\`\`json\n${JSON.stringify(parsedModelFindings.prosecutor || null, null, 2)}\n\`\`\`\n\n## Model Defender\n\n\`\`\`json\n${JSON.stringify(parsedModelFindings.defender || null, null, 2)}\n\`\`\`\n\n## Model Auditor\n\n\`\`\`json\n${JSON.stringify(parsedModelFindings.auditor || null, null, 2)}\n\`\`\`\n\n## Evidence Hashes\n\n- prosecutorEvidenceHash: \`${parsedEvidenceHashes.prosecutorEvidenceHash || 'n/a'}\`\n- defenderEvidenceHash: \`${parsedEvidenceHashes.defenderEvidenceHash || 'n/a'}\`\n- auditorEvidenceHash: \`${parsedEvidenceHashes.auditorEvidenceHash || 'n/a'}\`\n`
 
 const policyMarkdown = `# Policy Simulation\n\n## Counterfactual Mode Analysis\n\n\`\`\`json\n${JSON.stringify(deterministicProofBlock.policySimulation, null, 2)}\n\`\`\`\n\n## Final Selection\n\n- selectedMode: \`${finalVerdict.modeLabel || 'n/a'}\`\n- rationale: ${finalVerdict.reason || 'n/a'}\n`
 
-const proofMarkdown = `# Oracle Court Proof Artifact\n\n## Deterministic Proof Block\n\n\`\`\`json\n${JSON.stringify(deterministicProofBlock, null, 2)}\n\`\`\`\n\n## Notes\n\n- Evidence dossier is compiled before tribunal reasoning and hashed as \`evidenceRoot\`.\n- Prosecutor / Defender / Auditor briefs are adversarial, citation-backed, and independently hashed.\n- Policy mode is selected via counterfactual simulation across NORMAL / THROTTLE / REDEMPTION_ONLY.\n- Receiver enforces protocol consequence by calling \`MockRWAVault.setRiskMode(mode)\`.\n- If \`proofMode=simulated-placeholder\`, treat artifact as simulation-only (not final onchain proof).\n`
+const proofMarkdown = `# Oracle Court Proof Artifact\n\n## Deterministic Proof Block\n\n\`\`\`json\n${JSON.stringify(deterministicProofBlock, null, 2)}\n\`\`\`\n\n## Notes\n\n- Evidence dossier is compiled before tribunal reasoning and hashed as \`evidenceRoot\`.\n- Prosecutor / Defender / Auditor deterministic briefs remain the enforcement source of truth and are independently hashed.\n- Optional model findings are schema-validated against live dossier claim IDs and do not change the selected policy mode.\n- Policy mode is selected via counterfactual simulation across NORMAL / THROTTLE / REDEMPTION_ONLY.\n- Receiver enforces protocol consequence by calling \`MockRWAVault.setRiskMode(mode)\`.\n- If \`proofMode=simulated-placeholder\`, treat artifact as simulation-only (not final onchain proof).\n`
 
 fs.mkdirSync(path.dirname(proofPath), { recursive: true })
 fs.writeFileSync(proofPath, proofMarkdown, 'utf8')

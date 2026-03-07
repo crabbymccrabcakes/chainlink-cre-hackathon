@@ -81,5 +81,15 @@
   "constitution": {
     "evidenceSufficiencyMinBps": 7000,
     "freshnessMinBps": 6500
+  },
+  "model": {
+    "enabled": false,
+    "provider": "openai-responses",
+    "apiUrl": "https://api.openai.com/v1/responses",
+    "model": "gpt-4.1-mini",
+    "apiKeySecretId": "OPENAI_API_KEY",
+    "apiKeySecretNamespace": "default",
+    "temperature": 0,
+    "maxOutputTokens": 1200
   }
 }
