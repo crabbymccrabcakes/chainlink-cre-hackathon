@@ -1,4 +1,4 @@
-> Scenario: appeal-canonical (tx: 0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d)
+> Scenario: appeal-canonical (tx: 0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e)
 
 # Tribunal Briefs
 
@@ -21,7 +21,7 @@
     "Redemption queue penalty=0",
     "Contradiction severity total=0"
   ],
-  "confidenceBps": 5615,
+  "confidenceBps": 5614,
   "contradictionsFound": [],
   "policyRecommendation": "NORMAL",
   "position": "restrict",
@@ -81,7 +81,7 @@
     "Freshness score=1500",
     "Source failure penalty=0"
   ],
-  "confidenceBps": 7950,
+  "confidenceBps": 7951,
   "contradictionsFound": [],
   "policyRecommendation": "REDEMPTION_ONLY",
   "position": "hold",
@@ -91,6 +91,6 @@
 
 ## Evidence Hashes
 
-- prosecutorEvidenceHash: `0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41`
+- prosecutorEvidenceHash: `0x40fee3fff61b5923fbaa83a2fd2a9620bd5edda484cd847b115eb310b51ada5e`
 - defenderEvidenceHash: `0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd`
-- auditorEvidenceHash: `0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef`
+- auditorEvidenceHash: `0x1e813cdb2da59a86502350139ebf9e6b4feaba651bb1a3bc69edf6941a3f53bc`

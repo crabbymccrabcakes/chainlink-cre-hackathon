@@ -7,35 +7,35 @@
     "attestationAgeSeconds": 7200,
     "redemptionQueueBps": 700
   },
-  "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
+  "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e",
   "simulationResult": {
-    "appealOfCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
+    "appealOfCaseId": "0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451",
     "appealOutcome": "RELAX",
-    "auditorEvidenceHash": "0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef",
-    "auditorScore": 6501,
-    "caseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
+    "auditorEvidenceHash": "0x1e813cdb2da59a86502350139ebf9e6b4feaba651bb1a3bc69edf6941a3f53bc",
+    "auditorScore": 6502,
+    "caseId": "0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896",
     "constitutionalOverrideReason": "",
     "defenderEvidenceHash": "0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd",
     "defenderScore": 976,
-    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
+    "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
     "mode": 0,
     "modeLabel": "NORMAL",
     "policyMode": 0,
     "policyModeLabel": "NORMAL",
-    "priorCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
-    "prosecutorEvidenceHash": "0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41",
-    "prosecutorScore": 42,
-    "riskScoreBps": 5567,
-    "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
-    "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7"
+    "priorCaseId": "0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451",
+    "prosecutorEvidenceHash": "0x40fee3fff61b5923fbaa83a2fd2a9620bd5edda484cd847b115eb310b51ada5e",
+    "prosecutorScore": 40,
+    "riskScoreBps": 5566,
+    "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e",
+    "verdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01"
   },
   "verdictBulletin": {
-    "caseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
+    "caseId": "0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896",
     "mode": "NORMAL",
-    "riskScoreBps": 5567,
-    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
-    "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7",
-    "policyExplanation": null,
+    "riskScoreBps": 5566,
+    "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
+    "verdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01",
+    "policyExplanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6307",
     "constitutionalAssessments": [
       {
         "principle": "Solvency First",
@@ -69,20 +69,20 @@
         "contradictionCountDelta": -1,
         "contradictionSeverityDeltaBps": -4800,
         "freshnessDeltaBps": 0,
-        "riskDeltaBps": -4433
+        "riskDeltaBps": -4434
       },
       "outcome": "RELAX",
       "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
     },
-    "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d"
+    "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e"
   },
   "evidenceDossier": {
     "admissibilityScoreBps": 9095,
     "claimCount": 3,
     "contradictionCount": 0,
     "evidenceFreshnessScoreBps": 1500,
-    "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
-    "generatedAtUnix": 1772838077,
+    "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
+    "generatedAtUnix": 1772842686,
     "protectedSourcesPresent": true,
     "sourceIds": [
       "ATT-2026-02-28",
@@ -124,43 +124,43 @@
   "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "receiverState": {
     "latestMode": 0,
-    "latestRiskScoreBps": 5567,
-    "latestProsecutorScore": 42,
+    "latestRiskScoreBps": 5566,
+    "latestProsecutorScore": 40,
     "latestDefenderScore": 976,
-    "latestAuditorScore": 6501,
+    "latestAuditorScore": 6502,
     "latestContradictionCount": 0,
     "latestContradictionSeverityBps": 0,
     "latestEvidenceFreshnessScoreBps": 1500,
     "latestAdmissibilityScoreBps": 9095,
-    "latestTimestamp": 1772838077,
-    "latestCaseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
-    "latestPriorCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
-    "latestAppealOfCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
+    "latestTimestamp": 1772842686,
+    "latestCaseId": "0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896",
+    "latestPriorCaseId": "0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451",
+    "latestAppealOfCaseId": "0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451",
     "latestAppealOutcome": 2,
-    "latestProsecutorEvidenceHash": "0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41",
+    "latestProsecutorEvidenceHash": "0x40fee3fff61b5923fbaa83a2fd2a9620bd5edda484cd847b115eb310b51ada5e",
     "latestDefenderEvidenceHash": "0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd",
-    "latestAuditorEvidenceHash": "0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef",
-    "latestVerdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7",
+    "latestAuditorEvidenceHash": "0x1e813cdb2da59a86502350139ebf9e6b4feaba651bb1a3bc69edf6941a3f53bc",
+    "latestVerdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01",
     "latestCaseSummary": {
       "exists": true,
       "mode": 0,
       "appealOutcome": 2,
-      "riskScoreBps": 5567,
-      "prosecutorScore": 42,
+      "riskScoreBps": 5566,
+      "prosecutorScore": 40,
       "defenderScore": 976,
-      "auditorScore": 6501,
+      "auditorScore": 6502,
       "contradictionCount": 0,
       "contradictionSeverityBps": 0,
       "evidenceFreshnessScoreBps": 1500,
       "admissibilityScoreBps": 9095,
-      "timestamp": 1772838077,
-      "caseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
-      "priorCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
-      "appealOfCaseId": "0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383",
-      "prosecutorEvidenceHash": "0x515bf202d386b069685f154230c4c9d89615cca4d8f9b8ae8cef0d7b4c7afd41",
+      "timestamp": 1772842686,
+      "caseId": "0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896",
+      "priorCaseId": "0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451",
+      "appealOfCaseId": "0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451",
+      "prosecutorEvidenceHash": "0x40fee3fff61b5923fbaa83a2fd2a9620bd5edda484cd847b115eb310b51ada5e",
       "defenderEvidenceHash": "0xe10428e9b19a2e2d620c4d8cd3979d469834ac3741e02c8dbb361776a6a568dd",
-      "auditorEvidenceHash": "0x6e253fc1af56667c28acfe8f1845a46e69bcf97ea9ed041bc820ddc177378eef",
-      "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7"
+      "auditorEvidenceHash": "0x1e813cdb2da59a86502350139ebf9e6b4feaba651bb1a3bc69edf6941a3f53bc",
+      "verdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01"
     }
   },
   "vaultState": {
@@ -172,11 +172,11 @@
     "canMint1000": true,
     "canMint5000": true,
     "canRedeem1000": true,
-    "totalMinted": "5000",
-    "totalRedeemed": "2000",
+    "totalMinted": "15000",
+    "totalRedeemed": "5000",
     "actorState": {
       "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
-      "balance": "3000"
+      "balance": "10000"
     }
   },
   "actionProof": {
@@ -189,8 +189,8 @@
         "amount": "5000",
         "expectedStatus": "SUCCESS",
         "status": "SUCCESS",
-        "txHash": "0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889",
-        "blockNumber": "10398970",
+        "txHash": "0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093",
+        "blockNumber": "10399302",
         "error": null,
         "actorBalanceDelta": "5000",
         "totalMintedDelta": "5000",
@@ -203,9 +203,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "3000",
-          "totalMinted": "5000",
-          "totalRedeemed": "2000"
+          "actorBalance": "10000",
+          "totalMinted": "15000",
+          "totalRedeemed": "5000"
         },
         "after": {
           "riskMode": 0,
@@ -215,9 +215,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "8000",
-          "totalMinted": "10000",
-          "totalRedeemed": "2000"
+          "actorBalance": "15000",
+          "totalMinted": "20000",
+          "totalRedeemed": "5000"
         }
       },
       {
@@ -226,8 +226,8 @@
         "amount": "1000",
         "expectedStatus": "SUCCESS",
         "status": "SUCCESS",
-        "txHash": "0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f",
-        "blockNumber": "10398971",
+        "txHash": "0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a",
+        "blockNumber": "10399303",
         "error": null,
         "actorBalanceDelta": "-1000",
         "totalMintedDelta": "0",
@@ -240,9 +240,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "8000",
-          "totalMinted": "10000",
-          "totalRedeemed": "2000"
+          "actorBalance": "15000",
+          "totalMinted": "20000",
+          "totalRedeemed": "5000"
         },
         "after": {
           "riskMode": 0,
@@ -252,9 +252,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "7000",
-          "totalMinted": "10000",
-          "totalRedeemed": "3000"
+          "actorBalance": "14000",
+          "totalMinted": "20000",
+          "totalRedeemed": "6000"
         }
       }
     ],
@@ -266,9 +266,9 @@
       "redemptionQueueBps": 700,
       "canMintAmount": true,
       "canRedeemAmount": true,
-      "actorBalance": "7000",
-      "totalMinted": "10000",
-      "totalRedeemed": "3000"
+      "actorBalance": "14000",
+      "totalMinted": "20000",
+      "totalRedeemed": "6000"
     }
   }
 }

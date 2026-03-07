@@ -1,10 +1,10 @@
 {
-  "caseId": "0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844",
+  "caseId": "0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896",
   "mode": "NORMAL",
-  "riskScoreBps": 5567,
-  "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
-  "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7",
-  "policyExplanation": null,
+  "riskScoreBps": 5566,
+  "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
+  "verdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01",
+  "policyExplanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6307",
   "constitutionalAssessments": [
     {
       "principle": "Solvency First",
@@ -38,12 +38,12 @@
       "contradictionCountDelta": -1,
       "contradictionSeverityDeltaBps": -4800,
       "freshnessDeltaBps": 0,
-      "riskDeltaBps": -4433
+      "riskDeltaBps": -4434
     },
     "outcome": "RELAX",
     "rationale": "New evidence reduced contradiction pressure and/or improved freshness; policy relaxed."
   },
-  "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
+  "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e",
   "scenario": "appeal-canonical",
   "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
   "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
@@ -58,8 +58,8 @@
         "amount": "5000",
         "expectedStatus": "SUCCESS",
         "status": "SUCCESS",
-        "txHash": "0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889",
-        "blockNumber": "10398970",
+        "txHash": "0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093",
+        "blockNumber": "10399302",
         "error": null,
         "actorBalanceDelta": "5000",
         "totalMintedDelta": "5000",
@@ -72,9 +72,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "3000",
-          "totalMinted": "5000",
-          "totalRedeemed": "2000"
+          "actorBalance": "10000",
+          "totalMinted": "15000",
+          "totalRedeemed": "5000"
         },
         "after": {
           "riskMode": 0,
@@ -84,9 +84,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "8000",
-          "totalMinted": "10000",
-          "totalRedeemed": "2000"
+          "actorBalance": "15000",
+          "totalMinted": "20000",
+          "totalRedeemed": "5000"
         }
       },
       {
@@ -95,8 +95,8 @@
         "amount": "1000",
         "expectedStatus": "SUCCESS",
         "status": "SUCCESS",
-        "txHash": "0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f",
-        "blockNumber": "10398971",
+        "txHash": "0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a",
+        "blockNumber": "10399303",
         "error": null,
         "actorBalanceDelta": "-1000",
         "totalMintedDelta": "0",
@@ -109,9 +109,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "8000",
-          "totalMinted": "10000",
-          "totalRedeemed": "2000"
+          "actorBalance": "15000",
+          "totalMinted": "20000",
+          "totalRedeemed": "5000"
         },
         "after": {
           "riskMode": 0,
@@ -121,9 +121,9 @@
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "7000",
-          "totalMinted": "10000",
-          "totalRedeemed": "3000"
+          "actorBalance": "14000",
+          "totalMinted": "20000",
+          "totalRedeemed": "6000"
         }
       }
     ],
@@ -135,9 +135,21 @@
       "redemptionQueueBps": 700,
       "canMintAmount": true,
       "canRedeemAmount": true,
-      "actorBalance": "7000",
-      "totalMinted": "10000",
-      "totalRedeemed": "3000"
+      "actorBalance": "14000",
+      "totalMinted": "20000",
+      "totalRedeemed": "6000"
     }
+  },
+  "postActionVaultState": {
+    "riskMode": 0,
+    "throttleMintLimit": "1000",
+    "reserveCoverageBps": 9900,
+    "attestationAgeSeconds": 7200,
+    "redemptionQueueBps": 700,
+    "canMintAmount": true,
+    "canRedeemAmount": true,
+    "actorBalance": "14000",
+    "totalMinted": "20000",
+    "totalRedeemed": "6000"
   }
 }

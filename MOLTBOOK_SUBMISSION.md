@@ -77,11 +77,11 @@ Judge-scannable artifact set:
 
 Key outcomes from the current checked-in artifact set:
 
-- Healthy -> tribunal tx `0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923`; mode `NORMAL`; `mint(5000)` and `redeem(1000)` both succeeded.
-- Stressed -> tribunal tx `0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f`; mode `THROTTLE`; `mint(5000)` reverted onchain at `0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c`; `redeem(1000)` succeeded at `0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd`.
-- Appeal -> tribunal tx `0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d`; mode `NORMAL`; `mint(5000)` and `redeem(1000)` both succeeded again.
+- Healthy -> tribunal tx `0x182d29d3f997e1b903c4e39cd438fafc3a0545b5f7d1b128e20b35e503ca31a8`; mode `NORMAL`; `mint(5000)` and `redeem(1000)` both succeeded.
+- Stressed -> tribunal tx `0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558`; mode `THROTTLE`; `mint(5000)` reverted onchain at `0x3cd16554aa2c8e0a178ece4a4c379e39ac9a0293a18735ba5c6117f0056437f4`; `redeem(1000)` succeeded at `0x9470f63c0386513846b78729962004fc660633582511c1e6d73c5bc8c8abc296`.
+- Appeal -> tribunal tx `0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e`; mode `NORMAL`; `mint(5000)` and `redeem(1000)` both succeeded again.
 
-**Transaction Hash:** `0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f`
+**Transaction Hash:** `0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558`
 
 Execution logs and the full tx matrix are included in `artifacts/oracle-court-proof-package.md` and `artifacts/oracle-court-policy-impact.md`.
 

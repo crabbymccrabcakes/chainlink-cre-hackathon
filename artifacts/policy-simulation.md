@@ -1,4 +1,4 @@
-> Scenario: appeal-canonical (tx: 0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d)
+> Scenario: appeal-canonical (tx: 0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e)
 
 # Policy Simulation
 
@@ -6,33 +6,33 @@
 
 ```json
 {
-  "explanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6308",
+  "explanation": "NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6307",
   "modeResults": [
     {
       "falsePositiveCostBps": 3148,
       "mode": "NORMAL",
-      "objectiveScoreBps": 6308,
+      "objectiveScoreBps": 6307,
       "operationalReversibilityBps": 9300,
       "rationale": "Minimizes user harm but offers the least solvency protection.",
-      "solvencyProtectionBps": 4967,
+      "solvencyProtectionBps": 4966,
       "userHarmBps": 1200
     },
     {
       "falsePositiveCostBps": 2687,
       "mode": "THROTTLE",
-      "objectiveScoreBps": 6155,
+      "objectiveScoreBps": 6154,
       "operationalReversibilityBps": 7600,
       "rationale": "Balances containment with user access while preserving reversibility.",
-      "solvencyProtectionBps": 6367,
+      "solvencyProtectionBps": 6366,
       "userHarmBps": 4300
     },
     {
-      "falsePositiveCostBps": 3973,
+      "falsePositiveCostBps": 3974,
       "mode": "REDEMPTION_ONLY",
-      "objectiveScoreBps": 4878,
+      "objectiveScoreBps": 4877,
       "operationalReversibilityBps": 3000,
       "rationale": "Maximizes solvency containment under contradiction-heavy evidence.",
-      "solvencyProtectionBps": 7367,
+      "solvencyProtectionBps": 7366,
       "userHarmBps": 8200
     }
   ],
@@ -43,4 +43,4 @@
 ## Final Selection
 
 - selectedMode: `NORMAL`
-- rationale: NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6308
+- rationale: NORMAL selected by counterfactual policy simulation: Minimizes user harm but offers the least solvency protection. objective=6307

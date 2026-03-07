@@ -16,35 +16,35 @@ Appeal / retrial records the follow-up execution posture on the upgraded dockete
 
 | Scenario | Tribunal Tx | Effective Mode | Policy Mode | Risk Score (bps) | Large Mint 5000 | Redeem 1000 |
 |---|---|---|---|---:|---|---|
-| Scenario A — Healthy evidence and telemetry | 0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923 | NORMAL | NORMAL | 5563 | SUCCESS (mint 5000, delta=5000, tx=0x20ce725020e635476b57772b5c7dae0b0630bf1ad6acfcc4de2b9ddd208739fe) | SUCCESS (redeem 1000, delta=-1000, tx=0x80f22e9bfd80eedc3acd674807c3558664badbef30fb2e39420d328114edf9e2) |
-| Scenario B — Stressed evidence and telemetry | 0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f | THROTTLE | THROTTLE | 10000 | REVERTED (mint 5000, tx=0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c) | SUCCESS (redeem 1000, delta=-1000, tx=0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd) |
-| Scenario C — Appeal / retrial evidence and telemetry | 0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d | NORMAL | NORMAL | 5567 | SUCCESS (mint 5000, delta=5000, tx=0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889) | SUCCESS (redeem 1000, delta=-1000, tx=0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f) |
+| Scenario A — Healthy evidence and telemetry | 0x182d29d3f997e1b903c4e39cd438fafc3a0545b5f7d1b128e20b35e503ca31a8 | NORMAL | NORMAL | 5566 | SUCCESS (mint 5000, delta=5000, tx=0x535e26a7e32168c780f96da19b8d0c35c539d0776117a95db23c97a871f536bd) | SUCCESS (redeem 1000, delta=-1000, tx=0x01431e4d3bce457ae9ed1e10335635be92ce995927cf95a96c365c363cbc3361) |
+| Scenario B — Stressed evidence and telemetry | 0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558 | THROTTLE | THROTTLE | 10000 | REVERTED (mint 5000, tx=0x3cd16554aa2c8e0a178ece4a4c379e39ac9a0293a18735ba5c6117f0056437f4) | SUCCESS (redeem 1000, delta=-1000, tx=0x9470f63c0386513846b78729962004fc660633582511c1e6d73c5bc8c8abc296) |
+| Scenario C — Appeal / retrial evidence and telemetry | 0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e | NORMAL | NORMAL | 5566 | SUCCESS (mint 5000, delta=5000, tx=0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093) | SUCCESS (redeem 1000, delta=-1000, tx=0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a) |
 
 ## Action Evidence
 
 ### Scenario A — Healthy evidence and telemetry
 
-- tribunalTx: `0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923`
+- tribunalTx: `0x182d29d3f997e1b903c4e39cd438fafc3a0545b5f7d1b128e20b35e503ca31a8`
 - effectiveMode: `NORMAL`
 - policyMode: `NORMAL`
-- mint5000: SUCCESS (mint 5000, delta=5000, tx=0x20ce725020e635476b57772b5c7dae0b0630bf1ad6acfcc4de2b9ddd208739fe)
-- redeem1000: SUCCESS (redeem 1000, delta=-1000, tx=0x80f22e9bfd80eedc3acd674807c3558664badbef30fb2e39420d328114edf9e2)
+- mint5000: SUCCESS (mint 5000, delta=5000, tx=0x535e26a7e32168c780f96da19b8d0c35c539d0776117a95db23c97a871f536bd)
+- redeem1000: SUCCESS (redeem 1000, delta=-1000, tx=0x01431e4d3bce457ae9ed1e10335635be92ce995927cf95a96c365c363cbc3361)
 
 ### Scenario B — Stressed evidence and telemetry
 
-- tribunalTx: `0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f`
+- tribunalTx: `0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558`
 - effectiveMode: `THROTTLE`
 - policyMode: `THROTTLE`
-- mint5000: REVERTED (mint 5000, tx=0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c)
-- redeem1000: SUCCESS (redeem 1000, delta=-1000, tx=0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd)
+- mint5000: REVERTED (mint 5000, tx=0x3cd16554aa2c8e0a178ece4a4c379e39ac9a0293a18735ba5c6117f0056437f4)
+- redeem1000: SUCCESS (redeem 1000, delta=-1000, tx=0x9470f63c0386513846b78729962004fc660633582511c1e6d73c5bc8c8abc296)
 
 ### Scenario C — Appeal / retrial evidence and telemetry
 
-- tribunalTx: `0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d`
+- tribunalTx: `0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e`
 - effectiveMode: `NORMAL`
 - policyMode: `NORMAL`
-- mint5000: SUCCESS (mint 5000, delta=5000, tx=0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889)
-- redeem1000: SUCCESS (redeem 1000, delta=-1000, tx=0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f)
+- mint5000: SUCCESS (mint 5000, delta=5000, tx=0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093)
+- redeem1000: SUCCESS (redeem 1000, delta=-1000, tx=0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a)
 
 ## Healthy Scenario Inputs
 
@@ -76,7 +76,7 @@ Appeal / retrial records the follow-up execution posture on the upgraded dockete
 }
 ```
 
-## Final Enforced State (after appeal scenario)
+## Final Enforced State (after appeal post-verdict actions)
 
 ```json
 {
@@ -85,14 +85,10 @@ Appeal / retrial records the follow-up execution posture on the upgraded dockete
   "reserveCoverageBps": 9900,
   "attestationAgeSeconds": 7200,
   "redemptionQueueBps": 700,
-  "canMint1000": true,
-  "canMint5000": true,
-  "canRedeem1000": true,
-  "totalMinted": "5000",
-  "totalRedeemed": "2000",
-  "actorState": {
-    "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
-    "balance": "3000"
-  }
+  "canMintAmount": true,
+  "canRedeemAmount": true,
+  "actorBalance": "14000",
+  "totalMinted": "20000",
+  "totalRedeemed": "6000"
 }
 ```

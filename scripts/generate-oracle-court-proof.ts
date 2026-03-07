@@ -16,6 +16,7 @@ const briefsMdPath = path.join(projectRoot, 'artifacts', 'tribunal-briefs.md')
 const simulationMdPath = path.join(projectRoot, 'artifacts', 'policy-simulation.md')
 const bulletinJsonPath = path.join(projectRoot, 'artifacts', 'verdict-bulletin.json')
 const deploymentPath = path.join(projectRoot, 'contracts', 'deployments', 'sepolia-oracle-court-stack.json')
+const workflowConfigPath = path.join(projectRoot, 'src', 'workflows', 'oracle-court', 'config.generated.json')
 
 if (!fs.existsSync(logPath)) {
   throw new Error(`Simulation log not found: ${logPath}`)
@@ -24,6 +25,9 @@ if (!fs.existsSync(logPath)) {
 const deployment = fs.existsSync(deploymentPath)
   ? JSON.parse(fs.readFileSync(deploymentPath, 'utf8'))
   : {}
+const workflowConfig = fs.existsSync(workflowConfigPath)
+  ? JSON.parse(fs.readFileSync(workflowConfigPath, 'utf8'))
+  : null
 
 const lines = fs
   .readFileSync(logPath, 'utf8')
@@ -39,23 +43,140 @@ const tryParseJson = (value) => {
   }
 }
 
+const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
+
+const parseJsonFromLinePrefix = (prefix, startIndex) => {
+  const line = lines[startIndex]
+  const prefixIndex = line.indexOf(prefix)
+  if (prefixIndex < 0) return null
+
+  const payload = line.slice(prefixIndex + prefix.length).trim()
+  if (!payload || payload.includes('...(truncated)')) return null
+
+  const direct = tryParseJson(payload)
+  if (direct !== null) return direct
+
+  if (!payload.startsWith('{') && !payload.startsWith('[')) {
+    return null
+  }
+
+  const collected = [payload]
+  let objectDepth = (payload.match(/\{/g) || []).length - (payload.match(/\}/g) || []).length
+  let arrayDepth = (payload.match(/\[/g) || []).length - (payload.match(/\]/g) || []).length
+
+  for (let i = startIndex + 1; i < lines.length; i += 1) {
+    const next = lines[i]
+    if (next.includes('...(truncated)')) return null
+    collected.push(next)
+    objectDepth += (next.match(/\{/g) || []).length - (next.match(/\}/g) || []).length
+    arrayDepth += (next.match(/\[/g) || []).length - (next.match(/\]/g) || []).length
+
+    if (objectDepth <= 0 && arrayDepth <= 0) {
+      return tryParseJson(collected.join('\n'))
+    }
+  }
+
+  return null
+}
+
 const parseTaggedJson = (tag) => {
-  const line = lines.find((entry) => entry.includes(tag))
-  if (!line) return null
-  const index = line.indexOf(tag)
+  const index = lines.findIndex((entry) => entry.includes(tag))
   if (index < 0) return null
-  return tryParseJson(line.slice(index + tag.length))
+  return parseJsonFromLinePrefix(tag, index)
 }
 
 const parseTaggedJsonMany = (tag) =>
   lines
-    .filter((entry) => entry.includes(tag))
-    .map((entry) => {
-      const index = entry.indexOf(tag)
-      if (index < 0) return null
-      return tryParseJson(entry.slice(index + tag.length))
-    })
+    .map((entry, index) => (entry.includes(tag) ? parseJsonFromLinePrefix(tag, index) : null))
     .filter(Boolean)
+
+const parsePrefixedJson = (prefix) => {
+  const index = lines.findIndex((entry) => entry.includes(prefix))
+  if (index < 0) return null
+  return parseJsonFromLinePrefix(prefix, index)
+}
+
+const parseSourceSummary = () => {
+  const line = lines.find((entry) => entry.includes('[OracleCourt][SourceSummary]'))
+  if (!line) return null
+
+  const match = line.match(
+    /successful=(\d+)\s+failed=(\d+)\s+median=([0-9.]+)\s+min=([0-9.]+)\s+max=([0-9.]+)/,
+  )
+  if (!match) return null
+
+  return {
+    successfulSources: Number(match[1]),
+    failedSources: Number(match[2]),
+    usdcMedian: Number(match[3]),
+    usdcMin: Number(match[4]),
+    usdcMax: Number(match[5]),
+  }
+}
+
+const parseOffchainChange24hPct = () => {
+  const startIndex = lines.findIndex((entry) => entry.includes('[OracleCourt] Offchain signals:'))
+  if (startIndex < 0) return null
+
+  const endIndex = lines.findIndex(
+    (entry, index) => index > startIndex && entry.includes('[OracleCourt] Onchain signals:'),
+  )
+
+  const slice = lines.slice(startIndex, endIndex === -1 ? undefined : endIndex).join('\n')
+  const match = slice.match(/"change24hPct":\s*(-?\d+(?:\.\d+)?)/)
+  return match ? Number(match[1]) : null
+}
+
+const buildFallbackInputValues = () => {
+  const sourceSummary = parseSourceSummary()
+  const onchainSignals = parsePrefixedJson('[OracleCourt] Onchain signals: ')
+  const rwaSignals = parsePrefixedJson('[OracleCourt] RWA signals: ')
+
+  if (!sourceSummary || !onchainSignals || !rwaSignals || !workflowConfig?.rwaPolicy) {
+    return null
+  }
+
+  const usdc24hChangePct = parseOffchainChange24hPct()
+  const reserveCoverageGapBps = clamp(
+    workflowConfig.rwaPolicy.minReserveCoverageBps - rwaSignals.reserveCoverageBps,
+    0,
+    10_000,
+  )
+  const attestationLagSeconds = clamp(
+    rwaSignals.attestationAgeSeconds - workflowConfig.rwaPolicy.maxAttestationAgeSeconds,
+    0,
+    10_000_000,
+  )
+  const redemptionQueueExcessBps = clamp(
+    rwaSignals.redemptionQueueBps - workflowConfig.rwaPolicy.maxRedemptionQueueBps,
+    0,
+    10_000,
+  )
+
+  return {
+    usdcMedian: sourceSummary.usdcMedian,
+    usdcMin: sourceSummary.usdcMin,
+    usdcMax: sourceSummary.usdcMax,
+    usdc24hChangePct,
+    ethUsd: onchainSignals.ethUsd,
+    btcUsd: onchainSignals.btcUsd,
+    reserveCoverageBps: rwaSignals.reserveCoverageBps,
+    attestationAgeSeconds: rwaSignals.attestationAgeSeconds,
+    redemptionQueueBps: rwaSignals.redemptionQueueBps,
+    depegBps: clamp(Math.round(Math.abs(sourceSummary.usdcMedian - 1) * 10_000), 0, 10_000),
+    spreadBps: clamp(Math.round((sourceSummary.usdcMax - sourceSummary.usdcMin) * 10_000), 0, 10_000),
+    downside24hBps:
+      usdc24hChangePct === null ? null : clamp(Math.round(Math.max(0, -usdc24hChangePct) * 100), 0, 10_000),
+    reserveCoverageGapBps,
+    attestationLagPenaltyBps: clamp(Math.round(attestationLagSeconds / 120), 0, 2_500),
+    redemptionQueuePenaltyBps: clamp(Math.round(redemptionQueueExcessBps * 1.5), 0, 3_000),
+    sourceFailurePenaltyBps: clamp(sourceSummary.failedSources * 45, 0, 1_000),
+    macroStressBps:
+      (onchainSignals.ethUsd < 2_000 ? 35 : 0) +
+      (onchainSignals.btcUsd < 40_000 ? 35 : 0) +
+      (sourceSummary.successfulSources < workflowConfig.offchain.sources.length ? 25 : 0),
+  }
+}
 
 const parseSimulationResult = () => {
   const index = lines.findIndex((line) => line.includes('✓ Workflow Simulation Result:'))
@@ -103,6 +224,7 @@ const auditorBriefBlob = parseTaggedJson('[OracleCourt][AgentBrief][AUDITOR] ')
 const policySimulation = parseTaggedJson('[OracleCourt][PolicySimulation] ')
 const constitutionalAssessments = parseTaggedJson('[OracleCourt][Constitution] ')
 const appealOutcome = parseTaggedJson('[OracleCourt][AppealOutcome] ')
+const fallbackInputValues = buildFallbackInputValues()
 
 const evidenceDossier = evidenceDossierSummary
   ? {
@@ -124,7 +246,7 @@ const verdictBulletin =
     riskScoreBps: proofBlock?.agentScores?.riskScoreBps || simulationResult?.riskScoreBps || null,
     evidenceRoot: proofBlock?.evidenceHashes?.evidenceRoot || simulationResult?.evidenceRoot || null,
     verdictDigest: proofBlock?.evidenceHashes?.verdictDigest || simulationResult?.verdictDigest || null,
-    policyExplanation: proofBlock?.policySimulation?.explanation || null,
+    policyExplanation: proofBlock?.policySimulation?.explanation || policySimulation?.explanation || null,
     constitutionalAssessments: constitutionalAssessments || [],
     appealOutcome: appealOutcome || null,
     txHash,
@@ -362,7 +484,7 @@ const deterministicProofBlock = {
   chainId: sepolia.id,
   receiverAddress,
   vaultAddress,
-  inputValues: proofBlock?.inputValues || null,
+  inputValues: proofBlock?.inputValues || fallbackInputValues || null,
   evidenceDossierSummary: proofBlock?.evidenceDossierSummary || evidenceDossierSummary || null,
   evidenceDossier,
   agentBriefs: parsedBriefs,

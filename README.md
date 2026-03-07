@@ -36,30 +36,30 @@ Deployment transactions:
 
 Verified canonical proof writes:
 
-- Healthy tribunal tx: `0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923`
-- Stressed tribunal tx: `0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f`
-- Appeal tribunal tx: `0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d`
+- Healthy tribunal tx: `0x182d29d3f997e1b903c4e39cd438fafc3a0545b5f7d1b128e20b35e503ca31a8`
+- Stressed tribunal tx: `0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558`
+- Appeal tribunal tx: `0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e`
 
 Verified post-verdict user action writes:
 
-- Healthy `mint(5000)` tx: `0x20ce725020e635476b57772b5c7dae0b0630bf1ad6acfcc4de2b9ddd208739fe`
-- Healthy `redeem(1000)` tx: `0x80f22e9bfd80eedc3acd674807c3558664badbef30fb2e39420d328114edf9e2`
-- Stressed `mint(5000)` reverted tx: `0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c`
-- Stressed `redeem(1000)` tx: `0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd`
-- Appeal `mint(5000)` tx: `0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889`
-- Appeal `redeem(1000)` tx: `0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f`
+- Healthy `mint(5000)` tx: `0x535e26a7e32168c780f96da19b8d0c35c539d0776117a95db23c97a871f536bd`
+- Healthy `redeem(1000)` tx: `0x01431e4d3bce457ae9ed1e10335635be92ce995927cf95a96c365c363cbc3361`
+- Stressed `mint(5000)` reverted tx: `0x3cd16554aa2c8e0a178ece4a4c379e39ac9a0293a18735ba5c6117f0056437f4`
+- Stressed `redeem(1000)` tx: `0x9470f63c0386513846b78729962004fc660633582511c1e6d73c5bc8c8abc296`
+- Appeal `mint(5000)` tx: `0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093`
+- Appeal `redeem(1000)` tx: `0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a`
 
 Latest onchain state after the canonical proof run:
 
-- `latestCaseId = 0x0be49818d3346f3c5d4d08fac0e482a4987aa15922e1fd516a95e9684087f844`
-- `latestPriorCaseId = 0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383`
-- `latestAppealOfCaseId = 0x17ec24f0578fb950403e9d064634ff96214d409d5b451aa6344fc9e5c20a4383`
+- `latestCaseId = 0x41568898e5875dc9e77765ad3dcc847b1fff4fd28d34f44afec5f27d31364896`
+- `latestPriorCaseId = 0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451`
+- `latestAppealOfCaseId = 0x34022771d62bd3573499ce493d96854284bb23a7f94bcc23ca2e2049ea05f451`
 - `latestAppealOutcome = RELAX`
 - `latestMode = NORMAL`
-- `latestRiskScoreBps = 5567`
-- `vault totalMinted = 10000`
-- `vault totalRedeemed = 3000`
-- `vault actor balance = 7000`
+- `latestRiskScoreBps = 5566`
+- `vault totalMinted = 20000`
+- `vault totalRedeemed = 6000`
+- `vault actor balance = 14000`
 
 This confirms the upgraded receiver now behaves like a docket and that Oracle Court produces real protocol impact evidence, not just mode changes. In the stressed case, the policy simulator selected `THROTTLE`, the effective mode remained `THROTTLE`, and a real `mint(5000)` reverted onchain while redemption stayed available.
 

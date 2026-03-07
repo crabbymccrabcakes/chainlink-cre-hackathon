@@ -203,6 +203,7 @@ const canonicalPackage = {
       verdictDigest: healthy.verdictBulletin.verdictDigest,
       actionProof: healthy.actionProof,
       vaultState: healthy.vaultState,
+      postActionVaultState: healthy.actionProof.finalState,
     },
     stressed: {
       title: stressed.title,
@@ -217,6 +218,7 @@ const canonicalPackage = {
       verdictDigest: stressed.verdictBulletin.verdictDigest,
       actionProof: stressed.actionProof,
       vaultState: stressed.vaultState,
+      postActionVaultState: stressed.actionProof.finalState,
     },
     appeal: {
       title: appeal.title,
@@ -230,6 +232,7 @@ const canonicalPackage = {
       verdictDigest: appeal.verdictBulletin.verdictDigest,
       actionProof: appeal.actionProof,
       vaultState: appeal.vaultState,
+      postActionVaultState: appeal.actionProof.finalState,
     },
   },
 }
@@ -266,7 +269,7 @@ const actionEvidenceSection = (scenario) => {
 `
 }
 
-const packageMarkdown = `# Oracle Court Canonical Proof Package\n\n## One-line Story\n\nHealthy evidence + telemetry enables real mint/redeem execution.\nStressed evidence forces a reverted large-mint transaction under the effective policy mode.\nAppeal / retrial records the follow-up execution posture on the upgraded docketed stack.\n\n## Canonical Addresses\n\n- receiverAddress: \`${appeal.receiverAddress}\`\n- vaultAddress: \`${appeal.vaultAddress}\`\n- execution actor: \`${appeal.actionProof.actorAddress}\`\n\n## Scenario Matrix\n\n| Scenario | Tribunal Tx | Effective Mode | Policy Mode | Risk Score (bps) | Large Mint 5000 | Redeem 1000 |\n|---|---|---|---|---:|---|---|\n${quickRow(healthy)}\n${quickRow(stressed)}\n${quickRow(appeal)}\n\n## Action Evidence\n\n${actionEvidenceSection(healthy)}\n${actionEvidenceSection(stressed)}\n${actionEvidenceSection(appeal)}\n## Healthy Scenario Inputs\n\n\`\`\`json\n${JSON.stringify(healthy.telemetry, null, 2)}\n\`\`\`\n\n## Stressed Scenario Inputs\n\n\`\`\`json\n${JSON.stringify(stressed.telemetry, null, 2)}\n\`\`\`\n\n## Appeal Scenario Inputs\n\n\`\`\`json\n${JSON.stringify(appeal.telemetry, null, 2)}\n\`\`\`\n\n## Final Enforced State (after appeal scenario)\n\n\`\`\`json\n${JSON.stringify(appeal.vaultState, null, 2)}\n\`\`\`\n`
+const packageMarkdown = `# Oracle Court Canonical Proof Package\n\n## One-line Story\n\nHealthy evidence + telemetry enables real mint/redeem execution.\nStressed evidence forces a reverted large-mint transaction under the effective policy mode.\nAppeal / retrial records the follow-up execution posture on the upgraded docketed stack.\n\n## Canonical Addresses\n\n- receiverAddress: \`${appeal.receiverAddress}\`\n- vaultAddress: \`${appeal.vaultAddress}\`\n- execution actor: \`${appeal.actionProof.actorAddress}\`\n\n## Scenario Matrix\n\n| Scenario | Tribunal Tx | Effective Mode | Policy Mode | Risk Score (bps) | Large Mint 5000 | Redeem 1000 |\n|---|---|---|---|---:|---|---|\n${quickRow(healthy)}\n${quickRow(stressed)}\n${quickRow(appeal)}\n\n## Action Evidence\n\n${actionEvidenceSection(healthy)}\n${actionEvidenceSection(stressed)}\n${actionEvidenceSection(appeal)}\n## Healthy Scenario Inputs\n\n\`\`\`json\n${JSON.stringify(healthy.telemetry, null, 2)}\n\`\`\`\n\n## Stressed Scenario Inputs\n\n\`\`\`json\n${JSON.stringify(stressed.telemetry, null, 2)}\n\`\`\`\n\n## Appeal Scenario Inputs\n\n\`\`\`json\n${JSON.stringify(appeal.telemetry, null, 2)}\n\`\`\`\n\n## Final Enforced State (after appeal post-verdict actions)\n\n\`\`\`json\n${JSON.stringify(appeal.actionProof.finalState, null, 2)}\n\`\`\`\n`
 
 const packageMarkdownPath = path.join(artifactsDir, 'oracle-court-proof-package.md')
 fs.writeFileSync(packageMarkdownPath, packageMarkdown, 'utf8')
@@ -281,8 +284,9 @@ const verdictBulletinCanonical = {
   txHash: appeal.txHash,
   receiverAddress: appeal.receiverAddress,
   vaultAddress: appeal.vaultAddress,
-  resultingVaultMode: appeal.vaultState.riskMode,
+  resultingVaultMode: appeal.actionProof.finalState.riskMode,
   actionProof: appeal.actionProof,
+  postActionVaultState: appeal.actionProof.finalState,
 }
 
 fs.writeFileSync(verdictBulletinPath, `${JSON.stringify(verdictBulletinCanonical, null, 2)}\n`, 'utf8')

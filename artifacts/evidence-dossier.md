@@ -2,7 +2,7 @@
 
 ## Canonical Evidence Root
 
-- evidenceRoot: `0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3`
+- evidenceRoot: `0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421`
 - admissibilityScoreBps: `9095`
 - evidenceFreshnessScoreBps: `1500`
 - protectedSourcesPresent: `true`

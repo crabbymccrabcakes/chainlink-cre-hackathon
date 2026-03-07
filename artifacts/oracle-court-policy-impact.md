@@ -11,21 +11,21 @@ This artifact uses a judge-scannable execution flow.
 ```json
 {
   "packageVersion": "oracle-court-canonical-proof-v2",
-  "generatedAtIso": "2026-03-06T23:02:05.995Z",
+  "generatedAtIso": "2026-03-07T00:19:05.393Z",
   "story": "healthy verdict enables mint/redeem, stressed verdict produces a reverted large-mint proof onchain, appeal/retrial records the follow-up execution posture onchain",
   "receiverAddress": "0x4f89381387bcc29a4f7d12581314d69fad2bb67d",
   "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
   "scenarios": {
     "healthy": {
       "title": "Scenario A — Healthy evidence and telemetry",
-      "txHash": "0xc66c3a8acdc86e19ba95e5d879fd748a963a0d8af63f8077e9f1203c76593923",
+      "txHash": "0x182d29d3f997e1b903c4e39cd438fafc3a0545b5f7d1b128e20b35e503ca31a8",
       "modeLabel": "NORMAL",
       "mode": 0,
       "policyModeLabel": "NORMAL",
       "policyMode": 0,
-      "riskScoreBps": 5563,
-      "evidenceRoot": "0x5caf7a46dc78ada8fa67fa3b84afa5a2bdecb4903e58a8514af2a86f6b4a82e1",
-      "verdictDigest": "0x97e0dd8e63e1cbe8d10ad63c1f91a6708f5b20c6520d765adbf6e0ac203e556e",
+      "riskScoreBps": 5566,
+      "evidenceRoot": "0x2ae1a0624a9718aeddb75fc84b620987fbeefd112da55b0d2e2e6bdbb882167d",
+      "verdictDigest": "0x16122f2aba17e3bd7169ac36386046247f6b5bcb676d972e6fa87df4cb98196d",
       "actionProof": {
         "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
         "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
@@ -36,8 +36,8 @@ This artifact uses a judge-scannable execution flow.
             "amount": "5000",
             "expectedStatus": "SUCCESS",
             "status": "SUCCESS",
-            "txHash": "0x20ce725020e635476b57772b5c7dae0b0630bf1ad6acfcc4de2b9ddd208739fe",
-            "blockNumber": "10398961",
+            "txHash": "0x535e26a7e32168c780f96da19b8d0c35c539d0776117a95db23c97a871f536bd",
+            "blockNumber": "10399292",
             "error": null,
             "actorBalanceDelta": "5000",
             "totalMintedDelta": "5000",
@@ -50,9 +50,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 200,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "0",
-              "totalMinted": "0",
-              "totalRedeemed": "0"
+              "actorBalance": "7000",
+              "totalMinted": "10000",
+              "totalRedeemed": "3000"
             },
             "after": {
               "riskMode": 0,
@@ -62,9 +62,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 200,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "5000",
-              "totalMinted": "5000",
-              "totalRedeemed": "0"
+              "actorBalance": "12000",
+              "totalMinted": "15000",
+              "totalRedeemed": "3000"
             }
           },
           {
@@ -73,8 +73,8 @@ This artifact uses a judge-scannable execution flow.
             "amount": "1000",
             "expectedStatus": "SUCCESS",
             "status": "SUCCESS",
-            "txHash": "0x80f22e9bfd80eedc3acd674807c3558664badbef30fb2e39420d328114edf9e2",
-            "blockNumber": "10398962",
+            "txHash": "0x01431e4d3bce457ae9ed1e10335635be92ce995927cf95a96c365c363cbc3361",
+            "blockNumber": "10399293",
             "error": null,
             "actorBalanceDelta": "-1000",
             "totalMintedDelta": "0",
@@ -87,9 +87,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 200,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "5000",
-              "totalMinted": "5000",
-              "totalRedeemed": "0"
+              "actorBalance": "12000",
+              "totalMinted": "15000",
+              "totalRedeemed": "3000"
             },
             "after": {
               "riskMode": 0,
@@ -99,9 +99,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 200,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "4000",
-              "totalMinted": "5000",
-              "totalRedeemed": "1000"
+              "actorBalance": "11000",
+              "totalMinted": "15000",
+              "totalRedeemed": "4000"
             }
           }
         ],
@@ -113,9 +113,9 @@ This artifact uses a judge-scannable execution flow.
           "redemptionQueueBps": 200,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "4000",
-          "totalMinted": "5000",
-          "totalRedeemed": "1000"
+          "actorBalance": "11000",
+          "totalMinted": "15000",
+          "totalRedeemed": "4000"
         }
       },
       "vaultState": {
@@ -127,24 +127,36 @@ This artifact uses a judge-scannable execution flow.
         "canMint1000": true,
         "canMint5000": true,
         "canRedeem1000": true,
-        "totalMinted": "0",
-        "totalRedeemed": "0",
+        "totalMinted": "10000",
+        "totalRedeemed": "3000",
         "actorState": {
           "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
-          "balance": "0"
+          "balance": "7000"
         }
+      },
+      "postActionVaultState": {
+        "riskMode": 0,
+        "throttleMintLimit": "1000",
+        "reserveCoverageBps": 10000,
+        "attestationAgeSeconds": 300,
+        "redemptionQueueBps": 200,
+        "canMintAmount": true,
+        "canRedeemAmount": true,
+        "actorBalance": "11000",
+        "totalMinted": "15000",
+        "totalRedeemed": "4000"
       }
     },
     "stressed": {
       "title": "Scenario B — Stressed evidence and telemetry",
-      "txHash": "0x8831b18c70c477ec20a889bd701753278dd16ccaccdfa89902fce2974d0c3c4f",
+      "txHash": "0xa6e1e02f4c21515c037a1d5ef2ba52b089c5a8c117c576ea140b7ae2b5a7e558",
       "modeLabel": "THROTTLE",
       "mode": 1,
       "policyModeLabel": "THROTTLE",
       "policyMode": 1,
       "riskScoreBps": 10000,
-      "evidenceRoot": "0x55d76866df46f7d2d706c9add644cc134795c1615911ac7bf96694bcf773af73",
-      "verdictDigest": "0xb2deeaa18fca65f4f6f752d9199abf98c9bb98225d64737d2189cccd26ca50b1",
+      "evidenceRoot": "0xad6d64973c5a2dda584dd4fb55f0ec4ecf0e350eae8504d62043084a9a7c1bf7",
+      "verdictDigest": "0x6de6f95e47d040e578f6e7e2afc69284bbfc6f84c7148c06b13aa708bc6750f8",
       "actionProof": {
         "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
         "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
@@ -155,8 +167,8 @@ This artifact uses a judge-scannable execution flow.
             "amount": "5000",
             "expectedStatus": "REVERTED",
             "status": "REVERTED",
-            "txHash": "0x5cd7ccd06c5ad11e3d8333ae2527a50abcd26ef97ef413982a5c78ccc2f57e2c",
-            "blockNumber": "10398965",
+            "txHash": "0x3cd16554aa2c8e0a178ece4a4c379e39ac9a0293a18735ba5c6117f0056437f4",
+            "blockNumber": "10399297",
             "error": "Transaction reverted onchain",
             "actorBalanceDelta": "0",
             "totalMintedDelta": "0",
@@ -169,9 +181,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 2800,
               "canMintAmount": false,
               "canRedeemAmount": true,
-              "actorBalance": "4000",
-              "totalMinted": "5000",
-              "totalRedeemed": "1000"
+              "actorBalance": "11000",
+              "totalMinted": "15000",
+              "totalRedeemed": "4000"
             },
             "after": {
               "riskMode": 1,
@@ -181,9 +193,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 2800,
               "canMintAmount": false,
               "canRedeemAmount": true,
-              "actorBalance": "4000",
-              "totalMinted": "5000",
-              "totalRedeemed": "1000"
+              "actorBalance": "11000",
+              "totalMinted": "15000",
+              "totalRedeemed": "4000"
             }
           },
           {
@@ -192,8 +204,8 @@ This artifact uses a judge-scannable execution flow.
             "amount": "1000",
             "expectedStatus": "SUCCESS",
             "status": "SUCCESS",
-            "txHash": "0x16162843eeef745d7c93cb7b6d39f3110d144444ef764c52639a04b7fea43abd",
-            "blockNumber": "10398966",
+            "txHash": "0x9470f63c0386513846b78729962004fc660633582511c1e6d73c5bc8c8abc296",
+            "blockNumber": "10399298",
             "error": null,
             "actorBalanceDelta": "-1000",
             "totalMintedDelta": "0",
@@ -206,9 +218,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 2800,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "4000",
-              "totalMinted": "5000",
-              "totalRedeemed": "1000"
+              "actorBalance": "11000",
+              "totalMinted": "15000",
+              "totalRedeemed": "4000"
             },
             "after": {
               "riskMode": 1,
@@ -218,9 +230,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 2800,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "3000",
-              "totalMinted": "5000",
-              "totalRedeemed": "2000"
+              "actorBalance": "10000",
+              "totalMinted": "15000",
+              "totalRedeemed": "5000"
             }
           }
         ],
@@ -232,9 +244,9 @@ This artifact uses a judge-scannable execution flow.
           "redemptionQueueBps": 2800,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "3000",
-          "totalMinted": "5000",
-          "totalRedeemed": "2000"
+          "actorBalance": "10000",
+          "totalMinted": "15000",
+          "totalRedeemed": "5000"
         }
       },
       "vaultState": {
@@ -246,24 +258,36 @@ This artifact uses a judge-scannable execution flow.
         "canMint1000": true,
         "canMint5000": false,
         "canRedeem1000": true,
-        "totalMinted": "5000",
-        "totalRedeemed": "1000",
+        "totalMinted": "15000",
+        "totalRedeemed": "4000",
         "actorState": {
           "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
-          "balance": "4000"
+          "balance": "11000"
         }
+      },
+      "postActionVaultState": {
+        "riskMode": 1,
+        "throttleMintLimit": "1000",
+        "reserveCoverageBps": 9400,
+        "attestationAgeSeconds": 172800,
+        "redemptionQueueBps": 2800,
+        "canMintAmount": true,
+        "canRedeemAmount": true,
+        "actorBalance": "10000",
+        "totalMinted": "15000",
+        "totalRedeemed": "5000"
       }
     },
     "appeal": {
       "title": "Scenario C — Appeal / retrial evidence and telemetry",
-      "txHash": "0x4128f84408bb25e7589a1346f1db07eaf825d478500265851a61ef10ef5c3d0d",
+      "txHash": "0x6dda1f34ccfdd4cd27c94b6ab325292870068d8a206d81eac07dfe85356be44e",
       "modeLabel": "NORMAL",
       "mode": 0,
       "policyModeLabel": "NORMAL",
       "policyMode": 0,
-      "riskScoreBps": 5567,
-      "evidenceRoot": "0xb57eb3c9e725d01ce00c1e3b91f621b263dca0caecd91d7e532ba761b70e3af3",
-      "verdictDigest": "0x35ad0eae096cb9ef9d1abc5f1a7bb4fea1f251426befba284eee378e3473f1d7",
+      "riskScoreBps": 5566,
+      "evidenceRoot": "0xef78a6c4bf8d50b44a7616f4425bf23e71f00096afc4a85a1f3c3b2c47bb2421",
+      "verdictDigest": "0x1e872f21103900c102d30dd08a9cf4c5813e8efd91e64860946eef97f47bae01",
       "actionProof": {
         "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
         "vaultAddress": "0xd5c7fad217fa3b0ba8b03e962723b48aaa153d20",
@@ -274,8 +298,8 @@ This artifact uses a judge-scannable execution flow.
             "amount": "5000",
             "expectedStatus": "SUCCESS",
             "status": "SUCCESS",
-            "txHash": "0x52620c33e483cce65cf591cf6a801ee60d14ea656faea099646df1c09ea55889",
-            "blockNumber": "10398970",
+            "txHash": "0xddb1430ddc97cd0acafe07978dcc7d64ab9ea14e716153c593a2941f75e7d093",
+            "blockNumber": "10399302",
             "error": null,
             "actorBalanceDelta": "5000",
             "totalMintedDelta": "5000",
@@ -288,9 +312,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 700,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "3000",
-              "totalMinted": "5000",
-              "totalRedeemed": "2000"
+              "actorBalance": "10000",
+              "totalMinted": "15000",
+              "totalRedeemed": "5000"
             },
             "after": {
               "riskMode": 0,
@@ -300,9 +324,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 700,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "8000",
-              "totalMinted": "10000",
-              "totalRedeemed": "2000"
+              "actorBalance": "15000",
+              "totalMinted": "20000",
+              "totalRedeemed": "5000"
             }
           },
           {
@@ -311,8 +335,8 @@ This artifact uses a judge-scannable execution flow.
             "amount": "1000",
             "expectedStatus": "SUCCESS",
             "status": "SUCCESS",
-            "txHash": "0x2006a30c7899dd70256be9a35c9ed9c0f10ebec2589119f91e56410cfbabf95f",
-            "blockNumber": "10398971",
+            "txHash": "0x54c0548bc37f5b84cac6cd383c849896df5b4cd52dfd3153aff28bca111b242a",
+            "blockNumber": "10399303",
             "error": null,
             "actorBalanceDelta": "-1000",
             "totalMintedDelta": "0",
@@ -325,9 +349,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 700,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "8000",
-              "totalMinted": "10000",
-              "totalRedeemed": "2000"
+              "actorBalance": "15000",
+              "totalMinted": "20000",
+              "totalRedeemed": "5000"
             },
             "after": {
               "riskMode": 0,
@@ -337,9 +361,9 @@ This artifact uses a judge-scannable execution flow.
               "redemptionQueueBps": 700,
               "canMintAmount": true,
               "canRedeemAmount": true,
-              "actorBalance": "7000",
-              "totalMinted": "10000",
-              "totalRedeemed": "3000"
+              "actorBalance": "14000",
+              "totalMinted": "20000",
+              "totalRedeemed": "6000"
             }
           }
         ],
@@ -351,9 +375,9 @@ This artifact uses a judge-scannable execution flow.
           "redemptionQueueBps": 700,
           "canMintAmount": true,
           "canRedeemAmount": true,
-          "actorBalance": "7000",
-          "totalMinted": "10000",
-          "totalRedeemed": "3000"
+          "actorBalance": "14000",
+          "totalMinted": "20000",
+          "totalRedeemed": "6000"
         }
       },
       "vaultState": {
@@ -365,12 +389,24 @@ This artifact uses a judge-scannable execution flow.
         "canMint1000": true,
         "canMint5000": true,
         "canRedeem1000": true,
-        "totalMinted": "5000",
-        "totalRedeemed": "2000",
+        "totalMinted": "15000",
+        "totalRedeemed": "5000",
         "actorState": {
           "actorAddress": "0x7cF2523342Bc161dc2ac73D4f354251605675d54",
-          "balance": "3000"
+          "balance": "10000"
         }
+      },
+      "postActionVaultState": {
+        "riskMode": 0,
+        "throttleMintLimit": "1000",
+        "reserveCoverageBps": 9900,
+        "attestationAgeSeconds": 7200,
+        "redemptionQueueBps": 700,
+        "canMintAmount": true,
+        "canRedeemAmount": true,
+        "actorBalance": "14000",
+        "totalMinted": "20000",
+        "totalRedeemed": "6000"
       }
     }
   }
